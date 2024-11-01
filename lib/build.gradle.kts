@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.cardinalblue.kraftshader"
+    namespace = "com.cardinalblue.kraftshade"
     compileSdk = 34
 
     defaultConfig {

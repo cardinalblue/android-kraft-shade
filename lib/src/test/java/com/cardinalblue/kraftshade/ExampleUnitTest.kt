@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshader
+package com.cardinalblue.kraftshade
 
 import org.junit.Test
 

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "KraftShader"
+rootProject.name = "KraftShade"
 include(":demo")
 include(":lib")
