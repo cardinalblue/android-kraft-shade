@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "KraftShader"
 include(":demo")
- 
+include(":lib")
