@@ -1,0 +1,45 @@
+*.DS_Store
+*.class
+*.classpath
+*.dex
+*.eml
+*.iml
+*.project
+*.swp
+*.settings
+*.hprof
+**/merged_proguard*
+.idea/*
+.gradle/
+.metadata
+/releases
+bin/
+gen/
+build/
+captures/
+local.properties
+.kotlin/
+
+# Microsoft Visual Code
+.vscode
+
+# C++
+*/.externalNativeBuild/*
+.cxx
+
+# Python
+__pycache__/
+
+# fastlane specific
+fastlane/report.xml
+# deliver temporary files
+fastlane/Preview.html
+# snapshot generated screenshots
+fastlane/screenshots
+# scan temporary files
+fastlane/test_output
+# env files
+fastlane/.env
+
+# bundle
+.bundle/config
