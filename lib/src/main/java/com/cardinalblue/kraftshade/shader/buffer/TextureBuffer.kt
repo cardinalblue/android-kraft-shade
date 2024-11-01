@@ -1,0 +1,58 @@
+package com.cardinalblue.kraftshade.shader.buffer
+
+import android.graphics.Bitmap
+import android.opengl.GLES20
+import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.withFrameBufferRestored
+
+class TextureBuffer(
+    override val size: GlSize
+) : Texture(), GlBuffer {
+    override val isScreenCoordinate: Boolean = false
+
+    private var bufferId: Int = 0
+
+    init {
+        val buffers = intArrayOf(-1)
+        GLES20.glGenFramebuffers(1, buffers, 0)
+        GLES20.glTexImage2D(
+            GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, size.width, size.height, 0,
+            GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null
+        )
+        bufferId = buffers[0]
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, bufferId)
+
+        GLES20.glFramebufferTexture2D(
+            GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
+            GLES20.GL_TEXTURE_2D, textureId, 0
+        )
+
+        // be sure to do this otherwise if the later rendering target is WindowSurfaceBuffer then
+        // it's gonna fail
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
+    }
+
+    constructor(width: Int, height: Int) : this(GlSize(width, height))
+
+    override fun beforeDraw() {
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, bufferId)
+    }
+
+    override fun afterDraw() {
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
+    }
+
+    fun getBitmap(): Bitmap {
+        return withFrameBufferRestored {
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, bufferId)
+            com.cardinalblue.kraftshade.OpenGlUtils.createBitmapFromBuffer(size)
+        }
+    }
+
+    override fun delete() {
+        super.delete()
+        GLES20.glDeleteFramebuffers(1, intArrayOf(bufferId), 0)
+        bufferId = -1
+    }
+}

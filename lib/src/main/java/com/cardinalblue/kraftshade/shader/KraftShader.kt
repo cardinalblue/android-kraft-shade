@@ -1,0 +1,186 @@
+package com.cardinalblue.kraftshade.shader
+
+import android.opengl.GLES20
+import android.util.Log
+import androidx.annotation.CallSuper
+import org.intellij.lang.annotations.Language
+import com.cardinalblue.kraftshade.OpenGlUtils
+import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
+import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
+import java.util.LinkedList
+
+typealias GlTask = () -> Unit
+
+abstract class KraftShader : AutoCloseable {
+    var debug: Boolean = false
+
+    private var initialized = false
+    private val runOnDraw = LinkedList<Pair<String?, GlTask>>()
+
+    var glProgId = 0
+        private set
+    private var glAttribPosition = 0
+    protected var glAttribTextureCoordinate = 0
+
+    private var resolution: FloatArray by GlUniformDelegate("resolution", required = false)
+
+    fun log(message: String) {
+        if (!debug) return
+        Log.d("KraftShader", "[${this.javaClass.simpleName}] $message")
+    }
+
+    open fun loadVertexShader(): String {
+        return DEFAULT_VERTEX_SHADER
+    }
+
+    abstract fun loadFragmentShader(): String
+
+    open fun init() {
+        if (initialized) return
+        glProgId = OpenGlUtils.loadProgram(loadVertexShader(), loadFragmentShader())
+        glAttribPosition = GLES20.glGetAttribLocation(glProgId, "position")
+        glAttribTextureCoordinate = GLES20.glGetAttribLocation(glProgId, "inputTextureCoordinate")
+        initialized = true
+    }
+
+    fun draw(bufferSize: GlSize, isScreenCoordinate: Boolean) {
+        init()
+        GLES20.glUseProgram(glProgId)
+        // it's fine if the shader doesn't include the definition of resolution
+        resolution = bufferSize.vec2
+        beforeActualDraw()
+        runPendingOnDrawTasks()
+        actualDraw(isScreenCoordinate)
+        afterActualDraw()
+    }
+
+    /**
+     * Setup the texture in this method
+     */
+    @CallSuper
+    open fun beforeActualDraw() {
+        GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)
+        GLES20.glVertexAttribPointer(
+            glAttribTextureCoordinate,
+            2,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            OpenGlUtils.glTextureBuffer
+        )
+    }
+
+    fun actualDraw(isScreenCoordinate: Boolean) {
+        val cubeBuffer = if (isScreenCoordinate) {
+            OpenGlUtils.glVerticallyFlippedCubeBuffer
+        } else {
+            OpenGlUtils.glCubeBuffer
+        }
+        GLES20.glEnableVertexAttribArray(glAttribPosition)
+        GLES20.glVertexAttribPointer(
+            glAttribPosition,
+            2,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            cubeBuffer
+        )
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+        GLES20.glDisableVertexAttribArray(glAttribPosition)
+    }
+
+    /**
+     * Tear down the texture setup in this method
+     */
+    open fun afterActualDraw() {
+        GLES20.glDisableVertexAttribArray(glAttribTextureCoordinate)
+    }
+
+    fun drawTo(
+        glBuffer: GlBuffer,
+        drawBefore: GlBuffer.() -> Unit = {},
+        drawAfter: GlBuffer.() -> Unit = {}
+    ) {
+        glBuffer.drawTo {
+            drawBefore()
+            draw(glBuffer.size, glBuffer.isScreenCoordinate)
+            drawAfter()
+        }
+    }
+
+    private fun runPendingOnDrawTasks() {
+        synchronized(runOnDraw) {
+            runOnDraw.forEach { (key, task) ->
+                task()
+                if (key != null) {
+                    log("runOnDraw: $key")
+                }
+            }
+            runOnDraw.clear()
+            runOnDraw.add(null to { init() })
+        }
+    }
+
+    /**
+     * If there is task with the same key, the old one will be replaced. If it's null, then the
+     * replacement won't happen
+     */
+    fun runOnDraw(key: String? = null, task: GlTask) {
+        synchronized(runOnDraw) {
+            if (key != null) {
+                val iterator = runOnDraw.iterator()
+                while (iterator.hasNext()) {
+                    val (oldKey, _) = iterator.next()
+                    if (oldKey == key) {
+                        iterator.remove()
+                    }
+                }
+            }
+            runOnDraw.add(key to task)
+        }
+    }
+
+    open fun destroy() {
+        if (!initialized) return
+        GLES20.glDeleteProgram(glProgId)
+        initialized = false
+    }
+
+    override fun close() {
+        destroy()
+    }
+
+    fun KraftShaderTextureInput.activate() {
+        this.activate(this@KraftShader)
+    }
+
+    companion object {
+        val DEFAULT_VERTEX_SHADER: String get() = DEFAULT_VERTEX_SHADER_INTERNAL
+        val DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE: String get() = DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_INTERNAL
+    }
+}
+
+@Language("GLSL")
+private const val DEFAULT_VERTEX_SHADER_INTERNAL = """
+    attribute vec4 position;
+    attribute vec4 inputTextureCoordinate;
+    varying vec2 textureCoordinate;
+
+    uniform highp vec2 resolution;
+
+    void main()
+    {
+        gl_Position = position;
+        textureCoordinate = inputTextureCoordinate.xy;
+    }
+"""
+
+@Language("GLSL")
+private const val DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_INTERNAL = """
+    attribute vec4 position;
+    void main()
+    {
+        gl_Position = position;
+    }
+"""

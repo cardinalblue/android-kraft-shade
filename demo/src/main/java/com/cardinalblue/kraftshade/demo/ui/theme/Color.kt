@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.ui.theme
+package com.cardinalblue.kraftshade.demo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
