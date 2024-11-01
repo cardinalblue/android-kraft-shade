@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.cardinalblue.kraftshader"
+    namespace = "com.cardinalblue.kraftshader.demo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.cardinalblue.kraftshader"
+        applicationId = "com.cardinalblue.kraftshader.demo"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

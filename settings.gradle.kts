@@ -20,5 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "KraftShader"
-include(":app")
+include(":demo")
  
