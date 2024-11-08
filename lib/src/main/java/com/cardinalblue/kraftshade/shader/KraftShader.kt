@@ -6,13 +6,15 @@ import androidx.annotation.CallSuper
 import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.pipeline.Effect
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
+import kotlinx.coroutines.runBlocking
 import java.util.LinkedList
 
 typealias GlTask = () -> Unit
 
-abstract class KraftShader : AutoCloseable {
+abstract class KraftShader : Effect, AutoCloseable {
     var debug: Boolean = false
 
     private var initialized = false
@@ -97,15 +99,9 @@ abstract class KraftShader : AutoCloseable {
         GLES20.glDisableVertexAttribArray(glAttribTextureCoordinate)
     }
 
-    fun drawTo(
-        glBuffer: GlBuffer,
-        drawBefore: GlBuffer.() -> Unit = {},
-        drawAfter: GlBuffer.() -> Unit = {}
-    ) {
-        glBuffer.drawTo {
-            drawBefore()
-            draw(glBuffer.size, glBuffer.isScreenCoordinate)
-            drawAfter()
+    override suspend fun drawTo(buffer: GlBuffer) {
+        buffer.draw {
+            draw(buffer.size, buffer.isScreenCoordinate)
         }
     }
 
@@ -141,14 +137,16 @@ abstract class KraftShader : AutoCloseable {
         }
     }
 
-    open fun destroy() {
+    override suspend fun destroy() {
         if (!initialized) return
         GLES20.glDeleteProgram(glProgId)
         initialized = false
     }
 
     override fun close() {
-        destroy()
+        runBlocking {
+            destroy()
+        }
     }
 
     fun KraftShaderTextureInput.activate() {

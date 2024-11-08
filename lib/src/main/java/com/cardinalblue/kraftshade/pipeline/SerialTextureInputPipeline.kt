@@ -3,20 +3,18 @@ package com.cardinalblue.kraftshade.pipeline
 import kotlinx.coroutines.runBlocking
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.env.ProtectedGlEnv
-import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
-import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 
 class SerialTextureInputPipeline(
     glEnv: GlEnv,
-    private val shaders: List<TextureInputKraftShader>,
-) : Pipeline(glEnv) {
+    private val effects: List<SingleInputTextureEffect>,
+) : Pipeline(glEnv), SingleInputTextureEffect {
     private var buffer1: TextureBuffer? = null
     private var buffer2: TextureBuffer? = null
 
-    fun setInputTexture(texture: Texture) {
-        shaders.first().inputTextureId = texture.textureId
+    override fun setInputTextureId(textureId: Int) {
+        effects.first().setInputTextureId(textureId)
     }
 
     override fun setTargetBuffer(buffer: GlBuffer)  {
@@ -45,8 +43,8 @@ class SerialTextureInputPipeline(
         val buffer2 = requireNotNull(buffer2) { "call setTargetBuffer before executing the pipeline" }
         val targetBuffer = requireNotNull(targetBuffer) { "call setTargetBuffer before executing the pipeline" }
 
-        shaders.forEachIndexed { index, shader ->
-            val bufferToDrawTo: GlBuffer = if (index == shaders.lastIndex) {
+        effects.forEachIndexed { index, effect ->
+            val bufferToDrawTo: GlBuffer = if (index == effects.lastIndex) {
                 targetBuffer
             } else if (index % 2 == 0) { // 0, 2, 4, 6...
                 buffer1
@@ -55,15 +53,25 @@ class SerialTextureInputPipeline(
             }
 
             if (index != 0) {
-                shader.inputTextureId = if (index % 2 == 0) buffer2.textureId else buffer1.textureId
+                val texture = if (index % 2 == 0) buffer2 else buffer1
+                effect.setInputTexture(texture)
             }
 
-            shader.drawTo(bufferToDrawTo)
+            effect.drawTo(bufferToDrawTo)
         }
     }
 
+    /**
+     * Only call this method when input texture is set. You can just set the input texture once if
+     * it doesn't change at all, and then call this function to render the pipeline
+     */
+    override suspend fun drawTo(buffer: GlBuffer) {
+        setTargetBuffer(buffer)
+        run()
+    }
+
     override suspend fun GlEnv.destroy(protectedGlEnv: ProtectedGlEnv) {
-        shaders.forEach {
+        effects.forEach {
             it.destroy()
         }
         buffer1?.delete()

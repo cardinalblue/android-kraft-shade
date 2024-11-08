@@ -22,7 +22,7 @@ fun SimpleShaderTestScreen(
         val resultBuffer = TextureBuffer(bitmap.width, bitmap.height)
         val shader = createShader(context, bitmap)
 
-        shader.inputTextureId = texture.textureId
+        shader.setInputTexture(texture)
         shader.drawTo(resultBuffer)
         resultBuffer.getBitmap()
     }

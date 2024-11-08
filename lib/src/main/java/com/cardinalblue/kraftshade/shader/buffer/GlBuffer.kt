@@ -10,7 +10,7 @@ interface GlBuffer : AutoCloseable {
     fun afterDraw()
     fun delete()
 
-    fun drawTo(draw: GlBuffer.() -> Unit) {
+    fun draw(draw: GlBuffer.() -> Unit) {
         beforeDraw()
         GLES20.glViewport(0, 0, size.width, size.height)
         draw()

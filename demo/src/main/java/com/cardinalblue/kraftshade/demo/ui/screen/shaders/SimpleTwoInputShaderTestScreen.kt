@@ -27,7 +27,7 @@ fun SimpleTwoInputShaderTestScreen(
         val resultBuffer = TextureBuffer(bitmap1.width * 2, bitmap1.height * 2)
 
         val shader = createShader(context, bitmap1, bitmap2).apply {
-            inputTextureId = texture1.textureId
+            setInputTexture(texture1)
             secondInputTextureId = texture2.textureId
             draw(texture1, texture2, resultBuffer.size, false)
         }

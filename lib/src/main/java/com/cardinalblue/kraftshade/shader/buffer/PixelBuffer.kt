@@ -51,8 +51,8 @@ class PixelBuffer internal constructor(
         return OpenGlUtils.createBitmapFromBuffer(size)
     }
 
-    fun render(draw: GlBuffer.() -> Unit): Bitmap {
-        drawTo(draw)
+    fun render(drawBlock: GlBuffer.() -> Unit): Bitmap {
+        draw(drawBlock)
         return getBitmap()
     }
 }

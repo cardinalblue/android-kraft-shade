@@ -1,16 +1,10 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.pipeline
 
 import android.graphics.BitmapFactory
-import android.opengl.GLES20
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import jp.co.cyberagent.android.gpuimage.filter.GPUImageGrayscaleFilter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
 import com.cardinalblue.kraftshade.pipeline.input.TimeInput
@@ -20,6 +14,10 @@ import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.widget.KraftTextureView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
