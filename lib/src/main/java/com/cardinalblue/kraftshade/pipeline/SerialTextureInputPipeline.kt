@@ -21,7 +21,12 @@ class SerialTextureInputPipeline(
     }
 
     fun setTargetBuffer(buffer: GlBuffer)  {
+        val oldBufferSize = targetBuffer?.size
+        val newBufferSize = buffer.size
         targetBuffer = buffer
+        // buffer1 and buffer2 are used internally, so if the size if the same, we don't have to
+        // recreate them.
+        if (oldBufferSize == newBufferSize) return
         runBlocking {
             runDeferred {
                 buffer1?.delete()
@@ -61,5 +66,8 @@ class SerialTextureInputPipeline(
         shaders.forEach {
             it.destroy()
         }
+        targetBuffer = null
+        buffer1?.delete()
+        buffer2?.delete()
     }
 }
