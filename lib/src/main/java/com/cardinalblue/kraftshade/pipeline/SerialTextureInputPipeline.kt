@@ -12,7 +12,6 @@ class SerialTextureInputPipeline(
     glEnv: GlEnv,
     private val shaders: List<TextureInputKraftShader>,
 ) : Pipeline(glEnv) {
-    private var targetBuffer: GlBuffer? = null
     private var buffer1: TextureBuffer? = null
     private var buffer2: TextureBuffer? = null
 
@@ -20,10 +19,11 @@ class SerialTextureInputPipeline(
         shaders.first().inputTextureId = texture.textureId
     }
 
-    fun setTargetBuffer(buffer: GlBuffer)  {
+    override fun setTargetBuffer(buffer: GlBuffer)  {
         val oldBufferSize = targetBuffer?.size
         val newBufferSize = buffer.size
-        targetBuffer = buffer
+        // keep the size of the old buffer first is important
+        super.setTargetBuffer(buffer)
         // buffer1 and buffer2 are used internally, so if the size if the same, we don't have to
         // recreate them.
         if (oldBufferSize == newBufferSize) return
@@ -66,7 +66,6 @@ class SerialTextureInputPipeline(
         shaders.forEach {
             it.destroy()
         }
-        targetBuffer = null
         buffer1?.delete()
         buffer2?.delete()
     }

@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.pipeline
 
+import androidx.annotation.CallSuper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -8,6 +9,7 @@ import com.cardinalblue.kraftshade.env.ProtectedGlEnv
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
 import com.cardinalblue.kraftshade.shader.KraftShader
+import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 
 abstract class Pipeline(
     private val glEnv: GlEnv,
@@ -15,11 +17,20 @@ abstract class Pipeline(
     private val sampledInputs = mutableListOf<SampledInput<*>>()
     private val sampledInputSetupActions = mutableListOf<() -> Unit>()
 
+
+    protected var targetBuffer: GlBuffer? = null
+        private set
+
     private val mutex = Mutex()
     private val postponedTasks: MutableList<suspend GlEnv.(ProtectedGlEnv) -> Unit> = mutableListOf()
 
     abstract suspend fun GlEnv.execute(protectedGlEnv: ProtectedGlEnv)
     abstract suspend fun GlEnv.destroy(protectedGlEnv: ProtectedGlEnv)
+
+    @CallSuper
+    open fun setTargetBuffer(buffer: GlBuffer)  {
+        targetBuffer = buffer
+    }
 
     fun <T : Any, IN : Input<T>, S : KraftShader> connectInput(
         input: IN,
@@ -43,6 +54,7 @@ abstract class Pipeline(
     }
 
     suspend fun destroy() {
+        targetBuffer = null
         glEnv.use { destroy(it) }
     }
 
