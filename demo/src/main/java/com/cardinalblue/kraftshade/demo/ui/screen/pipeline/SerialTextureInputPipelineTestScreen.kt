@@ -9,6 +9,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
 import com.cardinalblue.kraftshade.pipeline.input.TimeInput
+import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
 import com.cardinalblue.kraftshade.pipeline.input.map
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
@@ -46,17 +47,8 @@ fun SerialTextureInputPipelineTestScreen() {
 
                     val time = TimeInput()
                     time.start()
-                    val saturationInput = time.map { t ->
-                        val periodicTime = t % 2f
-                        if (periodicTime < 1f) {
-                            periodicTime
-                        } else {
-                            2f - periodicTime
-                        }
-                    }
-                    val saturationKraftShader = SaturationKraftShader().apply {
-                        saturation = 0f
-                    }
+                    val saturationInput = time.bounceBetween(0f, 1f)
+                    val saturationKraftShader = SaturationKraftShader()
                     val shaders = mutableListOf<TextureInputKraftShader>(
                         saturationKraftShader,
                     )
