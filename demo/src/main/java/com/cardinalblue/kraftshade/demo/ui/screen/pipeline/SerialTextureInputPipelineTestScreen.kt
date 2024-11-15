@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.pipeline
 
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -26,9 +27,12 @@ fun SerialTextureInputPipelineTestScreen() {
     var pipeline: SerialTextureInputPipeline? by remember { mutableStateOf(null) }
     var buffer: WindowSurfaceBuffer? by remember { mutableStateOf(null) }
     var previousBuffer: WindowSurfaceBuffer? by remember { mutableStateOf(null) }
+    var aspectRatio by remember { mutableFloatStateOf(1f) }
 
     AndroidView(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .aspectRatio(aspectRatio),
         factory = { context ->
             KraftTextureView(context).apply {
                 runGlTask { _, windowSurface ->
@@ -37,6 +41,8 @@ fun SerialTextureInputPipelineTestScreen() {
                     val input = context.assets.open("sample/cat.jpg").use {
                         BitmapFactory.decodeStream(it)
                     }.let(::LoadedTexture)
+
+                    aspectRatio = input.size.aspectRatio
 
                     val time = TimeInput()
                     time.start()
