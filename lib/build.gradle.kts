@@ -1,6 +1,9 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("maven-publish")
 }
 
 android {
@@ -53,14 +56,59 @@ android {
             version = "3.22.1"
         }
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/cardinalblue/android-maven-packages")
+
+                credentials {
+                    username = ""
+                    password = gradleLocalProperties(rootDir, providers).getProperty("github.personalAccessToken")
+                }
+            }
+        }
+
+        publications {
+            val namespace = android.namespace ?: throw IllegalStateException("namespace is not set")
+            val packageGroupId = namespace.split(".").dropLast(1).joinToString(".")
+            val packageArtifactId = namespace.split(".").last()
+
+            val envKey = "MAVEN_PACKAGE_VERSION"
+            val envVersion = System.getenv(envKey)
+            val packageVersion = if (envVersion != null && envVersion.isNotBlank()) {
+                envVersion
+            } else {
+                println("Environment variable $envKey is not set. Use default version 0.1.0 for publication.")
+                "0.1.0"
+            }
+
+            create<MavenPublication>("release") {
+                groupId = packageGroupId
+                artifactId = packageArtifactId
+                version = packageVersion
+
+                from(components["release"])
+            }
+        }
+    }
 }
