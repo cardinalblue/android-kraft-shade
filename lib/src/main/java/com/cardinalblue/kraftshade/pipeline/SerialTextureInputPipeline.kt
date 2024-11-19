@@ -8,10 +8,23 @@ import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 
 class SerialTextureInputPipeline(
     glEnv: GlEnv,
-    private val effects: List<SingleInputTextureEffect>,
+    effects: List<SingleInputTextureEffect> = emptyList(),
 ) : Pipeline(glEnv), SingleInputTextureEffect {
     private var buffer1: TextureBuffer? = null
     private var buffer2: TextureBuffer? = null
+
+    private val effects = mutableListOf<SingleInputTextureEffect>().apply {
+        addAll(effects)
+    }
+
+    fun addEffect(effect: SingleInputTextureEffect) {
+        effects.add(effect)
+    }
+
+    fun removeEffect(effect: SingleInputTextureEffect) {
+        val removed = effects.remove(effect)
+        check(removed) { "effect not found" }
+    }
 
     override fun setInputTextureId(textureId: Int) {
         effects.first().setInputTextureId(textureId)

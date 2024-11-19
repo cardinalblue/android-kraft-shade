@@ -31,11 +31,11 @@ abstract class Pipeline(
         targetBuffer = buffer
     }
 
-    fun <T : Any, IN : Input<T>, S : KraftShader> connectInput(
+    fun <T : Any, IN : Input<T>, E : Effect> connectInput(
         input: IN,
-        shader: S,
+        shader: E,
         sampledFromExternal: Boolean = false,
-        action: (IN, S) -> Unit
+        action: (IN, E) -> Unit
     ) {
         if (!sampledFromExternal && input is SampledInput<*>) {
             sampledInputs.add(input)
