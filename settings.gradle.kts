@@ -22,4 +22,3 @@ dependencyResolutionManagement {
 rootProject.name = "KraftShade"
 include(":demo")
 include(":kraft-shade")
-project(":kraft-shade").projectDir = File("lib")
