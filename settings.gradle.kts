@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "KraftShade"
 include(":demo")
 include(":kraft-shade")
+include(":kraft-shade-compose")
