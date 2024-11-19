@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import com.cardinalblue.kraftshade.dsl.CommonInputs
+import com.cardinalblue.kraftshade.dsl.PipelineScope
+import com.cardinalblue.kraftshade.dsl.serialTextureInputPipeline
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
 import com.cardinalblue.kraftshade.pipeline.input.TimeInput
@@ -45,19 +48,20 @@ fun SerialTextureInputPipelineTestScreen() {
 
                     aspectRatio = input.size.aspectRatio
 
-                    val time = TimeInput()
-                    time.start()
-                    val saturationInput = time.bounceBetween(0f, 1f)
-                    val saturationKraftShader = SaturationKraftShader()
-                    val shaders = mutableListOf<TextureInputKraftShader>(
-                        saturationKraftShader,
-                    )
-                    pipeline = SerialTextureInputPipeline(this, shaders).also { pipeline ->
-                        pipeline.setInputTexture(input)
-                        pipeline.setTargetBuffer(windowSurface)
-                        pipeline.connectInput(saturationInput, saturationKraftShader) { saturationInput, shader ->
-                            shader.saturation = saturationInput.get()
+                    pipeline = serialTextureInputPipeline {
+                        withPipeline {
+                            setInputTexture(input)
+                            setTargetBuffer(windowSurface)
                         }
+
+                        +SaturationKraftShader()
+                            .withInput(
+                                CommonInputs
+                                    .time()
+                                    .bounceBetween(0f, 1f)
+                            ) { saturationInput, shader ->
+                                shader.saturation = saturationInput.get()
+                            }
                     }
                 }
             }

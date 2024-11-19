@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.pipeline
 
+import com.cardinalblue.kraftshade.OpenGlUtils
 import kotlinx.coroutines.runBlocking
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.env.ProtectedGlEnv
@@ -12,6 +13,8 @@ class SerialTextureInputPipeline(
 ) : Pipeline(glEnv), SingleInputTextureEffect {
     private var buffer1: TextureBuffer? = null
     private var buffer2: TextureBuffer? = null
+    // postpone the setup until rendering, to make sure effects is not empty
+    private var inputTextureId: Int = OpenGlUtils.NO_TEXTURE
 
     private val effects = mutableListOf<SingleInputTextureEffect>().apply {
         addAll(effects)
@@ -27,7 +30,7 @@ class SerialTextureInputPipeline(
     }
 
     override fun setInputTextureId(textureId: Int) {
-        effects.first().setInputTextureId(textureId)
+        inputTextureId = textureId
     }
 
     override fun setTargetBuffer(buffer: GlBuffer)  {
@@ -89,5 +92,15 @@ class SerialTextureInputPipeline(
         }
         buffer1?.delete()
         buffer2?.delete()
+    }
+
+    override suspend fun internalRun() {
+        check(inputTextureId != OpenGlUtils.NO_TEXTURE) { "input texture is not set" }
+        check(effects.isNotEmpty()) { "effects is empty" }
+
+        runDeferred {
+            effects.first().setInputTextureId(inputTextureId)
+        }
+        super.internalRun()
     }
 }

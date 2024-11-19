@@ -72,7 +72,8 @@ abstract class Pipeline(
         }
     }
 
-    private suspend fun internalRun() {
+    @CallSuper
+    open suspend fun internalRun() {
         sampledInputs.forEach { it.sample() }
         sampledInputSetupActions.forEach { it() }
         glEnv.use {
