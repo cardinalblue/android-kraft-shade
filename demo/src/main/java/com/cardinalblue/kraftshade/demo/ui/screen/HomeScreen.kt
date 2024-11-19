@@ -15,6 +15,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BasicShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BlendingExampleScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.pipeline.SerialTextureInputPipelineTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.shaders.*
+import com.cardinalblue.kraftshade.demo.ui.screen.view.AnimatedKraftTextureViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.KraftTextureViewTestWindow
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
 
@@ -68,6 +69,7 @@ enum class Destination(
     EmbossShader("emboss_shader", "Emboss Shader", screen = { EmbossShaderScreen() }),
     LookUpTableShader("look_up_table_shader", "Look Up Table Shader", screen = { LookUpTableShaderTestScreen() }),
     KraftTextureView("kraft_texture_view", "Kraft Texture View", screen = { KraftTextureViewTestWindow() }),
+    AnimatedKraftTextureView("animated_kraft_texture_view", "Animated Kraft Texture View", screen = { AnimatedKraftTextureViewTestWindow() }),
     SerialPipeline("serial_pipeline", "Serial Pipeline", screen = { SerialTextureInputPipelineTestScreen() }),
 }
 

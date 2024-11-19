@@ -13,9 +13,10 @@ import com.cardinalblue.kraftshade.util.KraftLogger
 
 typealias KraftTextureViewTask = suspend GlEnv.(env: ProtectedGlEnv, windowSurface: WindowSurfaceBuffer) -> Unit
 
-class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
+open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
     private val logger = KraftLogger("KraftTextureView")
-    private var glEnv: GlEnv? = null
+    var glEnv: GlEnv? = null
+        private set
     private var windowSurface: WindowSurfaceBuffer? = null
     private var coroutineScope = CoroutineScope(Job())
 
@@ -26,8 +27,8 @@ class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
     private val initLock = Mutex()
     private val taskAfterAttached: MutableList<KraftTextureViewTask> = mutableListOf()
 
-    fun runGlTask(task: KraftTextureViewTask) {
-        coroutineScope.launch {
+    fun runGlTask(task: KraftTextureViewTask): Job {
+        return coroutineScope.launch {
             initLock.withLock {
                 val glEnv = glEnv
                 val windowSurface = windowSurface

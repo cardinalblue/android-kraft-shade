@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.pipeline
+package com.cardinalblue.kraftshade.demo.ui.screen.view
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.aspectRatio
@@ -13,18 +13,15 @@ import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
+import com.cardinalblue.kraftshade.shader.builtin.DrawCircleKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
+import com.cardinalblue.kraftshade.widget.AnimatedKraftTextureView
 import com.cardinalblue.kraftshade.widget.KraftTextureView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun SerialTextureInputPipelineTestScreen() {
+fun AnimatedKraftTextureViewTestWindow() {
     var env: GlEnv? by remember { mutableStateOf(null) }
-    var pipeline: SerialTextureInputPipeline? by remember { mutableStateOf(null) }
     var buffer: WindowSurfaceBuffer? by remember { mutableStateOf(null) }
     var previousBuffer: WindowSurfaceBuffer? by remember { mutableStateOf(null) }
     var aspectRatio by remember { mutableFloatStateOf(1f) }
@@ -34,9 +31,9 @@ fun SerialTextureInputPipelineTestScreen() {
             .fillMaxSize()
             .aspectRatio(aspectRatio),
         factory = { context ->
-            KraftTextureView(context).apply {
-                env = this.glEnv
-                runGlTask { _, windowSurface ->
+            AnimatedKraftTextureView(context).apply {
+                env = glEnv
+                setEffect { _, windowSurface ->
                     previousBuffer = buffer
                     buffer = windowSurface
                     val input = context.assets.open("sample/cat.jpg").use {
@@ -45,7 +42,7 @@ fun SerialTextureInputPipelineTestScreen() {
 
                     aspectRatio = input.size.aspectRatio
 
-                    pipeline = serialTextureInputPipeline {
+                    serialTextureInputPipeline {
                         withPipeline {
                             setInputTexture(input)
                             setTargetBuffer(windowSurface)
@@ -63,17 +60,12 @@ fun SerialTextureInputPipelineTestScreen() {
                 }
             }
         }
-    ) {
-        it.runGlTask { _, windowSurface ->
-            pipeline?.setTargetBuffer(windowSurface)
-        }
-    }
+    )
 
     DisposableEffect(key1 = env) {
         onDispose {
             runBlocking {
                 env?.use {
-                    pipeline?.destroy()
                     terminate()
                 }
             }
@@ -88,20 +80,6 @@ fun SerialTextureInputPipelineTestScreen() {
                     previousBuffer?.delete()
                     previousBuffer = null
                 }
-            }
-        }
-    }
-
-    LaunchedEffect(key1 = pipeline) {
-        val pipeline = pipeline ?: return@LaunchedEffect
-        withContext(Dispatchers.Default) {
-            while (true) {
-                try {
-                    pipeline.run()
-                } catch (e: Exception) {
-                    break
-                }
-                delay(10.milliseconds)
             }
         }
     }
