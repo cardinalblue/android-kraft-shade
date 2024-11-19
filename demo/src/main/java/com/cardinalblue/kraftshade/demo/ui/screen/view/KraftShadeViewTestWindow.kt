@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import com.cardinalblue.kraftshade.compose.KraftShadeState
 import com.cardinalblue.kraftshade.compose.KraftShadeView
+import com.cardinalblue.kraftshade.compose.rememberKraftShadeState
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import kotlinx.coroutines.Dispatchers
@@ -17,15 +17,16 @@ import kotlinx.coroutines.withContext
 
 @Composable
 fun KraftShadeViewTestWindow() {
-    var state: KraftShadeState? by remember { mutableStateOf(null) }
+    val state: KraftShadeState = rememberKraftShadeState()
     var image: Bitmap? by remember { mutableStateOf(null) }
     var imageAspectRatio: Float by remember { mutableFloatStateOf(1.0f) }
 
-    KraftShadeView(modifier = Modifier
-        .fillMaxSize()
-        .aspectRatio(imageAspectRatio)) { _state ->
-        state = _state
-    }
+    KraftShadeView(
+        modifier = Modifier
+            .fillMaxSize()
+            .aspectRatio(imageAspectRatio),
+        state = state
+    )
 
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
@@ -39,9 +40,8 @@ fun KraftShadeViewTestWindow() {
     }
 
     LaunchedEffect(state, image) {
-        val state = state ?: return@LaunchedEffect
         val image = image ?: return@LaunchedEffect
-        state.runGlTask { env, windowSurface ->
+        state.runGlTask { _, windowSurface ->
             SaturationKraftShader(0f).apply {
                 setInputTexture(LoadedTexture(image))
                 drawTo(windowSurface)
