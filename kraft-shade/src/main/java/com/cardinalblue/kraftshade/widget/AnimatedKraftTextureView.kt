@@ -2,7 +2,6 @@ package com.cardinalblue.kraftshade.widget
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
 import androidx.annotation.MainThread
@@ -11,6 +10,7 @@ import com.cardinalblue.kraftshade.pipeline.Effect
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
+import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,6 +30,7 @@ class AnimatedKraftTextureView : KraftTextureView {
     private val callback: Callback = Callback()
     private var effect: Effect? = null
     private val choreographer: Choreographer = Choreographer.getInstance()
+    private val logger = KraftLogger("AnimatedKraftTextureView")
 
     fun setEffect(
         playAfterSet: Boolean = true,
@@ -60,6 +61,7 @@ class AnimatedKraftTextureView : KraftTextureView {
         pause() // Clean up any existing callback just in case
         choreographer.postFrameCallback(callback)
         playing = true
+        logger.i("Animation started")
     }
 
     @MainThread
@@ -67,6 +69,7 @@ class AnimatedKraftTextureView : KraftTextureView {
         choreographer.removeFrameCallback(callback)
         callback.job?.cancel() // Cancel any ongoing render job
         playing = false
+        logger.i("Animation paused")
     }
 
     private inner class Callback : FrameCallback {
@@ -82,18 +85,13 @@ class AnimatedKraftTextureView : KraftTextureView {
             val effect = requireNotNull(effect)
             val currentJob = job
             if (currentJob?.isActive == true) {
-                Log.d("AnimatedKraftTextureView", "Previous frame still rendering, skipping this frame")
+                logger.v("Previous frame still rendering, skipping this frame")
                 return
             }
 
             job = runGlTask { windowSurface ->
-                try {
+                logger.tryAndLog {
                     render(effect, windowSurface)
-                } catch (e: CancellationException) {
-                    throw e // Let cancellation propagate
-                } catch (e: Exception) {
-                    Log.e("AnimatedKraftTextureView", "Error rendering frame", e)
-                    // Don't stop animation on render error
                 }
             }
         }

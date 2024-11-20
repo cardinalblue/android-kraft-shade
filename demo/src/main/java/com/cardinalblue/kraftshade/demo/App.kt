@@ -2,6 +2,7 @@ package com.cardinalblue.kraftshade.demo
 
 import android.app.Application
 import com.cardinalblue.kraftshade.util.KraftLogger
+import com.cardinalblue.kraftshade.util.KraftLogLevel
 
 class App : Application() {
     override fun onCreate() {
@@ -10,7 +11,7 @@ class App : Application() {
     }
 
     private fun initDebugging() {
-        KraftLogger.debugEnabled = true
+        KraftLogger.logLevel = KraftLogLevel.VERBOSE // Enable all logs in demo app
         KraftLogger.throwOnError = true
     }
 }
