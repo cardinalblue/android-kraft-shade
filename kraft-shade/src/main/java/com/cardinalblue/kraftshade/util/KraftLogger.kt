@@ -20,30 +20,30 @@ enum class KraftLogLevel {
 value class KraftLogger(private val tag: String) {
     fun v(message: String) {
         if (!logLevel.isLoggable(KraftLogLevel.VERBOSE)) return
-        Log.v(tag, message)
+        Log.v(tag, "$LOG_PREFIX $message")
     }
 
     fun d(message: String) {
         if (!logLevel.isLoggable(KraftLogLevel.DEBUG)) return
-        Log.d(tag, message)
+        Log.d(tag, "$LOG_PREFIX $message")
     }
 
     fun i(message: String) {
         if (!logLevel.isLoggable(KraftLogLevel.INFO)) return
-        Log.i(tag, message)
+        Log.i(tag, "$LOG_PREFIX $message")
     }
 
     fun w(message: String) {
         if (!logLevel.isLoggable(KraftLogLevel.WARNING)) return
-        Log.w(tag, message)
+        Log.w(tag, "$LOG_PREFIX $message")
     }
 
     fun e(message: String, e: Throwable? = null) {
         if (!logLevel.isLoggable(KraftLogLevel.ERROR)) return
         if (e != null) {
-            Log.e(tag, message, e)
+            Log.e(tag, "$LOG_PREFIX $message", e)
         } else {
-            Log.e(tag, message)
+            Log.e(tag, "$LOG_PREFIX $message")
         }
     }
 
@@ -51,7 +51,7 @@ value class KraftLogger(private val tag: String) {
         try {
             block()
         } catch (e: Exception) {
-            e("${e.message}", e)
+            e("$LOG_PREFIX ${e.message}", e)
 
             if (throwOnError) {
                 throw e
@@ -60,6 +60,8 @@ value class KraftLogger(private val tag: String) {
     }
 
     companion object {
+        const val LOG_PREFIX = "[Kraft]"
+
         var logLevel = KraftLogLevel.NONE
         var throwOnError = false
     }
