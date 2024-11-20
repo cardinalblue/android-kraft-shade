@@ -9,10 +9,20 @@ import java.util.concurrent.Executors
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL10
 
+/**
+ * Manages the OpenGL ES environment and EGL context.
+ * This class handles the initialization of EGL, creation of surfaces, and management of the GL context.
+ */
 class GlEnv {
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 
+    /** The EGL10 instance used for all EGL operations */
     val egl10: EGL10 = EGLContext.getEGL() as EGL10
+
+    /** 
+     * The EGL display connection.
+     * Initialized with the default display and version information.
+     */
     val eglDisplay: EGLDisplay = egl10
         .eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY)
         .also { display ->
@@ -20,8 +30,13 @@ class GlEnv {
             egl10.eglInitialize(display, version)
         }
 
+    /** The chosen EGL configuration that matches our requirements */
     val eglConfig: EGLConfig = chooseEglConfig()
 
+    /** 
+     * The EGL context created with OpenGL ES 2.0 support.
+     * This context is essential for all OpenGL operations.
+     */
     val eglContext: EGLContext = run {
         egl10.eglCreateContext(
             eglDisplay,
@@ -34,8 +49,15 @@ class GlEnv {
         )
     }
 
+    /** The GL10 instance associated with our EGL context */
     val gl10: GL10 = eglContext.gl as GL10
 
+    /**
+     * Chooses an appropriate EGL configuration that matches our rendering requirements.
+     * 
+     * @return The chosen EGL configuration
+     * @throws IllegalStateException if no suitable configuration is found or if the selection process fails
+     */
     private fun chooseEglConfig(): EGLConfig {
         val configSpec = intArrayOf(
             EGL10.EGL_RED_SIZE, 8,
@@ -64,6 +86,12 @@ class GlEnv {
         return configs[0] ?: throw IllegalStateException("No config chosen")
     }
 
+    /**
+     * Creates a pixel buffer surface with the specified size.
+     * 
+     * @param size The size of the pixel buffer surface
+     * @return The created EGL surface
+     */
     fun createPbufferSurface(size: GlSize): EGLSurface {
         return egl10
             .eglCreatePbufferSurface(
@@ -77,6 +105,12 @@ class GlEnv {
             )
     }
 
+    /**
+     * Creates a window surface from a SurfaceTexture.
+     * 
+     * @param surfaceTexture The Android SurfaceTexture to create the surface from
+     * @return The created EGL surface
+     */
     fun createWindowSurface(surfaceTexture: SurfaceTexture): EGLSurface {
         return egl10
             .eglCreateWindowSurface(
@@ -89,30 +123,62 @@ class GlEnv {
             )
     }
 
+    /**
+     * Creates a pixel buffer for off-screen rendering.
+     * 
+     * @param width The width of the pixel buffer
+     * @param height The height of the pixel buffer
+     * @return A new PixelBuffer instance
+     */
     fun createPixelBuffer(width: Int, height: Int): PixelBuffer {
         return PixelBuffer(width, height, this)
     }
 
+    /**
+     * Swaps the buffers for the specified EGL surface.
+     * This is typically called after rendering to display the results.
+     * 
+     * @param eglSurface The EGL surface to swap buffers for
+     * @return true if the buffer swap was successful, false otherwise
+     */
     fun swapBuffers(eglSurface: EGLSurface): Boolean {
         return egl10.eglSwapBuffers(eglDisplay, eglSurface)
     }
 
+    /**
+     * Makes the specified EGL surface and context current.
+     * 
+     * @param surface The EGL surface to make current, defaults to EGL_NO_SURFACE
+     */
     fun makeCurrent(surface: EGLSurface = EGL10.EGL_NO_SURFACE) {
         egl10.eglMakeCurrent(eglDisplay, surface, surface, eglContext)
     }
 
+    /**
+     * Executes the provided block with the GL context made current.
+     * This function ensures all GL operations are performed on the correct thread.
+     * 
+     * @param block The suspend function to execute within the GL context
+     * @return The result of the block execution
+     */
     suspend fun <T> use(block: suspend GlEnv.() -> T): T = withContext(dispatcher) {
         makeCurrent()
         block()
     }
 
+    /**
+     * Terminates the GL environment, cleaning up all resources.
+     * This should be called when the GL environment is no longer needed.
+     */
     suspend fun terminate() = use {
         egl10.eglDestroyContext(eglDisplay, eglContext)
         egl10.eglTerminate(eglDisplay)
     }
 
     private companion object {
+        /** Version number of the EGL client API */
         const val EGL_CONTEXT_CLIENT_VERSION = 0x3098
+        /** Bit indicating OpenGL ES 2.0 support */
         const val EGL_OPENGL_ES2_BIT = 4
     }
 }
