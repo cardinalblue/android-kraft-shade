@@ -83,6 +83,9 @@ class WindowSurfaceBuffer(
     }
 
     override fun delete() {
+        // in this case, windowSurface is not created yet, so we don't have to destroy it
+        if (surfaceTexture == null) return
+
         with(glEnv.egl10) {
             eglMakeCurrent(
                 glEnv.eglDisplay, EGL10.EGL_NO_SURFACE,
