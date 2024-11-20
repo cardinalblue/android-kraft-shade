@@ -20,27 +20,7 @@ class GlEnv {
             egl10.eglInitialize(display, version)
         }
 
-    val eglConfig: EGLConfig = run {
-        val attribList = intArrayOf(
-            EGL10.EGL_DEPTH_SIZE, 0,
-            EGL10.EGL_STENCIL_SIZE, 0,
-            EGL10.EGL_RED_SIZE, 8,
-            EGL10.EGL_GREEN_SIZE, 8,
-            EGL10.EGL_BLUE_SIZE, 8,
-            EGL10.EGL_ALPHA_SIZE, 8,
-            EGL10.EGL_RENDERABLE_TYPE, 4,
-            EGL10.EGL_NONE
-        )
-
-        // No error checking performed, minimum required code to elucidate logic
-        // Expand on this logic to be more selective in choosing a configuration
-        val numConfig = IntArray(1)
-        egl10.eglChooseConfig(eglDisplay, attribList, null, 0, numConfig)
-        val configSize = numConfig[0]
-        val eglConfigs: Array<EGLConfig?> = arrayOfNulls(configSize)
-        egl10.eglChooseConfig(eglDisplay, attribList, eglConfigs, configSize, numConfig)
-        eglConfigs[0]!! // Best match is probably the first configuration
-    }
+    val eglConfig: EGLConfig = chooseEglConfig()
 
     val eglContext: EGLContext = run {
         egl10.eglCreateContext(
@@ -55,6 +35,34 @@ class GlEnv {
     }
 
     val gl10: GL10 = eglContext.gl as GL10
+
+    private fun chooseEglConfig(): EGLConfig {
+        val configSpec = intArrayOf(
+            EGL10.EGL_RED_SIZE, 8,
+            EGL10.EGL_GREEN_SIZE, 8,
+            EGL10.EGL_BLUE_SIZE, 8,
+            EGL10.EGL_ALPHA_SIZE, 8,
+            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL10.EGL_NONE
+        )
+
+        val numConfig = IntArray(1)
+        if (!egl10.eglChooseConfig(eglDisplay, configSpec, null, 0, numConfig)) {
+            throw IllegalStateException("eglChooseConfig failed")
+        }
+
+        val numConfigs = numConfig[0]
+        if (numConfigs <= 0) {
+            throw IllegalStateException("No configs match configSpec")
+        }
+
+        val configs = arrayOfNulls<EGLConfig>(numConfigs)
+        if (!egl10.eglChooseConfig(eglDisplay, configSpec, configs, numConfigs, numConfig)) {
+            throw IllegalStateException("eglChooseConfig#2 failed")
+        }
+
+        return configs[0] ?: throw IllegalStateException("No config chosen")
+    }
 
     fun createPbufferSurface(size: GlSize): EGLSurface {
         return egl10
@@ -105,5 +113,6 @@ class GlEnv {
 
     private companion object {
         const val EGL_CONTEXT_CLIENT_VERSION = 0x3098
+        const val EGL_OPENGL_ES2_BIT = 4
     }
 }

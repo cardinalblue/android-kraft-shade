@@ -18,6 +18,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.shaders.*
 import com.cardinalblue.kraftshade.demo.ui.screen.view.AnimatedKraftTextureViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.KraftShadeViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.KraftTextureViewTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
 
 @Composable
@@ -72,7 +73,8 @@ enum class Destination(
     KraftTextureView("kraft_texture_view", "Kraft Texture View", screen = { KraftTextureViewTestWindow() }),
     AnimatedKraftTextureView("animated_kraft_texture_view", "Animated Kraft Texture View", screen = { AnimatedKraftTextureViewTestWindow() }),
     SerialPipeline("serial_pipeline", "Serial Pipeline", screen = { SerialTextureInputPipelineTestScreen() }),
-    KraftShadeView("kraft_shade_view", "KraftShadeView (Composable)", screen = { KraftShadeViewTestWindow() })
+    KraftShadeView("kraft_shade_view", "KraftShadeView (Composable)", screen = { KraftShadeViewTestWindow() }),
+    TransparencyTest("transparency_test", "Transparency Test", screen = { TransparencyTestWindow() })
 }
 
 fun NavHostController.navigate(destination: Destination) {
