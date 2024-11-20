@@ -11,6 +11,7 @@ import com.cardinalblue.kraftshade.pipeline.Effect
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
@@ -26,8 +27,9 @@ class AnimatedKraftTextureView : KraftTextureView {
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private var callback: Callback? = null
+    private val callback: Callback = Callback()
     private var effect: Effect? = null
+    private val choreographer: Choreographer = Choreographer.getInstance()
 
     fun setEffect(
         playAfterSet: Boolean = true,
@@ -51,58 +53,47 @@ class AnimatedKraftTextureView : KraftTextureView {
     @MainThread
     fun play() {
         checkNotNull(effect) { "effect is not set, call setEffect before calling this method" }
+        
+        // If already playing, do nothing to avoid double-posting callbacks
+        if (playing) return
 
-        pause()
-        callback = Callback().also { callback ->
-            callback.scheduleNext = true
-            Choreographer
-                .getInstance()
-                .postFrameCallback(callback)
-        }
+        pause() // Clean up any existing callback just in case
+        choreographer.postFrameCallback(callback)
         playing = true
     }
 
     @MainThread
     fun pause() {
-        callback?.let { callback ->
-            callback.scheduleNext = false
-            Choreographer
-                .getInstance()
-                .removeFrameCallback(callback)
-        }
-        callback = null
+        choreographer.removeFrameCallback(callback)
+        callback.job?.cancel() // Cancel any ongoing render job
         playing = false
     }
 
     private inner class Callback : FrameCallback {
-        var scheduleNext = false
-
-        private var job: Job? = null
-        private var dirty = false
+        var job: Job? = null
+            private set
 
         override fun doFrame(frameTimeNanos: Long) {
+            if (!playing) return // Early return if we're not supposed to be playing
+
+            // Schedule next frame first
+            choreographer.postFrameCallback(this)
+
             val effect = requireNotNull(effect)
-            val isRunning = job?.isActive ?: false
-            if (isRunning) {
-                dirty = true
+            val currentJob = job
+            if (currentJob?.isActive == true) {
+                Log.d("AnimatedKraftTextureView", "Previous frame still rendering, skipping this frame")
                 return
             }
 
             job = runGlTask { windowSurface ->
-                dirty = false
-                do {
+                try {
                     render(effect, windowSurface)
-                    if (dirty) {
-                        Log.d("AnimatedKraftTextureView", "still dirty. this imply the effect can't be rendered in one frame.")
-                    }
-                } while(dirty)
-
-                if (!scheduleNext) return@runGlTask
-
-                withContext(Dispatchers.Main) {
-                    Choreographer
-                        .getInstance()
-                        .postFrameCallback(this@Callback)
+                } catch (e: CancellationException) {
+                    throw e // Let cancellation propagate
+                } catch (e: Exception) {
+                    Log.e("AnimatedKraftTextureView", "Error rendering frame", e)
+                    // Don't stop animation on render error
                 }
             }
         }
