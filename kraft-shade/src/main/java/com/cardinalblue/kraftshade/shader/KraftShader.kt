@@ -9,6 +9,7 @@ import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.Effect
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
+import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.runBlocking
 import java.util.LinkedList
 
@@ -27,6 +28,8 @@ abstract class KraftShader : Effect, AutoCloseable {
 
     private var resolution: FloatArray by GlUniformDelegate("resolution", required = false)
 
+    private val logger = KraftLogger("KraftShader")
+
     fun log(message: String) {
         if (!debug) return
         Log.d("KraftShader", "[${this.javaClass.simpleName}] $message")
@@ -40,6 +43,7 @@ abstract class KraftShader : Effect, AutoCloseable {
 
     open fun init() {
         if (initialized) return
+        logger.i("Initializing shader program for ${this::class.simpleName}")
         glProgId = OpenGlUtils.loadProgram(loadVertexShader(), loadFragmentShader())
         glAttribPosition = GLES20.glGetAttribLocation(glProgId, "position")
         glAttribTextureCoordinate = GLES20.glGetAttribLocation(glProgId, "inputTextureCoordinate")
@@ -139,6 +143,7 @@ abstract class KraftShader : Effect, AutoCloseable {
 
     override suspend fun destroy() {
         if (!initialized) return
+        logger.i("Destroying shader program: ${this::class.simpleName}")
         GLES20.glDeleteProgram(glProgId)
         initialized = false
     }

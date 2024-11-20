@@ -4,12 +4,14 @@ import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
+import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.runBlocking
 
 class SerialTextureInputPipeline(
     glEnv: GlEnv,
     effects: List<SingleInputTextureEffect> = emptyList(),
 ) : Pipeline(glEnv), SingleInputTextureEffect {
+    private val logger = KraftLogger("SerialPipeline")
     private var buffer1: TextureBuffer? = null
     private var buffer2: TextureBuffer? = null
     // postpone the setup until rendering, to make sure effects is not empty
@@ -20,10 +22,12 @@ class SerialTextureInputPipeline(
     }
 
     fun addEffect(effect: SingleInputTextureEffect) {
+        logger.d("Adding effect: ${effect::class.simpleName}")
         effects.add(effect)
     }
 
     fun removeEffect(effect: SingleInputTextureEffect) {
+        logger.d("Removing effect: ${effect::class.simpleName}")
         val removed = effects.remove(effect)
         check(removed) { "effect not found" }
     }
@@ -54,6 +58,7 @@ class SerialTextureInputPipeline(
      * Implement ping pong buffer
      */
     override suspend fun GlEnv.execute() {
+        logger.v("Executing serial pipeline")
         val buffer1 = requireNotNull(buffer1) { "call setTargetBuffer before executing the pipeline" }
         val buffer2 = requireNotNull(buffer2) { "call setTargetBuffer before executing the pipeline" }
         val targetBuffer = requireNotNull(targetBuffer) { "call setTargetBuffer before executing the pipeline" }
@@ -86,6 +91,7 @@ class SerialTextureInputPipeline(
     }
 
     override suspend fun GlEnv.destroy() {
+        logger.i("Destroying pipeline")
         effects.forEach {
             it.destroy()
         }

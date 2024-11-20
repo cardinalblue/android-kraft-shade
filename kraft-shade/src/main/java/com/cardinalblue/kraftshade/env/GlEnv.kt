@@ -5,6 +5,7 @@ import com.cardinalblue.kraftshade.model.GlSize
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
+import com.cardinalblue.kraftshade.util.KraftLogger
 import java.util.concurrent.Executors
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL10
@@ -15,6 +16,7 @@ import javax.microedition.khronos.opengles.GL10
  */
 class GlEnv {
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val logger = KraftLogger("GlEnv")
 
     /** The EGL10 instance used for all EGL operations */
     val egl10: EGL10 = EGLContext.getEGL() as EGL10
@@ -28,25 +30,33 @@ class GlEnv {
         .also { display ->
             val version = IntArray(2)
             egl10.eglInitialize(display, version)
+            logger.i("EGL initialized with version ${version[0]}.${version[1]}")
         }
 
     /** The chosen EGL configuration that matches our requirements */
-    val eglConfig: EGLConfig = chooseEglConfig()
+    val eglConfig: EGLConfig = chooseEglConfig().also {
+        logger.d("EGL config chosen")
+    }
 
     /** 
      * The EGL context created with OpenGL ES 2.0 support.
      * This context is essential for all OpenGL operations.
      */
-    val eglContext: EGLContext = run {
-        egl10.eglCreateContext(
-            eglDisplay,
-            eglConfig,
-            EGL10.EGL_NO_CONTEXT,
-            intArrayOf(
-                EGL_CONTEXT_CLIENT_VERSION, 2,
-                EGL10.EGL_NONE,
-            ),
-        )
+    val eglContext: EGLContext = egl10.eglCreateContext(
+        eglDisplay,
+        eglConfig,
+        EGL10.EGL_NO_CONTEXT,
+        intArrayOf(
+            EGL_CONTEXT_CLIENT_VERSION, 2,
+            EGL10.EGL_NONE,
+        ),
+    ).also { context ->
+        if (context == EGL10.EGL_NO_CONTEXT) {
+            val error = egl10.eglGetError()
+            logger.e("Failed to create EGL context, error: 0x${Integer.toHexString(error)}")
+            throw RuntimeException("Failed to create EGL context")
+        }
+        logger.i("EGL context created")
     }
 
     /** The GL10 instance associated with our EGL context */
@@ -112,6 +122,7 @@ class GlEnv {
      * @return The created EGL surface
      */
     fun createWindowSurface(surfaceTexture: SurfaceTexture): EGLSurface {
+        logger.d("Creating window surface")
         return egl10
             .eglCreateWindowSurface(
                 eglDisplay,
@@ -142,6 +153,7 @@ class GlEnv {
      * @return true if the buffer swap was successful, false otherwise
      */
     fun swapBuffers(eglSurface: EGLSurface): Boolean {
+        logger.v("Swapping buffers")
         return egl10.eglSwapBuffers(eglDisplay, eglSurface)
     }
 
@@ -151,6 +163,7 @@ class GlEnv {
      * @param surface The EGL surface to make current, defaults to EGL_NO_SURFACE
      */
     fun makeCurrent(surface: EGLSurface = EGL10.EGL_NO_SURFACE) {
+        logger.v("Making surface current")
         egl10.eglMakeCurrent(eglDisplay, surface, surface, eglContext)
     }
 

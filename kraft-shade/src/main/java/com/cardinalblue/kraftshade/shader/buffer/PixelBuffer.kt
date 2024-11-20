@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.util.KraftLogger
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLSurface
 
@@ -18,6 +19,12 @@ class PixelBuffer internal constructor(
     override val isScreenCoordinate: Boolean = false
     override val size: GlSize = GlSize(width, height)
 
+    private val logger = KraftLogger("PixelBuffer")
+
+    init {
+        logger.i("Creating pixel buffer with size: $size")
+    }
+
     private val pbufferSurface: EGLSurface = glEnv.createPbufferSurface(size)
 
     fun makeCurrent() {
@@ -25,6 +32,7 @@ class PixelBuffer internal constructor(
     }
 
     override fun delete() {
+        logger.i("Deleting pixel buffer")
         with(glEnv.egl10) {
             eglMakeCurrent(
                 glEnv.eglDisplay, EGL10.EGL_NO_SURFACE,

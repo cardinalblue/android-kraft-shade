@@ -28,6 +28,7 @@ class WindowSurfaceBuffer(
                 width: Int,
                 height: Int
             ) {
+                logger.i("Surface texture available: ${width}x${height}")
                 this@WindowSurfaceBuffer.surfaceTexture = surface
                 this@WindowSurfaceBuffer.width = width
                 this@WindowSurfaceBuffer.height = height
@@ -39,12 +40,14 @@ class WindowSurfaceBuffer(
                 width: Int,
                 height: Int
             ) {
+                logger.i("Surface texture size changed: ${width}x${height}")
                 this@WindowSurfaceBuffer.surfaceTexture = surface
                 this@WindowSurfaceBuffer.width = width
                 this@WindowSurfaceBuffer.height = height
             }
 
             override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+                logger.i("Surface texture destroyed")
                 this@WindowSurfaceBuffer.surfaceTexture = null
                 return true
             }

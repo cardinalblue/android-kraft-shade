@@ -3,16 +3,19 @@ package com.cardinalblue.kraftshade.shader.buffer
 import android.graphics.Bitmap
 import android.opengl.GLES20
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.util.KraftLogger
 import com.cardinalblue.kraftshade.withFrameBufferRestored
 
 class TextureBuffer(
     override val size: GlSize
 ) : Texture(), GlBuffer {
-    override val isScreenCoordinate: Boolean = false
+    private val logger = KraftLogger("TextureBuffer")
 
     private var bufferId: Int = 0
+    override val isScreenCoordinate: Boolean = false
 
     init {
+        logger.i("Creating texture buffer: ${size.width}x${size.height}")
         val buffers = intArrayOf(-1)
         GLES20.glGenFramebuffers(1, buffers, 0)
         GLES20.glTexImage2D(
@@ -36,6 +39,7 @@ class TextureBuffer(
     constructor(width: Int, height: Int) : this(GlSize(width, height))
 
     override fun beforeDraw() {
+        logger.v("Drawing to texture buffer")
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, bufferId)
     }
 
@@ -51,6 +55,7 @@ class TextureBuffer(
     }
 
     override fun delete() {
+        logger.i("Deleting texture buffer")
         super.delete()
         GLES20.glDeleteFramebuffers(1, intArrayOf(bufferId), 0)
         bufferId = -1

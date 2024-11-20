@@ -11,7 +11,7 @@ class App : Application() {
     }
 
     private fun initDebugging() {
-        KraftLogger.logLevel = KraftLogLevel.VERBOSE // Enable all logs in demo app
+        KraftLogger.logLevel = KraftLogLevel.DEBUG
         KraftLogger.throwOnError = true
     }
 }
