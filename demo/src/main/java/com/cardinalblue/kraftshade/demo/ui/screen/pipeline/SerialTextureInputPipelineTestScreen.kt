@@ -36,7 +36,7 @@ fun SerialTextureInputPipelineTestScreen() {
         factory = { context ->
             KraftTextureView(context).apply {
                 env = this.glEnv
-                runGlTask { _, windowSurface ->
+                runGlTask { windowSurface ->
                     previousBuffer = buffer
                     buffer = windowSurface
                     val input = context.assets.open("sample/cat.jpg").use {
@@ -64,7 +64,7 @@ fun SerialTextureInputPipelineTestScreen() {
             }
         }
     ) {
-        it.runGlTask { _, windowSurface ->
+        it.runGlTask { windowSurface ->
             pipeline?.setTargetBuffer(windowSurface)
         }
     }

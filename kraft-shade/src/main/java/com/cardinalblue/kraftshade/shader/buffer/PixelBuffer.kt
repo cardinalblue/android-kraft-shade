@@ -2,7 +2,7 @@ package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.Bitmap
 import com.cardinalblue.kraftshade.OpenGlUtils
-import com.cardinalblue.kraftshade.env.ProtectedGlEnv
+import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLSurface
@@ -13,24 +13,24 @@ import javax.microedition.khronos.egl.EGLSurface
 class PixelBuffer internal constructor(
     width: Int,
     height: Int,
-    private val protectedGlEnv: ProtectedGlEnv,
+    private val glEnv: GlEnv,
 ) : GlBuffer {
     override val isScreenCoordinate: Boolean = false
     override val size: GlSize = GlSize(width, height)
 
-    private val pbufferSurface: EGLSurface = protectedGlEnv.createPbufferSurface(size)
+    private val pbufferSurface: EGLSurface = glEnv.createPbufferSurface(size)
 
     fun makeCurrent() {
-        protectedGlEnv.makeCurrent(pbufferSurface)
+        glEnv.makeCurrent(pbufferSurface)
     }
 
     override fun delete() {
-        with(protectedGlEnv.egl10) {
+        with(glEnv.egl10) {
             eglMakeCurrent(
-                protectedGlEnv.eglDisplay, EGL10.EGL_NO_SURFACE,
+                glEnv.eglDisplay, EGL10.EGL_NO_SURFACE,
                 EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT
             )
-            eglDestroySurface(protectedGlEnv.eglDisplay, pbufferSurface)
+            eglDestroySurface(glEnv.eglDisplay, pbufferSurface)
         }
     }
 

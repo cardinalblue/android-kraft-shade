@@ -7,7 +7,6 @@ import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
 import androidx.annotation.MainThread
 import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.env.ProtectedGlEnv
 import com.cardinalblue.kraftshade.pipeline.Effect
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.shader.KraftShader
@@ -32,10 +31,10 @@ class AnimatedKraftTextureView : KraftTextureView {
 
     fun setEffect(
         playAfterSet: Boolean = true,
-        effectProvider: suspend GlEnv.(env: ProtectedGlEnv, windowSurface: WindowSurfaceBuffer) -> Effect,
+        effectProvider: suspend GlEnv.(windowSurface: WindowSurfaceBuffer) -> Effect,
     ) {
-        runGlTask { env, windowSurface ->
-            val effect = effectProvider.invoke(this, env, windowSurface)
+        runGlTask { windowSurface ->
+            val effect = effectProvider.invoke(this, windowSurface)
             this@AnimatedKraftTextureView.effect = effect
             if (playAfterSet) {
                 withContext(Dispatchers.Main) {
@@ -89,7 +88,7 @@ class AnimatedKraftTextureView : KraftTextureView {
                 return
             }
 
-            job = runGlTask { _, windowSurface ->
+            job = runGlTask { windowSurface ->
                 dirty = false
                 do {
                     render(effect, windowSurface)

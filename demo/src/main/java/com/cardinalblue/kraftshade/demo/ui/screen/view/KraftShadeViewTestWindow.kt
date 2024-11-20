@@ -41,7 +41,7 @@ fun KraftShadeViewTestWindow() {
 
     LaunchedEffect(state, image) {
         val image = image ?: return@LaunchedEffect
-        state.runGlTask { _, windowSurface ->
+        state.runGlTask { windowSurface ->
             SaturationKraftShader(0f).apply {
                 setInputTexture(LoadedTexture(image))
                 drawTo(windowSurface)

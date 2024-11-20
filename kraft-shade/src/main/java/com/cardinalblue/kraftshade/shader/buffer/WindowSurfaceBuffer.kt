@@ -2,14 +2,14 @@ package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.SurfaceTexture
 import android.view.TextureView
-import com.cardinalblue.kraftshade.env.ProtectedGlEnv
+import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.util.KraftLogger
 import javax.microedition.khronos.egl.EGL10
 import javax.microedition.khronos.egl.EGLSurface
 
 class WindowSurfaceBuffer(
-    private val protectedGlEnv: ProtectedGlEnv,
+    private val glEnv: GlEnv,
     private var listener: Listener? = null,
 ) : GlBuffer {
     private val logger = KraftLogger("WindowSurfaceBuffer")
@@ -67,15 +67,15 @@ class WindowSurfaceBuffer(
         val surfaceTexture = requireNotNull(surfaceTexture) {
             "surface is not ready. it should not be used yet!"
         }
-        protectedGlEnv.createWindowSurface(surfaceTexture)
+        glEnv.createWindowSurface(surfaceTexture)
     }
 
     fun swapBuffers() {
-        protectedGlEnv.swapBuffers(windowSurface)
+        glEnv.swapBuffers(windowSurface)
     }
 
     override fun beforeDraw() {
-        protectedGlEnv.makeCurrent(windowSurface)
+        glEnv.makeCurrent(windowSurface)
     }
 
     override fun afterDraw() {
@@ -83,12 +83,12 @@ class WindowSurfaceBuffer(
     }
 
     override fun delete() {
-        with(protectedGlEnv.egl10) {
+        with(glEnv.egl10) {
             eglMakeCurrent(
-                protectedGlEnv.eglDisplay, EGL10.EGL_NO_SURFACE,
+                glEnv.eglDisplay, EGL10.EGL_NO_SURFACE,
                 EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT
             )
-            eglDestroySurface(protectedGlEnv.eglDisplay, windowSurface)
+            eglDestroySurface(glEnv.eglDisplay, windowSurface)
         }
     }
 

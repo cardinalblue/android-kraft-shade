@@ -13,7 +13,7 @@ fun KraftTextureViewTestWindow() {
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
             KraftTextureView(context).apply {
-                runGlTask { env, windowSurface ->
+                runGlTask { windowSurface ->
                     val shader = DrawCircleKraftShader()
                     shader.drawTo(windowSurface)
                 }

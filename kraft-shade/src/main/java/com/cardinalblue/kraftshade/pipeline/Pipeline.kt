@@ -1,14 +1,12 @@
 package com.cardinalblue.kraftshade.pipeline
 
 import androidx.annotation.CallSuper
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.env.ProtectedGlEnv
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
-import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 abstract class Pipeline(
     private val glEnv: GlEnv,
@@ -21,10 +19,10 @@ abstract class Pipeline(
         private set
 
     private val mutex = Mutex()
-    private val postponedTasks: MutableList<suspend GlEnv.(ProtectedGlEnv) -> Unit> = mutableListOf()
+    private val postponedTasks: MutableList<suspend GlEnv.() -> Unit> = mutableListOf()
 
-    abstract suspend fun GlEnv.execute(protectedGlEnv: ProtectedGlEnv)
-    abstract suspend fun GlEnv.destroy(protectedGlEnv: ProtectedGlEnv)
+    abstract suspend fun GlEnv.execute()
+    abstract suspend fun GlEnv.destroy()
 
     @CallSuper
     open fun setTargetBuffer(buffer: GlBuffer)  {
@@ -54,19 +52,19 @@ abstract class Pipeline(
 
     override suspend fun destroy() {
         targetBuffer = null
-        glEnv.use { destroy(it) }
+        glEnv.use { destroy() }
     }
 
-    protected suspend fun runDeferred(block: suspend GlEnv.(ProtectedGlEnv) -> Unit) {
+    protected suspend fun runDeferred(block: suspend GlEnv.() -> Unit) {
         mutex.withLock {
             postponedTasks.add(block)
         }
     }
 
-    private suspend fun GlEnv.runPostponedTasks(env: ProtectedGlEnv) {
+    private suspend fun GlEnv.runPostponedTasks() {
         mutex.withLock {
             postponedTasks.forEach {
-                it(env)
+                it()
             }
             postponedTasks.clear()
         }
@@ -77,8 +75,8 @@ abstract class Pipeline(
         sampledInputs.forEach { it.sample() }
         sampledInputSetupActions.forEach { it() }
         glEnv.use {
-            runPostponedTasks(it)
-            execute(it)
+            runPostponedTasks()
+            execute()
         }
     }
 }

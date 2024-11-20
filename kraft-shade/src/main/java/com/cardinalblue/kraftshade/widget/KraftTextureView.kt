@@ -3,15 +3,14 @@ package com.cardinalblue.kraftshade.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.view.TextureView
+import com.cardinalblue.kraftshade.env.GlEnv
+import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
+import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.env.ProtectedGlEnv
-import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
-import com.cardinalblue.kraftshade.util.KraftLogger
 
-typealias KraftTextureViewTask = suspend GlEnv.(env: ProtectedGlEnv, windowSurface: WindowSurfaceBuffer) -> Unit
+typealias KraftTextureViewTask = suspend GlEnv.(windowSurface: WindowSurfaceBuffer) -> Unit
 
 open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
     private val logger = KraftLogger("KraftTextureView")
@@ -36,8 +35,8 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                     taskAfterAttached.add(task)
                 } else {
                     logger.tryAndLog {
-                        glEnv.use { protectedGlEnv ->
-                            task(protectedGlEnv, windowSurface)
+                        glEnv.use {
+                            task(windowSurface)
                         }
                     }
                 }
@@ -48,9 +47,9 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
     private suspend fun suspendInit() {
         initLock.withLock {
             glEnv = GlEnv().apply {
-                use { protectedGlEnv ->
+                use {
                     val surface = WindowSurfaceBuffer(
-                        protectedGlEnv = protectedGlEnv,
+                        glEnv = this,
                         listener = this@KraftTextureView,
                     ).also { windowSurface ->
                         surfaceTextureListener = windowSurface.surfaceTextureListener
@@ -99,9 +98,9 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
             initLock.withLock {
                 if (taskAfterAttached.isEmpty()) return@withLock
                 logger.tryAndLog {
-                    glEnv.use { protectedGlEnv ->
+                    glEnv.use {
                         logger.d("executing ${taskAfterAttached.size} tasks after buffer ready")
-                        taskAfterAttached.forEach { it.invoke(this, protectedGlEnv, surface) }
+                        taskAfterAttached.forEach { it.invoke(this, surface) }
                         taskAfterAttached.clear()
                     }
                 }

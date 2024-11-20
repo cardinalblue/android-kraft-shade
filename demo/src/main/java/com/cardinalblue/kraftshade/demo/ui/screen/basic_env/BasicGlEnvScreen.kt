@@ -12,12 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.env.ProtectedGlEnv
 
 @Composable
 fun BasicGlEnvScreen(
     modifier: Modifier = Modifier,
-    imageGeneration: suspend GlEnv.(env: ProtectedGlEnv) -> Bitmap,
+    imageGeneration: suspend GlEnv.() -> Bitmap,
 ) {
     var image by remember { mutableStateOf<ImageBitmap?>(null) }
 
@@ -38,9 +37,9 @@ fun BasicGlEnvScreen(
 
     LaunchedEffect(key1 = Unit) {
         val glEnv = GlEnv()
-        val bitmap = glEnv.use { protected ->
+        val bitmap = glEnv.use {
             imageGeneration
-                .invoke(this, protected)
+                .invoke(this)
                 .also { terminate() }
         }
         image = bitmap.asImageBitmap()

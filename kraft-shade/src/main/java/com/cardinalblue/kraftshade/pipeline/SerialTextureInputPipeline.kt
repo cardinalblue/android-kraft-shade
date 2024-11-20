@@ -1,11 +1,10 @@
 package com.cardinalblue.kraftshade.pipeline
 
 import com.cardinalblue.kraftshade.OpenGlUtils
-import kotlinx.coroutines.runBlocking
 import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.env.ProtectedGlEnv
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
+import kotlinx.coroutines.runBlocking
 
 class SerialTextureInputPipeline(
     glEnv: GlEnv,
@@ -54,7 +53,7 @@ class SerialTextureInputPipeline(
     /**
      * Implement ping pong buffer
      */
-    override suspend fun GlEnv.execute(protectedGlEnv: ProtectedGlEnv) {
+    override suspend fun GlEnv.execute() {
         val buffer1 = requireNotNull(buffer1) { "call setTargetBuffer before executing the pipeline" }
         val buffer2 = requireNotNull(buffer2) { "call setTargetBuffer before executing the pipeline" }
         val targetBuffer = requireNotNull(targetBuffer) { "call setTargetBuffer before executing the pipeline" }
@@ -86,7 +85,7 @@ class SerialTextureInputPipeline(
         run()
     }
 
-    override suspend fun GlEnv.destroy(protectedGlEnv: ProtectedGlEnv) {
+    override suspend fun GlEnv.destroy() {
         effects.forEach {
             it.destroy()
         }
