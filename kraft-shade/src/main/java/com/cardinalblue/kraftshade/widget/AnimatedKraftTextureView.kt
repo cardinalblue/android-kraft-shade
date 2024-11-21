@@ -11,7 +11,6 @@ import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
@@ -53,23 +52,28 @@ class AnimatedKraftTextureView : KraftTextureView {
      */
     @MainThread
     fun play() {
-        checkNotNull(effect) { "effect is not set, call setEffect before calling this method" }
-        
         // If already playing, do nothing to avoid double-posting callbacks
         if (playing) return
-
-        pause() // Clean up any existing callback just in case
+        logger.i("play()")
+        checkNotNull(effect) { "effect is not set, call setEffect before calling this method" }
         choreographer.postFrameCallback(callback)
         playing = true
-        logger.i("Animation started")
     }
 
     @MainThread
-    fun pause() {
-        choreographer.removeFrameCallback(callback)
+    fun stop() {
+        if (!playing) return
+        logger.d("stop()")
         callback.job?.cancel() // Cancel any ongoing render job
+        choreographer.removeFrameCallback(callback)
+        logger.d("removeFrameCallback - pause()")
         playing = false
         logger.i("Animation paused")
+    }
+
+    override fun onDetachedFromWindow() {
+        stop()
+        super.onDetachedFromWindow()
     }
 
     private inner class Callback : FrameCallback {
@@ -81,6 +85,7 @@ class AnimatedKraftTextureView : KraftTextureView {
 
             // Schedule next frame first
             choreographer.postFrameCallback(this)
+            logger.d("postFrameCallback - doFrame()")
 
             val effect = requireNotNull(effect)
             val currentJob = job
