@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.cardinalblue.kraftshade.compose.KraftShadeBaseState
-import com.cardinalblue.kraftshade.compose.KraftShadeView
-import com.cardinalblue.kraftshade.compose.rememberKraftShadeBaseState
+import com.cardinalblue.kraftshade.compose.*
 import com.cardinalblue.kraftshade.shader.KraftShader
 
 class TransparencyShader : KraftShader() {
@@ -43,7 +41,7 @@ class TransparencyShader : KraftShader() {
 
 @Composable
 fun TransparencyTestWindow() {
-    val state: KraftShadeBaseState = rememberKraftShadeBaseState()
+    val state: KraftShadeState = rememberKraftShadeState()
     var imageAspectRatio: Float by remember { mutableFloatStateOf(1.0f) }
 
     // Colorful background to demonstrate transparency

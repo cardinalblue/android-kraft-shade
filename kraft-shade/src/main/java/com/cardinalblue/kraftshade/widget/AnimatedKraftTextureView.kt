@@ -104,7 +104,7 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
 
             // Schedule next frame first
             choreographer.postFrameCallback(this)
-            logger.d("postFrameCallback - doFrame()")
+            logger.v("postFrameCallback - doFrame()")
 
             val effect = requireNotNull(effect)
             val currentJob = job

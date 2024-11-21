@@ -35,6 +35,11 @@ open class KraftShadeBaseState<V : KraftTextureView> internal constructor(
             }
         }
     }
+
+    fun terminate() {
+        val view = view ?: return
+        view.terminate()
+    }
 }
 
 @Composable

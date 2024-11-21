@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -14,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun KraftShadeAnimatedView(
     modifier: Modifier = Modifier,
-    state: KraftShadeState = rememberKraftShadeState(),
+    state: KraftShadeAnimatedState = rememberKraftShadeAnimatedState(),
 ) {
     AndroidView(
         modifier = modifier,
@@ -24,15 +25,33 @@ fun KraftShadeAnimatedView(
             }
         }
     )
+
+    DisposableEffect(key1 = Unit) {
+        onDispose {
+            state.terminate()
+        }
+    }
 }
 
 open class KraftShadeAnimatedState(scope: CoroutineScope) : KraftShadeBaseState<AnimatedKraftTextureView>(scope) {
+    val playing: Boolean get() {
+        return view?.playing ?: false
+    }
+
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = {},
         effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect
     ) {
         launchWithLock { view ->
             view.setEffect(afterSet, effectProvider)
+        }
+    }
+
+    fun setEffectAndPlay(
+        effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect
+    ) {
+        launchWithLock { view ->
+            view.setEffectAndPlay(effectProvider)
         }
     }
 

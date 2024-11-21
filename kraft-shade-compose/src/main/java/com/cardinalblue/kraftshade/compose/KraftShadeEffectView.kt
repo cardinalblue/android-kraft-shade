@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -24,6 +25,12 @@ fun KraftShadeEffectView(
             }
         }
     )
+
+    DisposableEffect(key1 = Unit) {
+        onDispose {
+            state.terminate()
+        }
+    }
 }
 
 open class KraftShadeEffectState(scope: CoroutineScope) : KraftShadeBaseState<KraftEffectTextureView>(scope) {

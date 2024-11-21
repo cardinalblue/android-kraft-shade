@@ -80,6 +80,10 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        terminate()
+    }
+
+    fun terminate() {
         coroutineScope.cancel()
         runBlocking {
             logger.tryAndLog {
