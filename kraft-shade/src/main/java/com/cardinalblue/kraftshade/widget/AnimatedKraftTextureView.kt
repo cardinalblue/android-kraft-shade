@@ -15,6 +15,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
 
+/**
+ * A specialized [KraftTextureView] that provides animation capabilities using Android's Choreographer
+ * for frame-synchronized rendering.
+ *
+ * This view requires an [Effect] to be set using [setEffect] before any rendering can occur. The effect
+ * defines how the content will be processed and rendered for each frame. The rendering pipeline is
+ * triggered in the following sequence:
+ *
+ * 1. Set an effect using [setEffect]
+ * 2. Call [play] to start the animation
+ * 3. For each frame:
+ *    - Choreographer triggers a new frame
+ *    - The effect is applied to process the frame
+ *    - The result is rendered to the view's surface
+ *
+ * For dynamic effects that need to change based on time, user interaction, or other states:
+ * - Use the input system within your [Effect] construction
+ * - Update the state of the inputs during animation instead of directly touching the components in the effect
+ * - The changes will be automatically applied in the next frame based on how pipeline and input work
+ *
+ * The animation can be controlled using [play] and [stop] methods.
+ */
 class AnimatedKraftTextureView : KraftTextureView {
     /**
      * Just a state for external to use
@@ -54,7 +76,7 @@ class AnimatedKraftTextureView : KraftTextureView {
     fun play() {
         // If already playing, do nothing to avoid double-posting callbacks
         if (playing) return
-        logger.i("play()")
+        logger.i("play")
         checkNotNull(effect) { "effect is not set, call setEffect before calling this method" }
         choreographer.postFrameCallback(callback)
         playing = true
@@ -63,12 +85,10 @@ class AnimatedKraftTextureView : KraftTextureView {
     @MainThread
     fun stop() {
         if (!playing) return
-        logger.d("stop()")
+        logger.d("stop")
         callback.job?.cancel() // Cancel any ongoing render job
         choreographer.removeFrameCallback(callback)
-        logger.d("removeFrameCallback - pause()")
         playing = false
-        logger.i("Animation paused")
     }
 
     override fun onDetachedFromWindow() {
