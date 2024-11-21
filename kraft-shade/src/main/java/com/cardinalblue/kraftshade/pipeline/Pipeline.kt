@@ -11,8 +11,8 @@ import kotlinx.coroutines.sync.withLock
 abstract class Pipeline(
     private val glEnv: GlEnv,
 ) : Effect {
-    private val sampledInputs = mutableListOf<SampledInput<*>>()
-    private val sampledInputSetupActions = mutableListOf<() -> Unit>()
+    private val sampledInputs = mutableSetOf<SampledInput<*>>()
+    private val inputSetupActions = mutableListOf<() -> Unit>()
 
 
     protected var targetBuffer: GlBuffer? = null
@@ -39,7 +39,7 @@ abstract class Pipeline(
             sampledInputs.add(input)
         }
 
-        sampledInputSetupActions.add {
+        inputSetupActions.add {
             action(input, shader)
         }
     }
@@ -86,7 +86,7 @@ abstract class Pipeline(
     @CallSuper
     open suspend fun internalRun() {
         sampledInputs.forEach { it.sample() }
-        sampledInputSetupActions.forEach { it() }
+        inputSetupActions.forEach { it() }
         glEnv.use {
             env.runPostponedTasks()
             env.execute()
