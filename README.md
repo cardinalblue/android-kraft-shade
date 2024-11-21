@@ -39,7 +39,7 @@ KraftShade aims to address these limitations with:
 
 3. Developer Experience
    - Flexible View components & Compose integration
-   - Flexible input system for animated effects
+   - Flexible input system for effect adjustment and re-rendering including animated effects
    - Debugging tools and utilities
 
 4. Performance
