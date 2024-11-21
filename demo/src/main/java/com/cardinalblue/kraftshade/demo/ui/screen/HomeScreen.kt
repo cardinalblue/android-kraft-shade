@@ -19,6 +19,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.view.AnimatedKraftTextureViewT
 import com.cardinalblue.kraftshade.demo.ui.screen.view.KraftShadeViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.KraftTextureViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.HazeFilterTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeAnimatedViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeEffectViewTestWindow
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
@@ -79,6 +80,7 @@ enum class Destination(
     TransparencyTest("transparency_test", "Transparency Test", screen = { TransparencyTestWindow() }),
     KraftShadeAnimatedView("compose_animated", "Compose (animated)", screen = { KraftShadeAnimatedViewTestWindow() }),
     KraftShadeEffectView("compose_effect", "Compose (effect)", screen = { KraftShadeEffectViewTestWindow() }),
+    HazeFilterTest("haze_filter_test", "Haze Filter Test", screen = { HazeFilterTestWindow() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {
