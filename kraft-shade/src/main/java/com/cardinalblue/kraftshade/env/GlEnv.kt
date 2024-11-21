@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.env
 
 import android.graphics.SurfaceTexture
+import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -61,6 +62,8 @@ class GlEnv {
 
     /** The GL10 instance associated with our EGL context */
     val gl10: GL10 = eglContext.gl as GL10
+
+    private val dslScope: GlEnvDslScope by lazy { GlEnvDslScope(this) }
 
     /**
      * Chooses an appropriate EGL configuration that matches our rendering requirements.
@@ -174,9 +177,9 @@ class GlEnv {
      * @param block The suspend function to execute within the GL context
      * @return The result of the block execution
      */
-    suspend fun <T> use(block: suspend GlEnv.() -> T): T = withContext(dispatcher) {
+    suspend fun <T> use(block: suspend GlEnvDslScope.() -> T): T = withContext(dispatcher) {
         makeCurrent()
-        block()
+        block(dslScope)
     }
 
     /**

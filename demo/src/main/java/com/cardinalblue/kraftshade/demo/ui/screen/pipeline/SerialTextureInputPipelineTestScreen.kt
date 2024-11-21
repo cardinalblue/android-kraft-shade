@@ -7,7 +7,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.cardinalblue.kraftshade.dsl.CommonInputs
-import com.cardinalblue.kraftshade.dsl.serialTextureInputPipeline
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
@@ -46,10 +45,8 @@ fun SerialTextureInputPipelineTestScreen() {
                     aspectRatio = input.size.aspectRatio
 
                     pipeline = serialTextureInputPipeline {
-                        withPipeline {
-                            setInputTexture(input)
-                            setTargetBuffer(windowSurface)
-                        }
+                        setInputTexture(input)
+                        setTargetBuffer(windowSurface)
 
                         +SaturationKraftShader()
                             .withInput(
@@ -74,7 +71,7 @@ fun SerialTextureInputPipelineTestScreen() {
             runBlocking {
                 env?.use {
                     pipeline?.destroy()
-                    terminate()
+                    terminateEnv()
                 }
             }
         }

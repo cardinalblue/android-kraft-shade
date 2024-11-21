@@ -50,8 +50,21 @@ abstract class Pipeline(
         }
     }
 
+    /**
+     * Only call this method when input texture is set. You can just set the input texture once if
+     * it doesn't change at all, and then call this function to render the pipeline
+     */
+    override suspend fun drawTo(buffer: GlBuffer) {
+        setTargetBuffer(buffer)
+        run()
+    }
+
+    @CallSuper
     override suspend fun destroy() {
         targetBuffer = null
+        mutex.withLock {
+            postponedTasks.clear()
+        }
         glEnv.use { destroy() }
     }
 
@@ -75,8 +88,8 @@ abstract class Pipeline(
         sampledInputs.forEach { it.sample() }
         sampledInputSetupActions.forEach { it() }
         glEnv.use {
-            runPostponedTasks()
-            execute()
+            env.runPostponedTasks()
+            env.execute()
         }
     }
 }

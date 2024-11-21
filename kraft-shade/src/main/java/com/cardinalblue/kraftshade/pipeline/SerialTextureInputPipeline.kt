@@ -81,15 +81,6 @@ class SerialTextureInputPipeline(
         }
     }
 
-    /**
-     * Only call this method when input texture is set. You can just set the input texture once if
-     * it doesn't change at all, and then call this function to render the pipeline
-     */
-    override suspend fun drawTo(buffer: GlBuffer) {
-        setTargetBuffer(buffer)
-        run()
-    }
-
     override suspend fun GlEnv.destroy() {
         logger.i("Destroying pipeline")
         effects.forEach {

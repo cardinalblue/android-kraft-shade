@@ -39,8 +39,8 @@ fun BasicGlEnvScreen(
         val glEnv = GlEnv()
         val bitmap = glEnv.use {
             imageGeneration
-                .invoke(this)
-                .also { terminate() }
+                .invoke(env)
+                .also { env.terminate() }
         }
         image = bitmap.asImageBitmap()
     }

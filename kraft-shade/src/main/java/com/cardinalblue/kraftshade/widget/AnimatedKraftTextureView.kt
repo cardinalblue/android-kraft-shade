@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
 import androidx.annotation.MainThread
+import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.Effect
 import com.cardinalblue.kraftshade.pipeline.Pipeline
@@ -31,7 +32,8 @@ import kotlinx.coroutines.withContext
  *    - The result is rendered to the view's surface
  *
  * For dynamic effects that need to change based on time, user interaction, or other states:
- * - Use the input system within your [Effect] construction
+ * - Use the input system within your [Pipeline] construction
+ * - Note that although KraftShader is also [Effect], but the input system only works with [Pipeline], so if you only have a [KraftShader], but you still want to use input system, you should wrap it in any kind of Pipeline.
  * - Update the state of the inputs during animation instead of directly touching the components in the effect
  * - The changes will be automatically applied in the next frame based on how pipeline and input work
  *
@@ -55,7 +57,7 @@ class AnimatedKraftTextureView : KraftTextureView {
 
     fun setEffect(
         playAfterSet: Boolean = true,
-        effectProvider: suspend GlEnv.(windowSurface: WindowSurfaceBuffer) -> Effect,
+        effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect,
     ) {
         runGlTask { windowSurface ->
             val effect = effectProvider.invoke(this, windowSurface)

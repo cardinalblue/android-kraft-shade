@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.view.TextureView
+import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -10,7 +11,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-typealias KraftTextureViewTask = suspend GlEnv.(windowSurface: WindowSurfaceBuffer) -> Unit
+typealias KraftTextureViewTask = suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit
 
 open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
     private val logger = KraftLogger("KraftTextureView")
@@ -51,7 +52,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
             glEnv = GlEnv().apply {
                 use {
                     val surface = WindowSurfaceBuffer(
-                        glEnv = this,
+                        glEnv = env,
                         listener = this@KraftTextureView,
                     ).also { windowSurface ->
                         surfaceTextureListener = windowSurface.surfaceTextureListener
@@ -84,7 +85,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                     glEnv?.use {
                         windowSurface?.delete()
                         windowSurface = null
-                        terminate()
+                        terminateEnv()
                     }
 
                     glEnv = null
@@ -102,7 +103,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                 logger.tryAndLog {
                     glEnv.use {
                         logger.d("executing ${taskAfterAttached.size} tasks after buffer ready")
-                        taskAfterAttached.forEach { it.invoke(this, surface) }
+                        taskAfterAttached.forEach { it.invoke(this@use, surface) }
                         taskAfterAttached.clear()
                     }
                 }

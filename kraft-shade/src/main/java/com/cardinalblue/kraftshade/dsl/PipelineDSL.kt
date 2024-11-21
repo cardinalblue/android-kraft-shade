@@ -1,6 +1,5 @@
 package com.cardinalblue.kraftshade.dsl
 
-import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.Effect
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
@@ -12,18 +11,6 @@ import com.cardinalblue.kraftshade.shader.buffer.Texture
 
 @DslMarker
 annotation class PipelineScopeMarker
-
-@PipelineScopeMarker
-suspend fun GlEnv.serialTextureInputPipeline(
-    effects: List<SingleInputTextureEffect> = emptyList(),
-    block: SerialTextureInputPipelineScope.() -> Unit = {},
-): SerialTextureInputPipeline {
-    return use {
-        val pipeline = SerialTextureInputPipeline(this, effects)
-        block(SerialTextureInputPipelineScope(pipeline))
-        pipeline
-    }
-}
 
 open class PipelineScope<P : Pipeline>(
     protected val pipeline: P,
@@ -52,6 +39,11 @@ open class PipelineScope<P : Pipeline>(
     ) {
         pipeline.connectInput(input, effect, sampledFromExternal, action)
     }
+
+    @PipelineScopeMarker
+    fun setTargetBuffer(buffer: GlBuffer) {
+        pipeline.setTargetBuffer(buffer)
+    }
 }
 
 class SerialTextureInputPipelineScope(
@@ -60,11 +52,6 @@ class SerialTextureInputPipelineScope(
     @PipelineScopeMarker
     fun setInputTexture(texture: Texture) {
         pipeline.setInputTexture(texture)
-    }
-
-    @PipelineScopeMarker
-    fun setTargetBuffer(buffer: GlBuffer) {
-        pipeline.setTargetBuffer(buffer)
     }
 
     @PipelineScopeMarker

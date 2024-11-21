@@ -7,16 +7,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.cardinalblue.kraftshade.dsl.CommonInputs
-import com.cardinalblue.kraftshade.dsl.serialTextureInputPipeline
 import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
-import com.cardinalblue.kraftshade.shader.builtin.DrawCircleKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.widget.AnimatedKraftTextureView
-import com.cardinalblue.kraftshade.widget.KraftTextureView
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -66,7 +62,7 @@ fun AnimatedKraftTextureViewTestWindow() {
         onDispose {
             runBlocking {
                 env?.use {
-                    terminate()
+                    terminateEnv()
                 }
             }
         }
