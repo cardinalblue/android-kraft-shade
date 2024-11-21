@@ -35,7 +35,7 @@ fun KraftShadeEffectView(
 
 open class KraftShadeEffectState(scope: CoroutineScope) : KraftShadeBaseState<KraftEffectTextureView>(scope) {
     fun setEffect(
-        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = {},
+        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
         effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect
     ) {
         launchWithLock { view ->
