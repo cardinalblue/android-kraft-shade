@@ -10,11 +10,13 @@ import com.cardinalblue.kraftshade.shader.KraftShader
 class GlEnvDslScope(
     val env: GlEnv
 ) {
-    suspend fun KraftShader.asPipeline(
-        setup: suspend Pipeline.() -> Unit = {},
+    suspend fun <T : KraftShader> T.asPipeline(
+        setup: suspend PipelineScope<Pipeline>.(T) -> Unit = {},
     ): Pipeline {
         val pipeline = WrapperPipeline(env, this)
-        pipeline.setup()
+        PipelineScope<Pipeline>(pipeline).apply {
+            setup(this@asPipeline)
+        }
         return pipeline
     }
 

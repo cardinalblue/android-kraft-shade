@@ -7,9 +7,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.cardinalblue.kraftshade.dsl.CommonInputs
+import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.env.GlEnv
+import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
+import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.widget.AnimatedKraftTextureView
@@ -38,21 +41,8 @@ fun AnimatedKraftTextureViewTestWindow() {
 
                     aspectRatio = input.size.aspectRatio
 
-                    serialTextureInputPipeline {
-                        withPipeline {
-                            setInputTexture(input)
-                            setTargetBuffer(windowSurface)
-                        }
-
-                        +SaturationKraftShader()
-                            .withInput(
-                                CommonInputs
-                                    .time()
-                                    .bounceBetween(0f, 1f)
-                            ) { saturationInput, shader ->
-                                shader.saturation = saturationInput.get()
-                            }
-                    }
+                    setupUsingSerialTextureInputPipeline(input, windowSurface)
+//                    setupUsingAsPipeline(input, windowSurface)
                 }
             }
         }
@@ -78,5 +68,42 @@ fun AnimatedKraftTextureViewTestWindow() {
                 }
             }
         }
+    }
+}
+
+
+private suspend fun GlEnvDslScope.setupUsingSerialTextureInputPipeline(
+    input: Texture,
+    windowSurface: WindowSurfaceBuffer,
+): Pipeline {
+    return serialTextureInputPipeline {
+        setInputTexture(input)
+        setTargetBuffer(windowSurface)
+
+        +SaturationKraftShader()
+            .withInput(
+                CommonInputs
+                    .time()
+                    .bounceBetween(0f, 1f)
+            ) { saturationInput, shader ->
+                shader.saturation = saturationInput.get()
+            }
+    }
+}
+
+private suspend fun GlEnvDslScope.setupUsingAsPipeline(
+    input: Texture,
+    windowSurface: WindowSurfaceBuffer,
+): Pipeline {
+    return SaturationKraftShader().asPipeline { shader ->
+        shader.setInputTexture(input)
+        shader.withInput(
+            CommonInputs
+                .time()
+                .bounceBetween(0f, 1f)
+        ) { saturationInput, _ ->
+            shader.saturation = saturationInput.get()
+        }
+        setTargetBuffer(windowSurface)
     }
 }
