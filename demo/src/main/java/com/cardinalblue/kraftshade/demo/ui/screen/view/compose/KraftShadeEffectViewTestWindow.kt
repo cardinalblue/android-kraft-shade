@@ -17,6 +17,7 @@ import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ContrastKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.PixelationKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,7 @@ fun KraftShadeEffectViewTestWindow() {
     var saturation by remember { mutableFloatStateOf(1f) }
     var brightness by remember { mutableFloatStateOf(0f) }
     var contrast by remember { mutableFloatStateOf(1.2f) }
+    var pixelSize by remember { mutableFloatStateOf(1f) }
     val context = LocalContext.current
 
     Column(
@@ -82,6 +84,18 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..4f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Pixel Size",
+                value = pixelSize,
+                onValueChange = { 
+                    pixelSize = it
+                    state.requestRender()
+                },
+                valueRange = 1f..100f
+            )
         }
     }
 
@@ -110,10 +124,16 @@ fun KraftShadeEffectViewTestWindow() {
                         shader.brightness = brightnessInput.get()
                     }
 
-                // Finally apply contrast
+                // Then apply contrast
                 +ContrastKraftShader()
                     .withInput(sampledInput { contrast }) { contrastInput, shader ->
                         shader.contrast = contrastInput.get()
+                    }
+
+                // Finally apply pixelation
+                +PixelationKraftShader()
+                    .withInput(sampledInput { pixelSize }) { pixelSizeInput, shader ->
+                        shader.pixel = pixelSizeInput.get()
                     }
             }
         }
