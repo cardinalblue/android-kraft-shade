@@ -2,8 +2,6 @@ package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,7 +11,9 @@ import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
+import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -22,6 +22,7 @@ fun KraftShadeEffectViewTestWindow() {
     val state = rememberKraftShadeEffectState()
     var aspectRatio by remember { mutableFloatStateOf(1f) }
     var saturation by remember { mutableFloatStateOf(1f) }
+    var brightness by remember { mutableFloatStateOf(0f) }
     val context = LocalContext.current
 
     Column(
@@ -36,17 +37,13 @@ fun KraftShadeEffectViewTestWindow() {
             state = state
         )
 
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp)
         ) {
-            Text("Saturation")
-            Slider(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp),
+            ParameterSlider(
+                label = "Saturation",
                 value = saturation,
                 onValueChange = { 
                     saturation = it
@@ -54,7 +51,18 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..2f
             )
-            Text("%.2f".format(saturation))
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Brightness",
+                value = brightness,
+                onValueChange = { 
+                    brightness = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
         }
     }
 
@@ -71,9 +79,16 @@ fun KraftShadeEffectViewTestWindow() {
                 setInputTexture(LoadedTexture(bitmap))
                 setTargetBuffer(windowSurface)
 
+                // First apply saturation
                 +SaturationKraftShader()
                     .withInput(sampledInput { saturation }) { saturationInput, shader ->
                         shader.saturation = saturationInput.get()
+                    }
+
+                // Then apply brightness
+                +BrightnessKraftShader()
+                    .withInput(sampledInput { brightness }) { brightnessInput, shader ->
+                        shader.brightness = brightnessInput.get()
                     }
             }
         }
