@@ -32,7 +32,7 @@ fun AnimatedKraftTextureViewTestWindow() {
         factory = { context ->
             AnimatedKraftTextureView(context).apply {
                 env = glEnv
-                setEffect { windowSurface ->
+                setEffectAndPlay { windowSurface ->
                     previousBuffer = buffer
                     buffer = windowSurface
                     val input = context.assets.open("sample/cat.jpg").use {

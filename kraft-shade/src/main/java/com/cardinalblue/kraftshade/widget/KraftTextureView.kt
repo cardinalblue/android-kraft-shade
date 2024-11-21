@@ -13,6 +13,10 @@ import kotlinx.coroutines.sync.withLock
 
 typealias KraftTextureViewTask = suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit
 
+/**
+ * Usually, you only need [KraftEffectTextureView] or [AnimatedKraftTextureView] instead of this
+ * class. This is the base class for all View implementations in KraftShade.
+ */
 open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
     private val logger = KraftLogger("KraftTextureView")
     var glEnv: GlEnv? = null

@@ -39,7 +39,7 @@ import kotlinx.coroutines.withContext
  *
  * The animation can be controlled using [play] and [stop] methods.
  */
-class AnimatedKraftTextureView : KraftTextureView {
+class AnimatedKraftTextureView : KraftEffectTextureView {
     /**
      * Just a state for external to use
      */
@@ -51,23 +51,20 @@ class AnimatedKraftTextureView : KraftTextureView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private val callback: Callback = Callback()
-    private var effect: Effect? = null
     private val choreographer: Choreographer = Choreographer.getInstance()
     private val logger = KraftLogger("AnimatedKraftTextureView")
 
-    fun setEffect(
-        playAfterSet: Boolean = true,
+    fun setEffectAndPlay(
         effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect,
     ) {
-        runGlTask { windowSurface ->
-            val effect = effectProvider.invoke(this, windowSurface)
-            this@AnimatedKraftTextureView.effect = effect
-            if (playAfterSet) {
+        setEffect(
+            effectProvider = effectProvider,
+            afterSet = {
                 withContext(Dispatchers.Main) {
                     play()
                 }
-            }
-        }
+            },
+        )
     }
 
     /**
@@ -120,17 +117,6 @@ class AnimatedKraftTextureView : KraftTextureView {
                 logger.tryAndLog {
                     render(effect, windowSurface)
                 }
-            }
-        }
-
-        private suspend fun render(
-            effect: Effect,
-            windowSurface: WindowSurfaceBuffer
-        ) {
-            if (effect is Pipeline) {
-                effect.run()
-            } else if (effect is KraftShader) {
-                effect.drawTo(windowSurface)
             }
         }
     }
