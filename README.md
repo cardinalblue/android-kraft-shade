@@ -2,6 +2,14 @@
 
 KraftShade is a modern, high-performance OpenGL ES graphics rendering library for Android, designed to provide a type-safe, Kotlin-first abstraction over OpenGL ES 2.0. Built with coroutines support and a focus on developer experience, KraftShade makes complex graphics operations simple while maintaining flexibility and performance.
 
+## Installation
+
+```gradle
+dependencies {
+    implementation 'com.cardinalblue:kraftshade:1.0.0'
+}
+```
+
 ## Why Another Graphics Library?
 
 While GPUImage has been a popular choice for Android graphics processing, it comes with several limitations:
@@ -47,29 +55,191 @@ KraftShade aims to address these limitations with:
    - Smart resource management
    - Optimized rendering pipeline
 
-## Key Features
+## Key Features and Core Components
 
-### Core Components
+### GlEnv (Graphics Environment)
+- Encapsulates all OpenGL ES environment setup in a single class
+- Creates a dedicated thread dispatcher and binds the GLES context to that thread
+- Ensures all OpenGL operations run in the correct context
 
-1. Graphics Infrastructure
-   - `GlEnv`: OpenGL ES environment and context management
-   - `KraftTextureView`: Base view for OpenGL rendering
-   - `AnimatedKraftTextureView`: Animation support with Choreographer
+### Buffer System (GlBuffer)
+- Supports multiple buffer types:
+  * PixelBuffer: For raw pixel data operations
+  * TextureBuffer (FBO): For off-screen rendering
+  * WindowSurfaceBuffer: For on-screen rendering
+- Handles screen coordinate transformations
+- Manages rendering target context in `beforeDraw`
 
-2. Shader System
-   - `KraftShader`: Base shader implementation
-   - Built-in effects:
-     * Saturation
-     * Emboss
-     * Look-up Table (LUT)
-     * Convolution (3x3)
-     * Alpha Blending
-     * Circle Drawing
-     * (remove some useless ones or move to demo module)
-     * (port all from GPUImage)
+### Shader System
+- `KraftShader`: Base shader implementation with modern Kotlin features
+- `GlUniformDelegate`: Smart uniform handling
+  * Supports multiple types (Int, Float, FloatArray, GlMat2/3/4)
+  * Deferred location query and value setting
+  * Optional uniforms support (useful for base class implementations)
+  * Automatic GLES API selection for value binding
+- `KraftShaderTextureInput`: Simplified texture input management
 
-3. Pipeline Architecture
-   - (To add)
+### Pipeline Architecture
+- Flexible pipeline types:
+  * `SerialTextureInputPipeline`: Linear processing chain (similar to GPUImageFilterGroup)
+  * `GraphPipeline`: Complex multi-pass rendering (coming soon)
+- Pipeline execution flow:
+  1. Input updates
+  2. Shader setup and input binding
+  3. Ordered rendering to FBOs
+  4. Final output to target buffer
+
+### Input System
+- `Input<T>`: Base input type
+- `SampledInput<T>`: Dynamic input handling
+  * `TimeInput`: Time-based animations
+  * `MappedInput`: Value transformations
+- Supports complex animations and transitions
+- Example of mapped input:
+  ```kotlin
+  fun SampledInput<Float>.bounceBetween(value1: Float, value2: Float): SampledInput<Float> {
+      val min = min(value1, value2)
+      val max = max(value1, value2)
+      val interval = max - min
+      return map { value ->
+          val intervalValue = value % (interval * 2f)
+          if (intervalValue < interval) {
+              intervalValue + value1
+          } else {
+              2f * interval - intervalValue
+          }
+      }
+  }
+  ```
+
+### View Components
+- Android Views:
+  * `KraftTextureView`: Base OpenGL rendering view
+  * `KraftEffectTextureView`: Effect-enabled view
+  * `AnimatedKraftTextureView`: Animation support with Choreographer
+- Jetpack Compose Integration:
+  * `KraftShadeView`: AndroidView wrapper for KraftTextureView
+  * `KraftShadeEffectView`: AndroidView wrapper for KraftEffectTextureView
+  * `KraftShadeAnimatedView`: AndroidView wrapper for AnimatedKraftTextureView
+
+## Support status of [GPUImage for iOS](https://github.com/BradLarson/GPUImage2) shaders
+- [x] Saturation
+- [x] Contrast
+- [x] Brightness
+- [ ] Levels
+- [ ] Exposure
+- [ ] RGB
+- [ ] RGB Diation
+- [x] Hue
+- [ ] White Balance
+- [ ] Monochrome
+- [ ] False Color
+- [ ] Sharpen
+- [ ] Unsharp Mask
+- [ ] Transform Operation
+- [ ] Crop
+- [ ] Gamma
+- [ ] Highlights and Shadows
+- [x] Haze
+- [ ] Sepia Tone
+- [ ] Amatorka
+- [ ] Miss Etikate
+- [ ] Soft Elegance
+- [x] Color Inversion
+- [ ] Solarize
+- [ ] Vibrance
+- [ ] Highlight and Shadow Tint
+- [ ] Luminance
+- [ ] Luminance Threshold
+- [ ] Average Color
+- [ ] Average Luminance
+- [ ] Average Luminance Threshold
+- [ ] Adaptive Threshold
+- [ ] Polar Pixellate
+- [x] Pixellate
+- [ ] Polka Dot
+- [ ] Halftone
+- [ ] Crosshatch
+- [ ] Sobel Edge Detection
+- [ ] Prewitt Edge Detection
+- [ ] Canny Edge Detection
+- [ ] Threshold Sobel EdgeDetection
+- [ ] Harris Corner Detector
+- [ ] Noble Corner Detector
+- [ ] Shi Tomasi Feature Detector
+- [ ] Colour FAST Feature Detector
+- [ ] Low Pass Filter
+- [ ] High Pass Filter
+- [ ] Sketch Filter
+- [ ] Threshold Sketch Filter
+- [ ] Toon Filter
+- [ ] SmoothToon Filter
+- [ ] Tilt Shift
+- [ ] CGA Colorspace Filter
+- [ ] Posterize
+- [x] Convolution 3x3
+- [x] Emboss Filter
+- [ ] Laplacian
+- [ ] Chroma Keying
+- [ ] Kuwahara Filter
+- [ ] Kuwahara Radius3 Filter
+- [ ] Vignette
+- [ ] Gaussian Blur
+- [ ] Box Blur
+- [ ] Bilateral Blur
+- [ ] Motion Blur
+- [ ] Zoom Blur
+- [ ] iOS Blur
+- [ ] Median Filter
+- [ ] Swirl Distortion
+- [ ] Bulge Distortion
+- [ ] Pinch Distortion
+- [ ] Sphere Refraction
+- [ ] Glass Sphere Refraction
+- [ ] Stretch Distortion
+- [ ] Dilation
+- [ ] Erosion
+- [ ] Opening Filter
+- [ ] Closing Filter
+- [ ] Local Binary Pattern
+- [ ] Color Local Binary Pattern
+- [ ] Dissolve Blend
+- [ ] Chroma Key Blend
+- [ ] Add Blend
+- [ ] Divide Blend
+- [ ] Multiply Blend
+- [ ] Overlay Blend
+- [ ] Lighten Blend
+- [ ] Darken Blend
+- [ ] Color Burn Blend
+- [ ] Color Dodge Blend
+- [ ] Linear Burn Blend
+- [ ] Screen Blend
+- [ ] Difference Blend
+- [ ] Subtract Blend
+- [ ] Exclusion Blend
+- [ ] HardLight Blend
+- [ ] SoftLight Blend
+- [ ] Color Blend
+- [ ] Hue Blend
+- [ ] Saturation Blend
+- [ ] Luminosity Blend
+- [ ] Normal Blend
+- [ ] Source Over Blend
+- [x] Alpha Blend
+- [ ] Non Maximum Suppression
+- [ ] Thresholded Non Maximum Suppression
+- [ ] Directional Non Maximum Suppression
+- [ ] Opacity
+- [ ] Weak Pixel Inclusion Filter
+- [ ] Color Matrix
+- [ ] Directional Sobel Edge Detection
+- [x] Lookup (LUT)
+- [ ] Tone Curve (*.acv files)
+
+## Others
+- [ ] Texture 3x3
+- [ ] Gray Scale
 
 ## Usage
 
@@ -139,14 +309,6 @@ class CustomEffect : KraftShader() {
         // no need to get the location anymore. GlUniformDelegate will handle it.
         intensity = value
     }
-}
-```
-
-## Installation (to be updated)
-
-```gradle
-dependencies {
-    implementation 'com.cardinalblue:kraftshade:1.0.0'
 }
 ```
 
