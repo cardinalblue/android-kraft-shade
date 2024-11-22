@@ -30,7 +30,7 @@ class HueKraftShader(
     override fun loadFragmentShader(): String = HUE_FRAGMENT_SHADER
 }
 
-// Ported from GPUImage
+// TODO: From AI. Check the code later.
 @Language("GLSL")
 private const val HUE_FRAGMENT_SHADER = """
 precision highp float;
