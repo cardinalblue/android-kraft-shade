@@ -134,6 +134,7 @@ abstract class KraftShader : Effect, AutoCloseable {
                     val (oldKey, _) = iterator.next()
                     if (oldKey == key) {
                         iterator.remove()
+                        break
                     }
                 }
             }
