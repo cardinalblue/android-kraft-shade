@@ -1,14 +1,12 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
 
 import android.graphics.BitmapFactory
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
@@ -17,6 +15,7 @@ import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ContrastKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.HueKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.PixelationKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
@@ -31,6 +30,7 @@ fun KraftShadeEffectViewTestWindow() {
     var brightness by remember { mutableFloatStateOf(0f) }
     var contrast by remember { mutableFloatStateOf(1.2f) }
     var pixelSize by remember { mutableFloatStateOf(1f) }
+    var hue by remember { mutableFloatStateOf(0f) }
     val context = LocalContext.current
 
     Column(
@@ -96,6 +96,18 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 1f..100f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Hue",
+                value = hue,
+                onValueChange = { 
+                    hue = it
+                    state.requestRender()
+                },
+                valueRange = 0f..360f
+            )
         }
     }
 
@@ -116,6 +128,12 @@ fun KraftShadeEffectViewTestWindow() {
                 +SaturationKraftShader()
                     .withInput(sampledInput { saturation }) { saturationInput, shader ->
                         shader.saturation = saturationInput.get()
+                    }
+
+                // Then apply hue
+                +HueKraftShader()
+                    .withInput(sampledInput { hue }) { hueInput, shader ->
+                        shader.setHueInDegree(hueInput.get())
                     }
 
                 // Then apply brightness
