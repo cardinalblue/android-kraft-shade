@@ -156,7 +156,7 @@ fun KraftShadeEffectViewTestWindow() {
                     "sat", "contrast")
 
                 SaturationKraftShader()
-                    .setInputAndAddAsStep(
+                    .addAsStepWithInput(
                         bitmap.asTexture(),
                         sampledInput { saturation },
                         targetBuffer = satResult,
@@ -182,7 +182,7 @@ fun KraftShadeEffectViewTestWindow() {
                 }
 
                 PixelationKraftShader()
-                    .setInputAndAddAsStep(
+                    .addAsStepWithInput(
                         contrastResult,
                         sampledInput { pixelSize },
                         targetBuffer = windowSurface,

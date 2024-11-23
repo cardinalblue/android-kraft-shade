@@ -52,7 +52,7 @@ open class PipelineSetupScope(
     /**
      * @param oneTimeSetupAction This is immediately applied to the shader. A useful example is to
      *  set up the input texture if this KraftShader is [TextureInputKraftShader]. See
-     *  [setInputAndAddAsStep] if you are actually working on the setup of [TextureInputKraftShader].
+     *  [addAsStepWithInput] if you are actually working on the setup of [TextureInputKraftShader].
      */
     @PipelineScopeMarker
     suspend fun <S : KraftShader> S.addAsStep(
@@ -75,7 +75,7 @@ open class PipelineSetupScope(
      *  the texture id is set to the shader, and it won't change since it's not using a reference.
      */
     @PipelineScopeMarker
-    suspend fun <S : TextureInputKraftShader> S.setInputAndAddAsStep(
+    suspend fun <S : TextureInputKraftShader> S.addAsStepWithInput(
         constantTexture: Texture,
         vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
@@ -94,7 +94,7 @@ open class PipelineSetupScope(
     }
 
     @PipelineScopeMarker
-    suspend fun <S : TextureInputKraftShader> S.setInputAndAddAsStep(
+    suspend fun <S : TextureInputKraftShader> S.addAsStepWithInput(
         inputBufferReference: BufferReference,
         vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
