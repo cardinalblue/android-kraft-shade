@@ -62,7 +62,9 @@ class Pipeline internal constructor(
         logger.d("run $stepCount steps")
         steps.forEach { step ->
             step.run()
-            logger.d("step ${step.stepIndex} done")
+            logger.d {
+                "step ${step.stepIndex} with ${step.shader::class.simpleName} done"
+            }
         }
     }
 

@@ -12,14 +12,12 @@ import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
-import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ContrastKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.HueKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.PixelationKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
-import com.cardinalblue.kraftshade.dsl.PipelineSetupScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -159,7 +157,7 @@ fun KraftShadeEffectViewTestWindow() {
 
                 SaturationKraftShader()
                     .setInputAndAddAsStep(
-                        inputTexture = bitmap.asTexture(),
+                        bitmap.asTexture(),
                         sampledInput { saturation },
                         targetBuffer = satResult,
                     ) { (saturation) ->
@@ -185,7 +183,7 @@ fun KraftShadeEffectViewTestWindow() {
 
                 PixelationKraftShader()
                     .setInputAndAddAsStep(
-                        inputTexture = contrastResult,
+                        contrastResult,
                         sampledInput { pixelSize },
                         targetBuffer = windowSurface,
                     ) { (pixelSize) ->

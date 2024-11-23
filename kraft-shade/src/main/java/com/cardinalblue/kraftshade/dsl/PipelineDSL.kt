@@ -1,11 +1,14 @@
 package com.cardinalblue.kraftshade.dsl
 
+import com.cardinalblue.kraftshade.pipeline.BufferReference
 import com.cardinalblue.kraftshade.pipeline.BufferReferenceCreator
 import com.cardinalblue.kraftshade.pipeline.Pipeline
+import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
 
@@ -63,10 +66,17 @@ open class PipelineSetupScope(
      * If the the shader is [TextureInputKraftShader], this function is more convenient to use. It
      * sets the input texture as a constant and adds the shader as a step to the pipeline. If you
      * use [addAsStep], you can easily forget to set the input texture.
+     *
+     * @param constantTexture Why we don't use [TextureProvider] here is because the setup of the
+     *  texture id here is immediate, so if it's not a constant texture (LoadedTexture), then can
+     *  change. For example, if it's a [BufferReference], if we take the texture id immediately. For
+     *  the first rendering when WindowSurfaceBuffer is ready, it works fine. If later the size of
+     *  the WindowSurfaceBuffer changes, the texture will be deleted by [TextureBufferPool]. However,
+     *  the texture id is set to the shader, and it won't change since it's not using a reference.
      */
     @PipelineScopeMarker
     suspend fun <S : TextureInputKraftShader> S.setInputAndAddAsStep(
-        inputTexture: TextureProvider,
+        constantTexture: Texture,
         vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
         oneTimeSetupAction: suspend S.() -> Unit = {},
@@ -76,10 +86,29 @@ open class PipelineSetupScope(
             inputs = inputs,
             targetBuffer = targetBuffer,
             oneTimeSetupAction = {
-                setInputTexture(inputTexture)
+                setInputTexture(constantTexture)
                 oneTimeSetupAction()
             },
             setupAction = setupAction,
+        )
+    }
+
+    @PipelineScopeMarker
+    suspend fun <S : TextureInputKraftShader> S.setInputAndAddAsStep(
+        inputBufferReference: BufferReference,
+        vararg inputs: Input<*>,
+        targetBuffer: GlBufferProvider,
+        oneTimeSetupAction: suspend S.() -> Unit = {},
+        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+    ) {
+        addAsStep(
+            inputs = inputs,
+            targetBuffer = targetBuffer,
+            oneTimeSetupAction = oneTimeSetupAction,
+            setupAction = { _inputs ->
+                setInputTexture(inputBufferReference.provideTexture())
+                setupAction.invoke(this, _inputs)
+            },
         )
     }
 

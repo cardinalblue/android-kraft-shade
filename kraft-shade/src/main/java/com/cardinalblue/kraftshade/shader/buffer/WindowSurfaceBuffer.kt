@@ -87,6 +87,7 @@ class WindowSurfaceBuffer(
 
     override fun afterDraw() {
         swapBuffers()
+        logger.d { "drawn ($size)" }
     }
 
     override fun delete() {
