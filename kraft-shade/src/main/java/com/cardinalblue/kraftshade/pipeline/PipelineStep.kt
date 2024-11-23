@@ -1,8 +1,17 @@
 package com.cardinalblue.kraftshade.pipeline
 
+import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+
+sealed class PipelineStep(
+    val stepIndex: Int,
+) {
+    abstract suspend fun run()
+
+    val type: String get() = this::class.simpleName ?: "impossible"
+}
 
 /**
  * @property stepIndex TODO maybe we don't need this at all. (for debugging?)
@@ -16,15 +25,25 @@ import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
  *  If these two are not the cases, that means that part of the setup on the effect is constant and
  *  you can just set it once when you create the [KraftShader] or child pipeline.
  */
-class PipelineStep<T : KraftShader> internal constructor(
-    val stepIndex: Int,
+class RunShaderStep<T : KraftShader> internal constructor(
+    stepIndex: Int,
     val shader: T,
     val inputs: List<Input<*>> = emptyList(),
     val targetBuffer: GlBufferProvider,
     val setupAction: suspend T.(List<Input<*>>) -> Unit = {},
-) {
-    suspend fun run() {
+) : PipelineStep(stepIndex) {
+    override suspend fun run() {
         shader.setupAction(inputs)
         shader.drawTo(targetBuffer.provideBuffer())
+    }
+}
+
+class RunTaskStep(
+    stepIndex: Int,
+    val purposeForDebug: String = "",
+    private val task: suspend () -> Unit,
+) : PipelineStep(stepIndex) {
+    override suspend fun run() {
+        task()
     }
 }

@@ -17,17 +17,21 @@ import com.cardinalblue.kraftshade.util.KraftLogger
  * [ ] Sampled inputs dirty mechanism
  */
 class Pipeline internal constructor(
-    private val glEnv: GlEnv,
+    internal val glEnv: GlEnv,
     internal val bufferPool: TextureBufferPool,
 ) : EffectExecution {
     private val sampledInputs: MutableSet<SampledInput<*>> = mutableSetOf()
-    private val steps: MutableList<PipelineStep<*>> = mutableListOf()
+    private val steps: MutableList<PipelineStep> = mutableListOf()
     val stepCount: Int get() = steps.size
 
     private val postponedTasks: MutableList<suspend GlEnv.() -> Unit> = mutableListOf()
 
     protected fun runDeferred(block: suspend GlEnv.() -> Unit) {
         postponedTasks.add(block)
+    }
+
+    fun addStep(step: PipelineStep) {
+        steps.add(step)
     }
 
     fun <T : KraftShader> addStep(
@@ -40,15 +44,13 @@ class Pipeline internal constructor(
             .filterIsInstance<SampledInput<*>>()
             .forEach { sampledInputs.add(it) }
 
-        steps.add(
-            PipelineStep(
-                stepIndex = steps.size,
-                shader = shader,
-                inputs = inputs,
-                targetBuffer = targetBuffer,
-                setupAction = setupAction,
-            )
-        )
+        RunShaderStep(
+            stepIndex = steps.size,
+            shader = shader,
+            inputs = inputs,
+            targetBuffer = targetBuffer,
+            setupAction = setupAction,
+        ).let(this::addStep)
     }
 
     override suspend fun run() {
@@ -63,7 +65,10 @@ class Pipeline internal constructor(
         steps.forEach { step ->
             step.run()
             logger.d {
-                "step ${step.stepIndex} with ${step.shader::class.simpleName} done"
+                when (step) {
+                    is RunShaderStep<*> -> "step [${step.type}:${step.stepIndex}] done with ${step.shader::class.simpleName}"
+                    is RunTaskStep -> "step [${step.type}:${step.stepIndex}] for [${step.purposeForDebug}] done"
+                }
             }
         }
     }

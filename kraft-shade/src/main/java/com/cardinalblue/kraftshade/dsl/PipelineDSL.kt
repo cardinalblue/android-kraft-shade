@@ -1,9 +1,7 @@
 package com.cardinalblue.kraftshade.dsl
 
-import com.cardinalblue.kraftshade.pipeline.BufferReference
-import com.cardinalblue.kraftshade.pipeline.BufferReferenceCreator
-import com.cardinalblue.kraftshade.pipeline.Pipeline
-import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
+import com.cardinalblue.kraftshade.env.GlEnv
+import com.cardinalblue.kraftshade.pipeline.*
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
@@ -26,6 +24,20 @@ open class PipelineSetupScope(
     @PipelineScopeMarker
     fun withPipeline(block: Pipeline.() -> Unit) {
         block(pipeline)
+    }
+
+    @PipelineScopeMarker
+    fun step(
+        purposeForDebug: String = "",
+        block: suspend GlEnv.() -> Unit
+    ) {
+        RunTaskStep(
+            stepIndex = pipeline.stepCount,
+            purposeForDebug = purposeForDebug,
+            task = {
+                block(pipeline.glEnv)
+            },
+        ).let(pipeline::addStep)
     }
 
     /**
@@ -121,6 +133,7 @@ open class PipelineSetupScope(
         val scope = SerialTextureInputPipelineScope(
             currentStepIndex = pipeline.stepCount - 1,
             pipeline = pipeline,
+            pipelineSetupScope = this,
             inputTexture = inputTexture,
             targetBuffer = targetBuffer
         )
@@ -136,6 +149,7 @@ open class PipelineSetupScope(
 class SerialTextureInputPipelineScope internal constructor(
     currentStepIndex: Int,
     private val pipeline: Pipeline,
+    private val pipelineSetupScope: PipelineSetupScope,
     private val inputTexture: TextureProvider,
     private val targetBuffer: GlBufferProvider,
 ) {
@@ -208,7 +222,11 @@ class SerialTextureInputPipelineScope internal constructor(
             isFirstStep = false
             drawToBuffer1 = !drawToBuffer1
         }
-        pipeline.bufferPool.recycle(buffer1, buffer2)
+        with(pipelineSetupScope) {
+            step("clean up ping pong buffers") {
+                pipeline.bufferPool.recycle(buffer1, buffer2)
+            }
+        }
     }
 
     private class InternalStep<S : TextureInputKraftShader>(

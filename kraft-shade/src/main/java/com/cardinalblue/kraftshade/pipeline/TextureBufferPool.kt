@@ -40,18 +40,22 @@ internal class TextureBufferPool(
     }
 
     fun recycle(vararg bufferReferences: BufferReference) {
+        var numberRecycled = 0
         bufferReferences.forEach { ref ->
             val buffer = map.remove(ref)
             if (buffer == null) {
                 logger.w("${ref.nameForDebug} is not in the pool")
                 return
             }
+            numberRecycled++
             availableBuffers.add(buffer)
         }
+        logger.d { "recycled $numberRecycled buffers ($availableSize / $poolSize)" }
     }
 
     // Do not remove suspend modifier here. This is only to ensure the thread is right.
     suspend fun delete() {
+        logger.d("delete all buffers")
         map.forEach { (_, buffer) -> buffer.delete() }
         map.clear()
         availableBuffers.forEach { it.delete() }
