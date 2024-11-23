@@ -1,6 +1,6 @@
 package com.cardinalblue.kraftshade.demo.ui.screen
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,13 +13,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BasicShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BlendingExampleScreen
-import com.cardinalblue.kraftshade.demo.ui.screen.pipeline.SerialTextureInputPipelineTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.shaders.*
-import com.cardinalblue.kraftshade.demo.ui.screen.view.AnimatedKraftTextureViewTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.KraftShadeViewTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.KraftTextureViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.HazeFilterTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeAnimatedViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeEffectViewTestWindow
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
@@ -73,14 +68,9 @@ enum class Destination(
     SimpleMixShader("alpha_blend_shader", "Alpha Blend Shader", screen = { AlphaBlendShaderScreen() }),
     EmbossShader("emboss_shader", "Emboss Shader", screen = { EmbossShaderScreen() }),
     LookUpTableShader("look_up_table_shader", "Look Up Table Shader", screen = { LookUpTableShaderTestScreen() }),
-    KraftTextureView("kraft_texture_view", "Kraft Texture View", screen = { KraftTextureViewTestWindow() }),
-    AnimatedKraftTextureView("animated_kraft_texture_view", "Animated Kraft Texture View", screen = { AnimatedKraftTextureViewTestWindow() }),
-    SerialPipeline("serial_pipeline", "Serial Pipeline", screen = { SerialTextureInputPipelineTestScreen() }),
-    KraftShadeView("kraft_shade_view", "KraftShadeView (Composable)", screen = { KraftShadeViewTestWindow() }),
     TransparencyTest("transparency_test", "Transparency Test", screen = { TransparencyTestWindow() }),
     KraftShadeAnimatedView("compose_animated", "Compose (animated)", screen = { KraftShadeAnimatedViewTestWindow() }),
     KraftShadeEffectView("compose_effect", "Compose (effect)", screen = { KraftShadeEffectViewTestWindow() }),
-    HazeFilterTest("haze_filter_test", "Haze Filter Test", screen = { HazeFilterTestWindow() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {

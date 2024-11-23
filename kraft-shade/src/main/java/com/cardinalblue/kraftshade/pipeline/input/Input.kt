@@ -9,4 +9,7 @@ interface Input<T : Any> : ReadOnlyProperty<Any?, T> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return get()
     }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <P> getCasted(): P = get() as P
 }

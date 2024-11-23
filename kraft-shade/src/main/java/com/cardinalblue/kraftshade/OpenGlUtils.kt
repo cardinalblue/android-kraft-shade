@@ -11,7 +11,7 @@ import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
 object OpenGlUtils {
-    const val NO_TEXTURE: Int = -1
+    const val NO_TEXTURE_ID: Int = -1
 
     val CUBE = floatArrayOf(
         -1.0f, -1.0f,
@@ -77,7 +77,7 @@ object OpenGlUtils {
     @JvmOverloads
     fun loadTexture(img: Bitmap, usedTexId: Int, recycle: Boolean = true): Int {
         val textures = IntArray(1)
-        if (usedTexId == NO_TEXTURE) {
+        if (usedTexId == NO_TEXTURE_ID) {
             GLES20.glGenTextures(1, textures, 0)
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0])
             GLES20.glTexParameterf(
@@ -111,7 +111,7 @@ object OpenGlUtils {
 
     fun loadTexture(data: IntBuffer?, width: Int, height: Int, usedTexId: Int): Int {
         val textures = IntArray(1)
-        if (usedTexId == NO_TEXTURE) {
+        if (usedTexId == NO_TEXTURE_ID) {
             GLES20.glGenTextures(1, textures, 0)
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0])
             GLES20.glTexParameterf(

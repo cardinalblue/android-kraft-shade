@@ -7,7 +7,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
-import com.cardinalblue.kraftshade.pipeline.Effect
+import com.cardinalblue.kraftshade.pipeline.EffectExecution
+import com.cardinalblue.kraftshade.pipeline.input.TimeInput
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.widget.AnimatedKraftTextureView
 import kotlinx.coroutines.CoroutineScope
@@ -40,18 +41,18 @@ open class KraftShadeAnimatedState(scope: CoroutineScope) : KraftShadeBaseState<
 
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = {},
-        effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect
+        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> EffectExecution
     ) {
         launchWithLock { view ->
-            view.setEffect(afterSet, effectProvider)
+            view.setEffect(afterSet, effectExecutionProvider)
         }
     }
 
     fun setEffectAndPlay(
-        effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect
+        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution
     ) {
         launchWithLock { view ->
-            view.setEffectAndPlay(effectProvider)
+            view.setEffectAndPlay(effectExecutionProvider)
         }
     }
 

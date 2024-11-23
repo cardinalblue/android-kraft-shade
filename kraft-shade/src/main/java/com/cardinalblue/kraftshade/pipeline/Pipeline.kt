@@ -1,95 +1,81 @@
 package com.cardinalblue.kraftshade.pipeline
 
-import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
-import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import com.cardinalblue.kraftshade.shader.KraftShader
+import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+import com.cardinalblue.kraftshade.util.KraftLogger
 
-abstract class Pipeline(
+/**
+ * This will be renamed to Pipeline later
+ * Implementation will be added based on future instructions
+ *
+ * TODO:
+ * [ ] Recycle buffers
+ * [ ] Sampled inputs dirty mechanism
+ */
+class Pipeline internal constructor(
     private val glEnv: GlEnv,
-) : Effect {
-    private val sampledInputs = mutableSetOf<SampledInput<*>>()
-    private val inputSetupActions = mutableListOf<() -> Unit>()
+    internal val bufferPool: TextureBufferPool,
+) : EffectExecution {
+    private val sampledInputs: MutableSet<SampledInput<*>> = mutableSetOf()
+    private val steps: MutableList<PipelineStep<*>> = mutableListOf()
+    val stepCount: Int get() = steps.size
 
-
-    protected var targetBuffer: GlBuffer? = null
-        private set
-
-    private val mutex = Mutex()
     private val postponedTasks: MutableList<suspend GlEnv.() -> Unit> = mutableListOf()
 
-    abstract suspend fun GlEnv.execute()
-    abstract suspend fun GlEnv.destroy()
-
-    @CallSuper
-    open fun setTargetBuffer(buffer: GlBuffer)  {
-        targetBuffer = buffer
+    protected fun runDeferred(block: suspend GlEnv.() -> Unit) {
+        postponedTasks.add(block)
     }
 
-    fun <T : Any, IN : Input<T>, E : Effect> connectInput(
-        input: IN,
-        shader: E,
-        sampledFromExternal: Boolean = false,
-        action: (IN, E) -> Unit
+    fun <T : KraftShader> addStep(
+        shader: T,
+        inputs: List<Input<*>> = emptyList(),
+        targetBuffer: GlBufferProvider,
+        setupAction: suspend T.(List<Input<*>>) -> Unit = {},
     ) {
-        if (!sampledFromExternal && input is SampledInput<*>) {
-            sampledInputs.add(input)
-        }
+        inputs
+            .filterIsInstance<SampledInput<*>>()
+            .forEach { sampledInputs.add(it) }
 
-        inputSetupActions.add {
-            action(input, shader)
-        }
+        steps.add(
+            PipelineStep(
+                stepIndex = steps.size,
+                shader = shader,
+                inputs = inputs,
+                targetBufferProvider = targetBuffer,
+                setupAction = setupAction,
+            )
+        )
     }
 
-    suspend fun run() {
-        glEnv.use {
-            internalRun()
-        }
-    }
+    override suspend fun run() {
+        with(glEnv) { runPostponedTasks() }
 
-    /**
-     * Only call this method when input texture is set. You can just set the input texture once if
-     * it doesn't change at all, and then call this function to render the pipeline
-     */
-    override suspend fun drawTo(buffer: GlBuffer) {
-        setTargetBuffer(buffer)
-        run()
-    }
+        // first sample all the inputs. for the steps setup if they use the same input, they will
+        // get the same value instead of getting from source of truth which may change while one
+        // frame is not done yet.
+        sampledInputs.forEach { it.sample() }
 
-    @CallSuper
-    override suspend fun destroy() {
-        targetBuffer = null
-        mutex.withLock {
-            postponedTasks.clear()
-        }
-        glEnv.use { destroy() }
-    }
-
-    protected suspend fun runDeferred(block: suspend GlEnv.() -> Unit) {
-        mutex.withLock {
-            postponedTasks.add(block)
+        logger.d("run $stepCount steps")
+        steps.forEach { step ->
+            step.run()
+            logger.d("step ${step.stepIndex} done")
         }
     }
 
     private suspend fun GlEnv.runPostponedTasks() {
-        mutex.withLock {
-            postponedTasks.forEach {
-                it()
-            }
-            postponedTasks.clear()
-        }
+        postponedTasks.forEach { it() }
+        postponedTasks.clear()
     }
 
-    @CallSuper
-    open suspend fun internalRun() {
-        sampledInputs.forEach { it.sample() }
-        inputSetupActions.forEach { it() }
-        glEnv.use {
-            env.runPostponedTasks()
-            env.execute()
-        }
+    override suspend fun destroy() {
+        logger.d("destroy")
+        postponedTasks.clear()
+    }
+
+    private companion object {
+        val logger = KraftLogger("Pipeline")
     }
 }

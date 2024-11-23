@@ -3,7 +3,7 @@ package com.cardinalblue.kraftshade.shader.buffer
 import android.opengl.GLES20
 import com.cardinalblue.kraftshade.model.GlSize
 
-interface GlBuffer : AutoCloseable {
+interface GlBuffer : AutoCloseable, GlBufferProvider {
     val isScreenCoordinate: Boolean
     val size: GlSize
     fun beforeDraw()
@@ -16,4 +16,18 @@ interface GlBuffer : AutoCloseable {
         draw()
         afterDraw()
     }
+
+    override fun provideBuffer(): GlBuffer = this
+}
+
+/**
+ * Implementations (including their subclasses):
+ * - GlBuffer
+ *     - TextureBuffer
+ *     - WindowSurfaceBuffer
+ *     - PixelBuffer
+ * - BufferReference
+ */
+fun interface GlBufferProvider {
+    fun provideBuffer(): GlBuffer
 }

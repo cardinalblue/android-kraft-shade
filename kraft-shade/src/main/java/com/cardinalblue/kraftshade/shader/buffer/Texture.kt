@@ -3,7 +3,7 @@ package com.cardinalblue.kraftshade.shader.buffer
 import android.opengl.GLES20
 import com.cardinalblue.kraftshade.OpenGlUtils
 
-open class Texture : AutoCloseable {
+open class Texture : AutoCloseable, TextureProvider {
     var textureId: Int
         private set
 
@@ -30,15 +30,28 @@ open class Texture : AutoCloseable {
         )
     }
 
-    fun isValid() = textureId != OpenGlUtils.NO_TEXTURE
+    fun isValid() = textureId != OpenGlUtils.NO_TEXTURE_ID
 
     open fun delete() {
         if (!isValid()) return
         GLES20.glDeleteTextures(1, intArrayOf(textureId), 0)
-        textureId = OpenGlUtils.NO_TEXTURE
+        textureId = OpenGlUtils.NO_TEXTURE_ID
     }
 
     override fun close() {
         delete()
     }
+
+    override fun provideTexture(): Texture = this
+}
+
+/**
+ * Implementations (including their subclasses):
+ * - Texture
+ *     - LoadedTexture
+ *     - TextureBuffer
+ * - BufferReference
+ */
+fun interface TextureProvider {
+    fun provideTexture(): Texture
 }

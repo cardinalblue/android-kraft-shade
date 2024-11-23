@@ -11,9 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeAnimatedView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeAnimatedState
-import com.cardinalblue.kraftshade.dsl.CommonInputs
+import com.cardinalblue.kraftshade.pipeline.input.CommonInputs
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
-import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -53,7 +52,7 @@ fun KraftShadeAnimatedViewTestWindow() {
     }
 
     LaunchedEffect(Unit) {
-        state.setEffectAndPlay { windowSurface ->
+        state.setEffectAndPlay { windowSurface, timeInput ->
             val bitmap = withContext(Dispatchers.IO) {
                 context.assets.open("sample/cat.jpg").use {
                     BitmapFactory.decodeStream(it)
@@ -61,19 +60,17 @@ fun KraftShadeAnimatedViewTestWindow() {
             }
             aspectRatio = bitmap.width.toFloat() / bitmap.height
 
-            serialTextureInputPipeline {
-                setInputTexture(LoadedTexture(bitmap))
-                setTargetBuffer(windowSurface)
+            val saturationInput = timeInput
+                .bounceBetween(0f, 1f)
 
-                +SaturationKraftShader()
-                    .withInput(
-                        CommonInputs
-                            .time()
-                            .bounceBetween(0f, 1f)
-                    ) { saturationInput, shader ->
-                        shader.saturation = saturationInput.get()
-                    }
-            }
+            SaturationKraftShader()
+                .apply { setInputTexture(bitmap.asTexture()) }
+                .asEffectExecution(
+                    saturationInput,
+                    targetBuffer = windowSurface
+                ) { (saturationInput) ->
+                    this.saturation = saturationInput.getCasted()
+                }
         }
     }
 }

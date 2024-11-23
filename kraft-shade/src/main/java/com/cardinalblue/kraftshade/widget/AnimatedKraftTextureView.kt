@@ -6,9 +6,9 @@ import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
 import androidx.annotation.MainThread
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
-import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.pipeline.Effect
+import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.Pipeline
+import com.cardinalblue.kraftshade.pipeline.input.TimeInput
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -20,7 +20,7 @@ import kotlinx.coroutines.withContext
  * A specialized [KraftTextureView] that provides animation capabilities using Android's Choreographer
  * for frame-synchronized rendering.
  *
- * This view requires an [Effect] to be set using [setEffect] before any rendering can occur. The effect
+ * This view requires an [EffectExecution] to be set using [setEffect] before any rendering can occur. The effect
  * defines how the content will be processed and rendered for each frame. The rendering pipeline is
  * triggered in the following sequence:
  *
@@ -33,7 +33,7 @@ import kotlinx.coroutines.withContext
  *
  * For dynamic effects that need to change based on time, user interaction, or other states:
  * - Use the input system within your [Pipeline] construction
- * - Note that although KraftShader is also [Effect], but the input system only works with [Pipeline], so if you only have a [KraftShader], but you still want to use input system, you should wrap it in any kind of Pipeline.
+ * - Note that although KraftShader is also [EffectExecution], but the input system only works with [Pipeline], so if you only have a [KraftShader], but you still want to use input system, you should wrap it in any kind of Pipeline.
  * - Update the state of the inputs during animation instead of directly touching the components in the effect
  * - The changes will be automatically applied in the next frame based on how pipeline and input work
  *
@@ -54,11 +54,15 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
     private val choreographer: Choreographer = Choreographer.getInstance()
     private val logger = KraftLogger("AnimatedKraftTextureView")
 
+    private val timeInput: TimeInput = TimeInput()
+
     fun setEffectAndPlay(
-        effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect,
+        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution,
     ) {
         setEffect(
-            effectProvider = effectProvider,
+            effectExecutionProvider = {
+                effectExecutionProvider(this, it, timeInput)
+            },
             afterSet = {
                 withContext(Dispatchers.Main) {
                     play()
@@ -73,10 +77,11 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
      */
     @MainThread
     fun play() {
+        checkNotNull(effectExecution) { "effect is not set, call setEffect before calling this method" }
         // If already playing, do nothing to avoid double-posting callbacks
         if (playing) return
         logger.i("play")
-        checkNotNull(effect) { "effect is not set, call setEffect before calling this method" }
+        timeInput.start()
         choreographer.postFrameCallback(callback)
         playing = true
     }
@@ -85,6 +90,7 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
     fun stop() {
         if (!playing) return
         logger.d("stop")
+        timeInput.pause()
         callback.job?.cancel() // Cancel any ongoing render job
         choreographer.removeFrameCallback(callback)
         playing = false
@@ -106,7 +112,7 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
             choreographer.postFrameCallback(this)
             logger.v("postFrameCallback - doFrame()")
 
-            val effect = requireNotNull(effect)
+            val effect = requireNotNull(effectExecution)
             val currentJob = job
             if (currentJob?.isActive == true) {
                 logger.v("Previous frame still rendering, skipping this frame")
@@ -115,7 +121,7 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
 
             job = runGlTask { windowSurface ->
                 logger.tryAndLog {
-                    render(effect, windowSurface)
+                    effect.run()
                 }
             }
         }

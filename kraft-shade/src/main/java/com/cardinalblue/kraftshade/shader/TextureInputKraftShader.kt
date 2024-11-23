@@ -2,17 +2,22 @@ package com.cardinalblue.kraftshade.shader
 
 import android.opengl.GLES20
 import androidx.annotation.CallSuper
+import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
-import com.cardinalblue.kraftshade.pipeline.SingleInputTextureEffect
 import com.cardinalblue.kraftshade.shader.buffer.Texture
+import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
-abstract class TextureInputKraftShader : KraftShader(), SingleInputTextureEffect {
+abstract class TextureInputKraftShader : KraftShader() {
     private val inputTexture = KraftShaderTextureInput(
         0, "inputImageTexture", required = false)
     private var _inputTextureId: Int by inputTexture.textureIdDelegate
 
-    override fun setInputTextureId(textureId: Int) {
+    fun setInputTextureId(textureId: Int) {
         _inputTextureId = textureId
+    }
+
+    fun setInputTexture(texture: TextureProvider) {
+        setInputTextureId(texture.provideTexture().textureId)
     }
 
     open fun draw(
@@ -26,6 +31,9 @@ abstract class TextureInputKraftShader : KraftShader(), SingleInputTextureEffect
 
     @CallSuper
     override fun beforeActualDraw() {
+        check(_inputTextureId != OpenGlUtils.NO_TEXTURE_ID) {
+            "input texture is not set for ${this::class.simpleName}"
+        }
         super.beforeActualDraw()
         inputTexture.activate()
     }

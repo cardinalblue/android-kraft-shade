@@ -1,33 +1,32 @@
 package com.cardinalblue.kraftshade.dsl
 
+import android.graphics.Bitmap
 import com.cardinalblue.kraftshade.env.GlEnv
+import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.Pipeline
-import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
-import com.cardinalblue.kraftshade.pipeline.SingleInputTextureEffect
-import com.cardinalblue.kraftshade.pipeline.WrapperPipeline
+import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
+import com.cardinalblue.kraftshade.pipeline.input.Input
+import com.cardinalblue.kraftshade.pipeline.input.SampledInput
 import com.cardinalblue.kraftshade.shader.KraftShader
+import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 
 class GlEnvDslScope(
     val env: GlEnv
 ) {
-    suspend fun <T : KraftShader> T.asPipeline(
-        setup: suspend PipelineScope<Pipeline>.(T) -> Unit = {},
-    ): Pipeline {
-        val pipeline = WrapperPipeline(env, this)
-        PipelineScope<Pipeline>(pipeline).apply {
-            setup(this@asPipeline)
-        }
-        return pipeline
-    }
-
+    /**
+     * @param bufferSize The size (width, height) of the rendering target.
+     */
     @PipelineScopeMarker
-    suspend fun GlEnvDslScope.serialTextureInputPipeline(
-        effects: List<SingleInputTextureEffect> = emptyList(),
-        block: SerialTextureInputPipelineScope.() -> Unit = {},
-    ): SerialTextureInputPipeline {
+    suspend fun GlEnvDslScope.pipeline(
+        bufferSize: GlSize,
+        block: suspend PipelineSetupScope.() -> Unit = {},
+    ): Pipeline {
         return env.use {
-            val pipeline = SerialTextureInputPipeline(env, effects)
-            block(SerialTextureInputPipelineScope(pipeline))
+            val pipeline = Pipeline(env, TextureBufferPool(bufferSize))
+            val scope = PipelineSetupScope(pipeline)
+            scope.block()
             pipeline
         }
     }
@@ -35,4 +34,24 @@ class GlEnvDslScope(
     suspend fun terminateEnv() {
         env.terminate()
     }
+
+    fun <S : KraftShader> S.asEffectExecution(
+        vararg inputs: Input<*>,
+        targetBuffer: GlBufferProvider,
+        setup: suspend S.(Array<out Input<*>>) -> Unit = {},
+    ) = object : EffectExecution {
+        override suspend fun run() {
+            inputs
+                .filterIsInstance<SampledInput<*>>()
+                .forEach { it.sample() }
+            this@asEffectExecution.setup(inputs)
+            drawTo(targetBuffer.provideBuffer())
+        }
+
+        override suspend fun destroy() {
+            this@asEffectExecution.destroy()
+        }
+    }
+
+    fun Bitmap.asTexture() = LoadedTexture(this)
 }

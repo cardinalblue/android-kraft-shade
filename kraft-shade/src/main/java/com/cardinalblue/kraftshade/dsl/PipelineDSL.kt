@@ -1,82 +1,194 @@
 package com.cardinalblue.kraftshade.dsl
 
-import com.cardinalblue.kraftshade.pipeline.Effect
+import com.cardinalblue.kraftshade.pipeline.BufferReferenceCreator
 import com.cardinalblue.kraftshade.pipeline.Pipeline
-import com.cardinalblue.kraftshade.pipeline.SerialTextureInputPipeline
-import com.cardinalblue.kraftshade.pipeline.SingleInputTextureEffect
 import com.cardinalblue.kraftshade.pipeline.input.Input
-import com.cardinalblue.kraftshade.pipeline.input.TimeInput
-import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
-import com.cardinalblue.kraftshade.shader.buffer.Texture
+import com.cardinalblue.kraftshade.shader.KraftShader
+import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
+import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
+
 
 @DslMarker
 annotation class PipelineScopeMarker
 
-open class PipelineScope<P : Pipeline>(
-    protected val pipeline: P,
+open class PipelineSetupScope(
+    protected val pipeline: Pipeline,
 ) {
     @PipelineScopeMarker
-    fun withPipeline(block: P.() -> Unit) {
+    fun createBufferReferences(
+        vararg namesForDebug: String
+    ): BufferReferenceCreator = BufferReferenceCreator(pipeline.bufferPool, *namesForDebug)
+
+    @PipelineScopeMarker
+    fun withPipeline(block: Pipeline.() -> Unit) {
         block(pipeline)
     }
 
+    /**
+     * The setup action should include the input texture if the [KraftShader] needs it. Unless it's
+     * a shader doesn't need any input texture.
+     */
     @PipelineScopeMarker
-    fun <T : Any, IN : Input<T>, E : Effect> E.withInput(
-        input: IN,
-        sampledFromExternal: Boolean = false,
-        action: (IN, E) -> Unit
-    ): E {
-        connectInput(input, this@withInput, sampledFromExternal, action)
-        return this
-    }
-
-    @PipelineScopeMarker
-    fun <T : Any, IN : Input<T>, E : Effect> connectInput(
-        input: IN,
-        effect: E,
-        sampledFromExternal: Boolean = false,
-        action: (IN, E) -> Unit
+    suspend fun <S : KraftShader> step(
+        shader: S,
+        inputs: List<Input<*>> = emptyList(),
+        targetBuffer: GlBufferProvider,
+        oneTimeSetupAction: suspend S.() -> Unit = {},
+        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) {
-        pipeline.connectInput(input, effect, sampledFromExternal, action)
+        oneTimeSetupAction.invoke(shader)
+        pipeline.addStep(
+            shader = shader,
+            inputs = inputs,
+            targetBuffer = targetBuffer,
+            setupAction = setupAction,
+        )
+    }
+
+    /**
+     * @param oneTimeSetupAction This is immediately applied to the shader. A useful example is to
+     *  set up the input texture if this KraftShader is [TextureInputKraftShader]. See
+     *  [setInputAndAddAsStep] if you are actually working on the setup of [TextureInputKraftShader].
+     */
+    @PipelineScopeMarker
+    suspend fun <S : KraftShader> S.addAsStep(
+        vararg inputs: Input<*>,
+        targetBuffer: GlBufferProvider,
+        oneTimeSetupAction: suspend S.() -> Unit = {},
+        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+    ) = step(this, inputs.toList(), targetBuffer, oneTimeSetupAction, setupAction)
+
+    /**
+     * If the the shader is [TextureInputKraftShader], this function is more convenient to use. It
+     * sets the input texture as a constant and adds the shader as a step to the pipeline. If you
+     * use [addAsStep], you can easily forget to set the input texture.
+     */
+    @PipelineScopeMarker
+    suspend fun <S : TextureInputKraftShader> S.setInputAndAddAsStep(
+        inputTexture: TextureProvider,
+        vararg inputs: Input<*>,
+        targetBuffer: GlBufferProvider,
+        oneTimeSetupAction: suspend S.() -> Unit = {},
+        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+    ) {
+        addAsStep(
+            inputs = inputs,
+            targetBuffer = targetBuffer,
+            oneTimeSetupAction = {
+                setInputTexture(inputTexture)
+                oneTimeSetupAction()
+            },
+            setupAction = setupAction,
+        )
     }
 
     @PipelineScopeMarker
-    fun setTargetBuffer(buffer: GlBuffer) {
-        pipeline.setTargetBuffer(buffer)
+    fun serialSteps(
+        inputTexture: TextureProvider,
+        targetBuffer: GlBufferProvider,
+        block: SerialTextureInputPipelineScope.() -> Unit
+    ) {
+        val scope = SerialTextureInputPipelineScope(
+            currentStepIndex = pipeline.stepCount - 1,
+            pipeline = pipeline,
+            inputTexture = inputTexture,
+            targetBuffer = targetBuffer
+        )
+
+        // we have to do it in two steps, because before the block is finished. We don't know which
+        // of the step is the last step that we have to draw to the target buffer.
+        scope.block()
+
+        scope.applyToPipeline()
     }
 }
 
-class SerialTextureInputPipelineScope(
-    pipeline: SerialTextureInputPipeline
-) : PipelineScope<SerialTextureInputPipeline>(pipeline) {
+class SerialTextureInputPipelineScope internal constructor(
+    currentStepIndex: Int,
+    private val pipeline: Pipeline,
+    private val inputTexture: TextureProvider,
+    private val targetBuffer: GlBufferProvider,
+) {
+    private val bufferReferencePrefix = "$currentStepIndex"
+    private val steps = mutableListOf<InternalStep<*>>()
+
+    /**
+     * Different from [PipelineSetupScope.step], you don't have to setup the input and provide
+     * target buffer, so it's more convenient to use.
+     *
+     * Also, the step set here isn't added to the [pipeline] immediately. Instead, it will be added
+     * to the pipeline when [applyToPipeline] is called. The reason behind this is that we don't
+     * know which step is the last step that we have to draw to the target buffer until all the steps
+     * are added.
+     */
     @PipelineScopeMarker
-    fun setInputTexture(texture: Texture) {
-        pipeline.setInputTexture(texture)
+    fun <S : TextureInputKraftShader> step(
+        shader: S,
+        vararg inputs: Input<*>,
+        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+    ) {
+        steps.add(InternalStep(shader, inputs.toList(), setupAction))
     }
 
     @PipelineScopeMarker
-    operator fun SingleInputTextureEffect.unaryPlus() {
-        pipeline.addEffect(this)
-    }
+    fun <S : TextureInputKraftShader> S.addAsStep(
+        vararg inputs: Input<*>,
+        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+    ) = step(this, *inputs, setupAction = setupAction)
 
     @PipelineScopeMarker
-    operator fun <S : SingleInputTextureEffect> (() -> S).unaryPlus() {
-        +this()
+    internal fun applyToPipeline() {
+        val stepIterator = steps.iterator()
+
+        // this is ping pong buffer mechanism
+        var drawToBuffer1 = true
+        val (buffer1, buffer2) = BufferReferenceCreator(
+            pipeline.bufferPool,
+            "$bufferReferencePrefix-serial-1",
+            "$bufferReferencePrefix-serial-2",
+        )
+
+        check(stepIterator.hasNext()) {
+            "serial steps should have at least one step"
+        }
+
+        var isFirstStep = true
+
+        while (stepIterator.hasNext()) {
+            val step = stepIterator.next()
+            val isLastStep = !stepIterator.hasNext()
+            val targetBuffer: GlBufferProvider = if (isLastStep) this.targetBuffer else {
+                if (drawToBuffer1) buffer1 else buffer2
+            }
+
+            val inputTexture: TextureProvider = if (isFirstStep) this.inputTexture else {
+                if (drawToBuffer1) buffer2 else buffer1
+            }
+
+            pipeline.addStep(
+                shader = step.shader,
+                inputs = step.inputs,
+                targetBuffer = targetBuffer,
+                setupAction = {
+                    step.shader.setInputTexture(inputTexture)
+                    step.setup()
+                },
+            )
+
+            isFirstStep = false
+            drawToBuffer1 = !drawToBuffer1
+        }
+        pipeline.bufferPool.recycle(buffer1, buffer2)
     }
 
-    @PipelineScopeMarker
-    operator fun SingleInputTextureEffect.unaryMinus() {
-        pipeline.removeEffect(this)
-    }
-
-    @PipelineScopeMarker
-    fun <S : SingleInputTextureEffect> effect(block: () -> S) {
-        pipeline.addEffect(block())
-    }
-}
-
-object CommonInputs {
-    fun time(start: Boolean = true) = TimeInput().apply {
-        if (start) start()
+    private class InternalStep<S : TextureInputKraftShader>(
+        val shader: S,
+        val inputs: List<Input<*>> = emptyList(),
+        val setupAction: suspend (S, List<Input<*>>) -> Unit = { _, _ ->},
+    ) {
+        suspend fun setup() {
+            setupAction.invoke(shader, inputs)
+        }
     }
 }

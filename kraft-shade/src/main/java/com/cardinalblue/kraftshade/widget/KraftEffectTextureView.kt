@@ -3,7 +3,7 @@ package com.cardinalblue.kraftshade.widget
 import android.content.Context
 import android.util.AttributeSet
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
-import com.cardinalblue.kraftshade.pipeline.Effect
+import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
@@ -20,46 +20,35 @@ open class KraftEffectTextureView : KraftTextureView {
     private val logger = KraftLogger("KraftEffectTextureView")
     private var attachScope: CoroutineScope? = null
 
-    protected var effect: Effect? = null
+    protected var effectExecution: EffectExecution? = null
     protected var job: Job? = null
 
     private val renderFlow = MutableSharedFlow<Unit>()
 
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = {},
-        effectProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Effect
+        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> EffectExecution
     ) {
         runGlTask { windowSurface ->
-            val effect = effectProvider.invoke(this, windowSurface)
-            this@KraftEffectTextureView.effect = effect
+            val effect = effectExecutionProvider.invoke(this, windowSurface)
+            this@KraftEffectTextureView.effectExecution = effect
             afterSet(this, windowSurface)
         }
     }
 
     fun requestRender() {
-        attachScope?.launch {
+        attachScope?.launch(Dispatchers.Default) {
             renderFlow.emit(Unit)
         }
     }
 
     private fun asyncRender() {
-        val effect = effect ?: return
+        val effect = effectExecution ?: return
         job?.cancel()
         job = runGlTask { windowSurface ->
             logger.tryAndLog {
-                render(effect, windowSurface)
+                effect.run()
             }
-        }
-    }
-
-    protected suspend fun render(
-        effect: Effect,
-        windowSurface: WindowSurfaceBuffer
-    ) {
-        if (effect is Pipeline) {
-            effect.run()
-        } else if (effect is KraftShader) {
-            effect.drawTo(windowSurface)
         }
     }
 

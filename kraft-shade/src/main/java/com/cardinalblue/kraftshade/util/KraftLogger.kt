@@ -28,6 +28,11 @@ value class KraftLogger(private val tag: String) {
         Log.d(tag, "$LOG_PREFIX $message")
     }
 
+    inline fun d(messageProvider: () -> String) {
+        if (!logLevel.isLoggable(KraftLogLevel.DEBUG)) return
+        d(messageProvider())
+    }
+
     fun i(message: String) {
         if (!logLevel.isLoggable(KraftLogLevel.INFO)) return
         Log.i(tag, "$LOG_PREFIX $message")

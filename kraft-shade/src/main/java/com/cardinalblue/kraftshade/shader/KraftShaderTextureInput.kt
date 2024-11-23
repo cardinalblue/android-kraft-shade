@@ -66,14 +66,14 @@ class KraftShaderTextureInput(
 }
 
 private class TextureIdDelegate : ReadWriteProperty<KraftShader, Int> {
-    private var textureId: Int = OpenGlUtils.NO_TEXTURE
+    private var textureId: Int = OpenGlUtils.NO_TEXTURE_ID
 
     override fun getValue(thisRef: KraftShader, property: kotlin.reflect.KProperty<*>): Int {
         return textureId
     }
 
     override fun setValue(thisRef: KraftShader, property: kotlin.reflect.KProperty<*>, value: Int) {
-        require(value != OpenGlUtils.NO_TEXTURE) {
+        require(value != OpenGlUtils.NO_TEXTURE_ID) {
             "Invalid input texture is not loaded"
         }
         textureId = value

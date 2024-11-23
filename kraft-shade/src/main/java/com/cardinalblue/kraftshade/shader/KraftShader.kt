@@ -6,7 +6,7 @@ import androidx.annotation.CallSuper
 import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
-import com.cardinalblue.kraftshade.pipeline.Effect
+import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -15,7 +15,7 @@ import java.util.LinkedList
 
 typealias GlTask = () -> Unit
 
-abstract class KraftShader : Effect, AutoCloseable {
+abstract class KraftShader : AutoCloseable {
     var debug: Boolean = false
 
     private var initialized = false
@@ -103,7 +103,7 @@ abstract class KraftShader : Effect, AutoCloseable {
         GLES20.glDisableVertexAttribArray(glAttribTextureCoordinate)
     }
 
-    override suspend fun drawTo(buffer: GlBuffer) {
+    fun drawTo(buffer: GlBuffer) {
         buffer.draw {
             draw(buffer.size, buffer.isScreenCoordinate)
         }
@@ -142,7 +142,7 @@ abstract class KraftShader : Effect, AutoCloseable {
         }
     }
 
-    override suspend fun destroy() {
+    fun destroy() {
         if (!initialized) return
         logger.i("Destroying shader program: ${this::class.simpleName}")
         GLES20.glDeleteProgram(glProgId)
