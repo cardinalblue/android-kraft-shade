@@ -44,6 +44,7 @@ class WindowSurfaceBuffer(
                 this@WindowSurfaceBuffer.surfaceTexture = surface
                 this@WindowSurfaceBuffer.width = width
                 this@WindowSurfaceBuffer.height = height
+                listener?.onWindowSurfaceBufferSizeChanged(GlSize(width, height))
             }
 
             override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -107,5 +108,6 @@ class WindowSurfaceBuffer(
 
     interface Listener {
         fun onWindowSurfaceBufferReady()
+        fun onWindowSurfaceBufferSizeChanged(size: GlSize)
     }
 }

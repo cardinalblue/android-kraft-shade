@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.pipeline
 
 import com.cardinalblue.kraftshade.env.GlEnv
+import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
 import com.cardinalblue.kraftshade.shader.KraftShader
@@ -44,7 +45,7 @@ class Pipeline internal constructor(
                 stepIndex = steps.size,
                 shader = shader,
                 inputs = inputs,
-                targetBufferProvider = targetBuffer,
+                targetBuffer = targetBuffer,
                 setupAction = setupAction,
             )
         )
@@ -73,6 +74,11 @@ class Pipeline internal constructor(
     override suspend fun destroy() {
         logger.d("destroy")
         postponedTasks.clear()
+    }
+
+    override suspend fun onBufferSizeChanged(size: GlSize) {
+        bufferPool.changeSize(size)
+        logger.d("buffer size changed to $size")
     }
 
     private companion object {

@@ -20,11 +20,11 @@ class PipelineStep<T : KraftShader> internal constructor(
     val stepIndex: Int,
     val shader: T,
     val inputs: List<Input<*>> = emptyList(),
-    val targetBufferProvider: GlBufferProvider,
+    val targetBuffer: GlBufferProvider,
     val setupAction: suspend T.(List<Input<*>>) -> Unit = {},
 ) {
     suspend fun run() {
         shader.setupAction(inputs)
-        shader.drawTo(targetBufferProvider.provideBuffer())
+        shader.drawTo(targetBuffer.provideBuffer())
     }
 }

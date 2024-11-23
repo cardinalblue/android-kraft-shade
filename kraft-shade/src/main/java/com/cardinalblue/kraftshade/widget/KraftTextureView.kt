@@ -5,11 +5,13 @@ import android.util.AttributeSet
 import android.view.TextureView
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.env.GlEnv
+import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.util.Collections
 
 typealias KraftTextureViewTask = suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit
 
@@ -31,7 +33,17 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
     }
 
     private val initLock = Mutex()
-    private val taskAfterAttached: MutableList<KraftTextureViewTask> = mutableListOf()
+    private val taskAfterAttached: MutableList<KraftTextureViewTask> = Collections.synchronizedList(mutableListOf())
+
+    private val listeners = mutableListOf<WindowSurfaceBuffer.Listener>()
+
+    fun addWindowSurfaceBufferListener(listener: WindowSurfaceBuffer.Listener) {
+        listeners.add(listener)
+    }
+
+    fun removeWindowSurfaceBufferListener(listener: WindowSurfaceBuffer.Listener) {
+        listeners.remove(listener)
+    }
 
     fun runGlTask(task: KraftTextureViewTask): Job {
         return coroutineScope.launch {
@@ -116,6 +128,14 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                     }
                 }
             }
+        }
+
+        listeners.forEach(WindowSurfaceBuffer.Listener::onWindowSurfaceBufferReady)
+    }
+
+    override fun onWindowSurfaceBufferSizeChanged(size: GlSize) {
+        listeners.forEach {
+            it.onWindowSurfaceBufferSizeChanged(size)
         }
     }
 }

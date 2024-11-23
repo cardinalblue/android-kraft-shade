@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.pipeline
 
+import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 
 /**
@@ -14,4 +15,6 @@ interface EffectExecution {
     suspend fun run()
 
     suspend fun destroy()
+
+    suspend fun onBufferSizeChanged(size: GlSize)
 }

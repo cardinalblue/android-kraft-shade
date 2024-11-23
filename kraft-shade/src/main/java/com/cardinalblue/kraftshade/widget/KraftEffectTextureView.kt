@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.widget
 import android.content.Context
 import android.util.AttributeSet
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
+import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.shader.KraftShader
@@ -24,6 +25,21 @@ open class KraftEffectTextureView : KraftTextureView {
     protected var job: Job? = null
 
     private val renderFlow = MutableSharedFlow<Unit>()
+
+    private val sizeChangeListener = object : WindowSurfaceBuffer.Listener {
+        override fun onWindowSurfaceBufferReady() {}
+
+        override fun onWindowSurfaceBufferSizeChanged(size: GlSize) {
+            runGlTask {
+                effectExecution?.onBufferSizeChanged(size)
+                requestRender()
+            }
+        }
+    }
+
+    init {
+        addWindowSurfaceBufferListener(sizeChangeListener)
+    }
 
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = {},

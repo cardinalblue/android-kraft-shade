@@ -51,6 +51,10 @@ class GlEnvDslScope(
         override suspend fun destroy() {
             this@asEffectExecution.destroy()
         }
+
+        override suspend fun onBufferSizeChanged(size: GlSize) {
+            // no need to do anything since the shader is not aware of the buffer size
+        }
     }
 
     fun Bitmap.asTexture() = LoadedTexture(this)

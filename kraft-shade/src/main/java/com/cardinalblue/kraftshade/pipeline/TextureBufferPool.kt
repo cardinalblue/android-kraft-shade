@@ -9,13 +9,18 @@ import com.cardinalblue.kraftshade.util.KraftLogger
  * [KraftShader]s or child [Pipeline].
  */
 internal class TextureBufferPool(
-    val bufferSize: GlSize
+    private var bufferSize: GlSize
 ) {
     private val map = mutableMapOf<BufferReference, TextureBuffer>()
     private val availableBuffers: MutableList<TextureBuffer> = mutableListOf()
 
     val poolSize: Int get() = availableBuffers.size + map.size
     val availableSize: Int get() = availableBuffers.size
+
+    suspend fun changeSize(size: GlSize) {
+        delete()
+        bufferSize = size
+    }
 
     operator fun get(bufferReference: BufferReference): TextureBuffer {
         return map[bufferReference] ?: run {
@@ -45,7 +50,10 @@ internal class TextureBufferPool(
         }
     }
 
-    fun delete() {
+    // Do not remove suspend modifier here. This is only to ensure the thread is right.
+    suspend fun delete() {
+        map.forEach { (_, buffer) -> buffer.delete() }
+        map.clear()
         availableBuffers.forEach { it.delete() }
         availableBuffers.clear()
     }
