@@ -41,7 +41,8 @@ class TimeInput(
         startTime = getTime()
         lastSampleTime = startTime
         // to update the last sample
-        sample()
+        markDirty()
+        get()
     }
 
     /**
@@ -54,7 +55,8 @@ class TimeInput(
         lastSampleTime = getTime()
         pausedTime += (lastSampleTime - startTime)
         startTime = lastSampleTime
-        sample()
+        markDirty()
+        get()
     }
 
     private fun Long.seconds(): Float {

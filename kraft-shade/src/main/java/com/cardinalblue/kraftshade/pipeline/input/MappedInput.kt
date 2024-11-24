@@ -8,7 +8,12 @@ class MappedInput<I : Any, O : Any>(
     private val mapping: (I) -> O,
 ) : SampledInput<O>() {
     override fun provideSample(): O {
-        return mapping(source.sample())
+        return mapping(source.get())
+    }
+
+    override fun markDirty() {
+        super.markDirty()
+        source.markDirty()
     }
 }
 

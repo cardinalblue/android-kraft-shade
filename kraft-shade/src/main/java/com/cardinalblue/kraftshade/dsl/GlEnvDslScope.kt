@@ -41,9 +41,10 @@ class GlEnvDslScope(
         setup: suspend S.(Array<out Input<*>>) -> Unit = {},
     ) = object : EffectExecution {
         override suspend fun run() {
-            inputs
+            val sampledInputs = inputs
                 .filterIsInstance<SampledInput<*>>()
-                .forEach { it.sample() }
+            sampledInputs.forEach { it.markDirty() }
+            sampledInputs.forEach { it.get() }
             this@asEffectExecution.setup(inputs)
             drawTo(targetBuffer.provideBuffer())
         }

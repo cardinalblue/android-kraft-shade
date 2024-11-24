@@ -56,10 +56,9 @@ class Pipeline internal constructor(
     override suspend fun run() {
         with(glEnv) { runPostponedTasks() }
 
-        // first sample all the inputs. for the steps setup if they use the same input, they will
-        // get the same value instead of getting from source of truth which may change while one
-        // frame is not done yet.
-        sampledInputs.forEach { it.sample() }
+        // Mark all sampled inputs as dirty at the start of the frame
+        sampledInputs.forEach { it.markDirty() }
+        sampledInputs.forEach { it.get() }
 
         logger.d("run $stepCount steps")
         steps.forEach { step ->

@@ -1,27 +1,35 @@
 package com.cardinalblue.kraftshade.pipeline.input
 
+import androidx.annotation.CallSuper
+
 abstract class SampledInput<T : Any> : Input<T> {
     private var lastSample: T? = null
+    private var isDirty: Boolean = true
 
     /**
-     * Sample produces new values, and to make sure values set to each shader is consistent for a
-     * specific frame, the sample of an [SampledInput] should be called at the beginning of the
-     * execution of a pipeline.
+     * Sample produces new values. This is called internally when the input is dirty
+     * and needs to update its value.
      */
-    abstract fun provideSample(): T
+    protected abstract fun provideSample(): T
 
     /**
-     * Get doesn't produce new values, so if it's connected to multiple shaders in the pipeline,
-     * they are getting the same value using get.
+     * Get the current value. If the input is dirty, it will sample a new value first.
+     * This ensures consistent values within the same frame.
      */
     override fun get(): T {
-        return lastSample ?: sample()
+        if (isDirty) {
+            lastSample = provideSample()
+            isDirty = false
+        }
+        return lastSample!!
     }
 
-    fun sample(): T {
-        val value = provideSample()
-        lastSample = value
-        return value
+    /**
+     * Mark this input as dirty, causing it to sample a new value on the next get() call.
+     */
+    @CallSuper
+    internal open fun markDirty() {
+        isDirty = true
     }
 }
 
