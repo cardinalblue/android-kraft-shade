@@ -18,6 +18,7 @@ import com.cardinalblue.kraftshade.shader.builtin.HueKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.PixelationKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
+import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -119,52 +120,16 @@ fun KraftShadeEffectViewTestWindow() {
             }
             aspectRatio = bitmap.width.toFloat() / bitmap.height
 
-//            pipeline(windowSurface.size) {
-//                serialSteps(
-//                    inputTexture = LoadedTexture(bitmap),
-//                    targetBuffer = windowSurface,
-//                ) {
-//                    SaturationKraftShader()
-//                        .addAsStep(sampledInput { saturation }) { (saturation) ->
-//                            this.saturation = saturation.getCasted()
-//                        }
-//
-//                    HueKraftShader()
-//                        .addAsStep(sampledInput { hue }) { (hue) ->
-//                            this.setHueInDegree(hue.getCasted())
-//                        }
-//
-//                    BrightnessKraftShader()
-//                        .addAsStep(sampledInput { brightness }) { (brightness) ->
-//                            this.brightness = brightness.getCasted()
-//                        }
-//
-//                    ContrastKraftShader()
-//                        .addAsStep(sampledInput { contrast }) { (contrast) ->
-//                            this.contrast = contrast.getCasted()
-//                        }
-//
-//                    PixelationKraftShader()
-//                        .addAsStep(sampledInput { pixelSize }) { (pixelSize) ->
-//                            this.pixel = pixelSize.getCasted()
-//                        }
-//                }
-//            }
-
             pipeline(windowSurface.size) {
-                val (satResult, contrastResult) = createBufferReferences(
-                    "sat", "contrast")
+                serialSteps(
+                    inputTexture = bitmap.asTexture(),
+                    targetBuffer = windowSurface,
+                ) {
+                    SaturationKraftShader()
+                        .addAsStep(sampledInput { saturation }) { (saturation) ->
+                            this.saturation = saturation.getCasted()
+                        }
 
-                SaturationKraftShader()
-                    .addAsStepWithInput(
-                        bitmap.asTexture(),
-                        sampledInput { saturation },
-                        targetBuffer = satResult,
-                    ) { (saturation) ->
-                        this.saturation = saturation.getCasted()
-                    }
-
-                serialSteps(satResult, contrastResult) {
                     HueKraftShader()
                         .addAsStep(sampledInput { hue }) { (hue) ->
                             this.setHueInDegree(hue.getCasted())
@@ -179,17 +144,53 @@ fun KraftShadeEffectViewTestWindow() {
                         .addAsStep(sampledInput { contrast }) { (contrast) ->
                             this.contrast = contrast.getCasted()
                         }
-                }
 
-                PixelationKraftShader()
-                    .addAsStepWithInput(
-                        contrastResult,
-                        sampledInput { pixelSize },
-                        targetBuffer = windowSurface,
-                    ) { (pixelSize) ->
-                        this.pixel = pixelSize.getCasted()
-                    }
+                    PixelationKraftShader()
+                        .addAsStep(sampledInput { pixelSize }) { (pixelSize) ->
+                            this.pixel = pixelSize.getCasted()
+                        }
+                }
             }
+
+//            pipeline(windowSurface.size) {
+//                val (satResult, contrastResult) = createBufferReferences(
+//                    "sat", "contrast")
+//
+//                SaturationKraftShader()
+//                    .addAsStepWithInput(
+//                        bitmap.asTexture(),
+//                        sampledInput { saturation },
+//                        targetBuffer = satResult,
+//                    ) { (saturation) ->
+//                        this.saturation = saturation.getCasted()
+//                    }
+//
+//                serialSteps(satResult, contrastResult) {
+//                    HueKraftShader()
+//                        .addAsStep(sampledInput { hue }) { (hue) ->
+//                            this.setHueInDegree(hue.getCasted())
+//                        }
+//
+//                    BrightnessKraftShader()
+//                        .addAsStep(sampledInput { brightness }) { (brightness) ->
+//                            this.brightness = brightness.getCasted()
+//                        }
+//
+//                    ContrastKraftShader()
+//                        .addAsStep(sampledInput { contrast }) { (contrast) ->
+//                            this.contrast = contrast.getCasted()
+//                        }
+//                }
+//
+//                PixelationKraftShader()
+//                    .addAsStepWithInput(
+//                        contrastResult,
+//                        sampledInput { pixelSize },
+//                        targetBuffer = windowSurface,
+//                    ) { (pixelSize) ->
+//                        this.pixel = pixelSize.getCasted()
+//                    }
+//            }
         }
     }
 }

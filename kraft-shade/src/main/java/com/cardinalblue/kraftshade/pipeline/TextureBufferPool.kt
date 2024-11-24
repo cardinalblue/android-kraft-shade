@@ -27,19 +27,22 @@ internal class TextureBufferPool(
             availableBuffers
                 .removeFirstOrNull()
                 ?.let { availableBuffer ->
-                    logger.d { "reuse a buffer for ${bufferReference.nameForDebug} ($availableSize / $poolSize)" }
                     map[bufferReference] = availableBuffer
+                    logger.d { "reuse a buffer for ${bufferReference.nameForDebug} ($availableSize / $poolSize)" }
                     return availableBuffer
                 }
 
-            logger.d { "creating new buffer for ${bufferReference.nameForDebug} ($availableSize / $poolSize)" }
             TextureBuffer(bufferSize).also {
                 map[bufferReference] = it
+                logger.d { "creating new buffer for ${bufferReference.nameForDebug} ($availableSize / $poolSize)" }
             }
         }
     }
 
-    fun recycle(vararg bufferReferences: BufferReference) {
+    fun recycle(
+        vararg bufferReferences: BufferReference,
+        afterStepIndex: Int? = null
+    ) {
         var numberRecycled = 0
         bufferReferences.forEach { ref ->
             val buffer = map.remove(ref)
@@ -49,8 +52,18 @@ internal class TextureBufferPool(
             }
             numberRecycled++
             availableBuffers.add(buffer)
+            logger.d {
+                "recycle [${ref.nameForDebug}] after step $afterStepIndex"
+            }
         }
         logger.d { "recycled $numberRecycled buffers ($availableSize / $poolSize)" }
+    }
+
+    fun recycleAll() {
+        logger.d("recycle all buffers")
+        map.keys
+            .toList()
+            .forEach { recycle(it) }
     }
 
     // Do not remove suspend modifier here. This is only to ensure the thread is right.

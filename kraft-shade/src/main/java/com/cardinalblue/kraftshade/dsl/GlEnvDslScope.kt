@@ -21,10 +21,11 @@ class GlEnvDslScope(
     @PipelineScopeMarker
     suspend fun GlEnvDslScope.pipeline(
         bufferSize: GlSize,
+        automaticRecycle: Boolean = true,
         block: suspend PipelineSetupScope.() -> Unit = {},
     ): Pipeline {
         return env.use {
-            val pipeline = Pipeline(env, TextureBufferPool(bufferSize))
+            val pipeline = Pipeline(env, TextureBufferPool(bufferSize), automaticRecycle)
             val scope = PipelineSetupScope(pipeline)
             scope.block()
             pipeline

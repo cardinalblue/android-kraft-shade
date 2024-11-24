@@ -4,6 +4,7 @@ import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
+import com.cardinalblue.kraftshade.pipeline.input.TextureReferenceInput
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -19,15 +20,49 @@ import com.cardinalblue.kraftshade.util.KraftLogger
 class Pipeline internal constructor(
     internal val glEnv: GlEnv,
     internal val bufferPool: TextureBufferPool,
+    internal val automaticRecycle: Boolean = true,
 ) : EffectExecution {
     private val sampledInputs: MutableSet<SampledInput<*>> = mutableSetOf()
     private val steps: MutableList<PipelineStep> = mutableListOf()
     val stepCount: Int get() = steps.size
 
+    /**
+     * Used for tracking the index of the last step using a [BufferReference]
+     */
+    private val bufferReferenceUsage = mutableMapOf<BufferReference, Int>()
+    
     private val postponedTasks: MutableList<suspend GlEnv.() -> Unit> = mutableListOf()
 
     protected fun runDeferred(block: suspend GlEnv.() -> Unit) {
         postponedTasks.add(block)
+    }
+
+    private fun trackInputUsage(input: Input<*>, stepIndex: Int) {
+        when (input) {
+            is TextureReferenceInput -> {
+                val bufferReference = input.bufferReference
+                bufferReferenceUsage[bufferReference] = stepIndex
+                logger.d("[BufferedReference] ${bufferReference.nameForDebug} is used at step $stepIndex")
+            }
+
+            // for sampling all the sampled input at the beginning of the frame, so stepIndex is
+            // not important here
+            is SampledInput<*> -> {
+                sampledInputs.add(input)
+            }
+        }
+    }
+
+    private fun recycleUnusedBuffers(currentStep: Int) {
+        val buffersToRecycle = bufferReferenceUsage.entries
+            .filter { (_, lastUsedStepIndex) -> lastUsedStepIndex == currentStep }
+            .map { it.key }
+            .toTypedArray()
+
+        if (buffersToRecycle.isNotEmpty()) {
+            bufferPool.recycle(*buffersToRecycle, afterStepIndex = currentStep)
+            buffersToRecycle.forEach { bufferReferenceUsage.remove(it) }
+        }
     }
 
     fun addStep(step: PipelineStep) {
@@ -40,9 +75,9 @@ class Pipeline internal constructor(
         targetBuffer: GlBufferProvider,
         setupAction: suspend T.(List<Input<*>>) -> Unit = {},
     ) {
-        inputs
-            .filterIsInstance<SampledInput<*>>()
-            .forEach { sampledInputs.add(it) }
+        // Track input usage for this step, the step index is [steps.size] since this step is not
+        // added yet otherwise it would be [steps.size - 1]
+        inputs.forEach { input -> trackInputUsage(input, steps.size) }
 
         RunShaderStep(
             stepIndex = steps.size,
@@ -69,7 +104,13 @@ class Pipeline internal constructor(
                     is RunTaskStep -> "step [${step.type}:${step.stepIndex}] for [${step.purposeForDebug}] done"
                 }
             }
+
+            // Recycle buffers that won't be used anymore
+            if (automaticRecycle) {
+                recycleUnusedBuffers(step.stepIndex)
+            }
         }
+        bufferPool.recycleAll()
     }
 
     private suspend fun GlEnv.runPostponedTasks() {

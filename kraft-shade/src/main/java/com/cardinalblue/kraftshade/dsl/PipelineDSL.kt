@@ -3,6 +3,8 @@ package com.cardinalblue.kraftshade.dsl
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.*
 import com.cardinalblue.kraftshade.pipeline.input.Input
+import com.cardinalblue.kraftshade.pipeline.input.TextureInput
+import com.cardinalblue.kraftshade.pipeline.input.asTextureInput
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
@@ -113,13 +115,15 @@ open class PipelineSetupScope(
         oneTimeSetupAction: suspend S.() -> Unit = {},
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) {
+        val inputsPlusTextureInput = inputs.toList() + inputBufferReference.asTextureInput()
         addAsStep(
-            inputs = inputs,
+            inputs = inputsPlusTextureInput.toTypedArray(),
             targetBuffer = targetBuffer,
             oneTimeSetupAction = oneTimeSetupAction,
             setupAction = { _inputs ->
-                setInputTexture(inputBufferReference.provideTexture())
-                setupAction.invoke(this, _inputs)
+                val textureInput = _inputs.last() as TextureInput
+                setInputTexture(textureInput.get())
+                setupAction.invoke(this, _inputs.subList(0, _inputs.size - 1))
             },
         )
     }
@@ -131,7 +135,7 @@ open class PipelineSetupScope(
         block: SerialTextureInputPipelineScope.() -> Unit
     ) {
         val scope = SerialTextureInputPipelineScope(
-            currentStepIndex = pipeline.stepCount - 1,
+            currentStepIndex = pipeline.stepCount,
             pipeline = pipeline,
             pipelineSetupScope = this,
             inputTexture = inputTexture,
@@ -188,8 +192,8 @@ class SerialTextureInputPipelineScope internal constructor(
         var drawToBuffer1 = true
         val (buffer1, buffer2) = BufferReferenceCreator(
             pipeline.bufferPool,
-            "$bufferReferencePrefix-serial-1",
-            "$bufferReferencePrefix-serial-2",
+            "$bufferReferencePrefix-serial-ping",
+            "$bufferReferencePrefix-serial-pong",
         )
 
         check(stepIterator.hasNext()) {
@@ -205,16 +209,17 @@ class SerialTextureInputPipelineScope internal constructor(
                 if (drawToBuffer1) buffer1 else buffer2
             }
 
-            val inputTexture: TextureProvider = if (isFirstStep) this.inputTexture else {
+            val inputTextureProvider: TextureProvider = if (isFirstStep) inputTexture else {
                 if (drawToBuffer1) buffer2 else buffer1
             }
 
             pipeline.addStep(
                 shader = step.shader,
-                inputs = step.inputs,
+                inputs = step.inputs + inputTextureProvider.asTextureInput(),
                 targetBuffer = targetBuffer,
-                setupAction = {
-                    step.shader.setInputTexture(inputTexture)
+                setupAction = { inputs ->
+                    val textureInput = inputs.last() as TextureInput
+                    step.shader.setInputTexture(textureInput.get())
                     step.setup()
                 },
             )
@@ -222,9 +227,12 @@ class SerialTextureInputPipelineScope internal constructor(
             isFirstStep = false
             drawToBuffer1 = !drawToBuffer1
         }
-        with(pipelineSetupScope) {
-            step("clean up ping pong buffers") {
-                pipeline.bufferPool.recycle(buffer1, buffer2)
+
+        if (!pipeline.automaticRecycle) {
+            with(pipelineSetupScope) {
+                step("clean up ping pong buffers") {
+                    pipeline.bufferPool.recycle(buffer1, buffer2)
+                }
             }
         }
     }
