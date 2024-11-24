@@ -16,11 +16,10 @@ suspend fun kraftBitmap(
     outputHeight: Int,
     block: suspend KraftBitmapDslScope.() -> Bitmap
 ) : Bitmap {
-    val env = GlEnv()
-    return env.execute {
-        val scope = KraftBitmapDslScope(outputWidth, outputHeight, env)
-        scope.block().also {
-            terminateEnv()
+    return GlEnv().use {
+        env.execute {
+            val scope = KraftBitmapDslScope(outputWidth, outputHeight, env)
+            scope.block()
         }
     }
 }
@@ -50,11 +49,10 @@ suspend fun kraftBitmapFrom(
     inputBitmap: Bitmap,
     block: suspend KraftBitmapWithInputDslScope.() -> Bitmap
 ): Bitmap {
-    val env = GlEnv()
-    return env.execute {
-        val scope = KraftBitmapWithInputDslScope(inputBitmap, env)
-        scope.block().also {
-            terminateEnv()
+    return GlEnv().use {
+        env.execute {
+            val scope = KraftBitmapWithInputDslScope(inputBitmap, env)
+            scope.block()
         }
     }
 }

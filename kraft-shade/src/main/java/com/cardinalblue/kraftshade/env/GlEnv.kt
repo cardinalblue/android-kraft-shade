@@ -182,6 +182,16 @@ class GlEnv {
         block(dslScope)
     }
 
+    suspend fun <T> use(block: suspend GlEnvDslScope.() -> T): T {
+        try {
+            return execute(block)
+        } catch (e: Exception) {
+            throw e
+        } finally {
+            terminate()
+        }
+    }
+
     /**
      * Terminates the GL environment, cleaning up all resources.
      * This should be called when the GL environment is no longer needed.
