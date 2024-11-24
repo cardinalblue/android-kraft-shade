@@ -1,6 +1,5 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,14 +10,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
-import com.cardinalblue.kraftshade.demo.R
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
-import com.cardinalblue.kraftshade.shader.CrosshatchKraftShader
-import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.cardinalblue.kraftshade.shader.builtin.CrosshatchKraftShader
 
 @Composable
 fun CrosshatchTestScreen() {

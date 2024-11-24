@@ -138,7 +138,7 @@ KraftShade aims to address these limitations with:
 - [ ] Unsharp Mask
 - [ ] Transform Operation
 - [ ] Crop
-- [ ] Gamma
+- [x] Gamma
 - [ ] Highlights and Shadows
 - [x] Haze
 - [ ] Sepia Tone

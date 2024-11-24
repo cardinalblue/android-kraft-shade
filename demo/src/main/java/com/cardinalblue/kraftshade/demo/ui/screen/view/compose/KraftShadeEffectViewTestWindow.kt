@@ -14,6 +14,7 @@ import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ContrastKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.GammaKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.HueKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.PixelationKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
@@ -32,6 +33,7 @@ fun KraftShadeEffectViewTestWindow() {
     var contrast by remember { mutableFloatStateOf(1.2f) }
     var pixelSize by remember { mutableFloatStateOf(1f) }
     var hue by remember { mutableFloatStateOf(0f) }
+    var gamma by remember { mutableFloatStateOf(1.2f) }
     val context = LocalContext.current
 
     Column(
@@ -109,6 +111,18 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..360f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Gamma",
+                value = gamma,
+                onValueChange = { 
+                    gamma = it
+                    state.requestRender()
+                },
+                valueRange = 0f..3f
+            )
         }
     }
 
@@ -145,6 +159,11 @@ fun KraftShadeEffectViewTestWindow() {
                     PixelationKraftShader()
                         .addAsStep(sampledInput { pixelSize }) { (pixelSize) ->
                             this.pixel = pixelSize.getCasted()
+                        }
+
+                    GammaKraftShader()
+                        .addAsStep(sampledInput { gamma }) { (gamma) ->
+                            this.gamma = gamma.getCasted()
                         }
                 }
             }
