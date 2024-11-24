@@ -1,13 +1,13 @@
 package com.cardinalblue.kraftshade.demo.shader
 
 import org.intellij.lang.annotations.Language
-import com.cardinalblue.kraftshade.model.Color
+import com.cardinalblue.kraftshade.model.GlColor
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
 class DrawCircleKraftShader(
-    color: Color = Color.Red,
-    backgroundColor: Color = Color.Transparent
+    color: GlColor = GlColor.Red,
+    backgroundColor: GlColor = GlColor.Transparent
 ) : KraftShader() {
     private var color: FloatArray by GlUniformDelegate("color")
     private var backgroundColor: FloatArray by GlUniformDelegate("bgColor")
@@ -29,7 +29,7 @@ class DrawCircleKraftShader(
         color = floatArrayOf(r, g, b, a)
     }
 
-    fun setColor(color: Color) {
+    fun setColor(color: GlColor) {
         this.color = color.vec4
     }
 
@@ -37,7 +37,7 @@ class DrawCircleKraftShader(
         backgroundColor = floatArrayOf(r, g, b, a)
     }
 
-    fun setBackgroundColor(color: Color) {
+    fun setBackgroundColor(color: GlColor) {
         backgroundColor = color.vec4
     }
 }

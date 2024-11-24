@@ -207,7 +207,7 @@ KraftShade aims to address these limitations with:
 - [ ] Chroma Key Blend
 - [ ] Add Blend
 - [ ] Divide Blend
-- [ ] Multiply Blend
+- [x] Multiply Blend
 - [ ] Overlay Blend
 - [ ] Lighten Blend
 - [ ] Darken Blend

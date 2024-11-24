@@ -53,7 +53,7 @@ open class GlUniformDelegate<T : Any>(
                         2 -> GLES20.glUniform2fv(location, 1, value, 0)
                         3 -> GLES20.glUniform3fv(location, 1, value, 0)
                         4 -> GLES20.glUniform4fv(location, 1, value, 0)
-                        else -> throw IllegalArgumentException("Invalid float array size: ${value.size}")
+                        else -> GLES20.glUniform1fv(location, value.size, value, 0)
                     }
                 }
 

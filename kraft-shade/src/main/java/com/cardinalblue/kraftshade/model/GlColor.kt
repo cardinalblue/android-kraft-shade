@@ -3,7 +3,7 @@ package com.cardinalblue.kraftshade.model
 import androidx.annotation.ColorInt
 
 @JvmInline
-value class Color private constructor(@ColorInt val intValue: Int) {
+value class GlColor private constructor(@ColorInt val intValue: Int) {
     val int: Int get() = intValue
     val r: Int get() = intValue shr 16 and 0xFF
     val g: Int get() = intValue shr 8 and 0xFF
@@ -21,14 +21,14 @@ value class Color private constructor(@ColorInt val intValue: Int) {
     fun alterAlpha(a: Float) = normalizedRGBA(rFloat, gFloat, bFloat, a)
 
     companion object {
-        fun normalizedRGBA(r: Float, g: Float, b: Float, a: Float = 1f) = Color(
+        fun normalizedRGBA(r: Float, g: Float, b: Float, a: Float = 1f) = GlColor(
             ((a * 255).toInt() shl 24) or
             ((r * 255).toInt() shl 16) or
             ((g * 255).toInt() shl 8) or
             (b * 255).toInt()
         )
 
-        fun int(@ColorInt intValue: Int) = Color(intValue)
+        fun int(@ColorInt intValue: Int) = GlColor(intValue)
 
         // common colors
         val Black get() = normalizedRGBA(0f, 0f, 0f)
