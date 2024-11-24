@@ -7,9 +7,6 @@ import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 
-@DslMarker
-annotation class KraftBitmapScopeMarker
-
 suspend fun kraftBitmap(
     outputWidth: Int,
     outputHeight: Int,
@@ -23,7 +20,7 @@ suspend fun kraftBitmap(
     }
 }
 
-@KraftBitmapScopeMarker
+@KraftShadeDsl
 class KraftBitmapDslScope(
     private val outputWidth: Int,
     private val outputHeight: Int,
@@ -35,9 +32,15 @@ class KraftBitmapDslScope(
         block: suspend PipelineSetupScope.(outputBuffer: TextureBuffer) -> Unit = {},
     ): Bitmap {
         with(envScope) {
-            val outputBuffer = TextureBuffer(outputWidth, outputHeight)
-            pipeline(outputWidth, outputHeight, block = { block(outputBuffer) })
-                .run()
+            val outputBuffer = TextureBuffer(
+                this@KraftBitmapDslScope.outputWidth,
+                this@KraftBitmapDslScope.outputHeight
+            )
+            pipeline(
+                this@KraftBitmapDslScope.outputWidth,
+                this@KraftBitmapDslScope.outputHeight,
+                block = { block(outputBuffer) }
+            ).run()
             return outputBuffer.getBitmap()
         }
     }
@@ -55,7 +58,7 @@ suspend fun kraftBitmapFrom(
     }
 }
 
-@KraftBitmapScopeMarker
+@KraftShadeDsl
 class KraftBitmapWithInputDslScope(
     private val input: Bitmap,
     val env: GlEnv,

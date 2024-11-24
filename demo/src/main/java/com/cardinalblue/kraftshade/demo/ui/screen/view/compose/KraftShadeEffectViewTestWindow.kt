@@ -14,6 +14,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.Parame
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.model.GlMat4
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
+import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.*
 
 @Composable

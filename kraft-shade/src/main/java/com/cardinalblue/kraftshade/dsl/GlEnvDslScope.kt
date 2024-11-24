@@ -3,15 +3,11 @@ package com.cardinalblue.kraftshade.dsl
 import android.graphics.Bitmap
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
-import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
-import com.cardinalblue.kraftshade.pipeline.input.Input
-import com.cardinalblue.kraftshade.pipeline.input.SampledInput
-import com.cardinalblue.kraftshade.shader.KraftShader
-import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 
+@KraftShadeDsl
 class GlEnvDslScope(
     val env: GlEnv
 ) {
@@ -51,29 +47,4 @@ class GlEnvDslScope(
             env.terminate()
         }
     }
-
-    fun <S : KraftShader> S.asEffectExecution(
-        vararg inputs: Input<*>,
-        targetBuffer: GlBufferProvider,
-        setup: suspend S.(Array<out Input<*>>) -> Unit = {},
-    ) = object : EffectExecution {
-        override suspend fun run() {
-            val sampledInputs = inputs
-                .filterIsInstance<SampledInput<*>>()
-            sampledInputs.forEach { it.markDirty() }
-            sampledInputs.forEach { it.get() }
-            this@asEffectExecution.setup(inputs)
-            drawTo(targetBuffer.provideBuffer())
-        }
-
-        override suspend fun destroy() {
-            this@asEffectExecution.destroy()
-        }
-
-        override suspend fun onBufferSizeChanged(size: GlSize) {
-            // no need to do anything since the shader is not aware of the buffer size
-        }
-    }
-
-    fun Bitmap.asTexture() = LoadedTexture(this)
 }

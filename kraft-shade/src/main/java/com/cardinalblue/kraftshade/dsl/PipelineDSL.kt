@@ -11,11 +11,7 @@ import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
-
-@DslMarker
-annotation class PipelineScopeMarker
-
-@PipelineScopeMarker
+@KraftShadeDsl
 class PipelineSetupScope(
     private val pipeline: Pipeline,
 ) {
@@ -122,7 +118,7 @@ class PipelineSetupScope(
         )
     }
 
-    @PipelineScopeMarker
+    @KraftShadeDsl
     suspend fun serialSteps(
         inputTexture: TextureProvider,
         targetBuffer: GlBufferProvider,
@@ -144,7 +140,7 @@ class PipelineSetupScope(
     }
 }
 
-@PipelineScopeMarker
+@KraftShadeDsl
 class SerialTextureInputPipelineScope internal constructor(
     currentStepIndex: Int,
     private val pipeline: Pipeline,

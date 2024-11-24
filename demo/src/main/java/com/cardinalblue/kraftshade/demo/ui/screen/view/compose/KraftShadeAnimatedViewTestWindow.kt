@@ -1,6 +1,5 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -12,11 +11,10 @@ import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeAnimatedView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeAnimatedState
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.pipeline.input.CommonInputs
+import com.cardinalblue.kraftshade.pipeline.asEffectExecution
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
+import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Composable
 fun KraftShadeAnimatedViewTestWindow() {

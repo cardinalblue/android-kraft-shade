@@ -3,7 +3,6 @@ package com.cardinalblue.kraftshade.shader
 import android.opengl.GLES20
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.OpenGlUtils
-import com.cardinalblue.kraftshade.dsl.PipelineScopeMarker
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
