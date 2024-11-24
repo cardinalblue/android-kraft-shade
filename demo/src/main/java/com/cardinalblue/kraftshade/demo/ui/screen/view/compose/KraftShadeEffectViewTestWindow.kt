@@ -151,46 +151,6 @@ fun KraftShadeEffectViewTestWindow() {
                         }
                 }
             }
-
-//            pipeline(windowSurface.size) {
-//                val (satResult, contrastResult) = createBufferReferences(
-//                    "sat", "contrast")
-//
-//                SaturationKraftShader()
-//                    .addAsStepWithInput(
-//                        bitmap.asTexture(),
-//                        sampledInput { saturation },
-//                        targetBuffer = satResult,
-//                    ) { (saturation) ->
-//                        this.saturation = saturation.getCasted()
-//                    }
-//
-//                serialSteps(satResult, contrastResult) {
-//                    HueKraftShader()
-//                        .addAsStep(sampledInput { hue }) { (hue) ->
-//                            this.setHueInDegree(hue.getCasted())
-//                        }
-//
-//                    BrightnessKraftShader()
-//                        .addAsStep(sampledInput { brightness }) { (brightness) ->
-//                            this.brightness = brightness.getCasted()
-//                        }
-//
-//                    ContrastKraftShader()
-//                        .addAsStep(sampledInput { contrast }) { (contrast) ->
-//                            this.contrast = contrast.getCasted()
-//                        }
-//                }
-//
-//                PixelationKraftShader()
-//                    .addAsStepWithInput(
-//                        contrastResult,
-//                        sampledInput { pixelSize },
-//                        targetBuffer = windowSurface,
-//                    ) { (pixelSize) ->
-//                        this.pixel = pixelSize.getCasted()
-//                    }
-//            }
         }
     }
 }
