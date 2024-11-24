@@ -13,6 +13,7 @@ import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.demo.R
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
+import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.CrosshatchKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
@@ -62,11 +63,7 @@ fun CrosshatchTestScreen() {
 
             LaunchedEffect(Unit) {
                 state.setEffect { windowSurface ->
-                    val bitmap = withContext(Dispatchers.IO) {
-                        context.assets.open("sample/cat.jpg").use {
-                            BitmapFactory.decodeStream(it)
-                        }
-                    }
+                    val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
                     aspectRatio = bitmap.width.toFloat() / bitmap.height
 
                     CrosshatchKraftShader()

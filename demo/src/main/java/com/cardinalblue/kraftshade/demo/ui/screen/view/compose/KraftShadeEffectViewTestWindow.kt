@@ -18,6 +18,7 @@ import com.cardinalblue.kraftshade.shader.builtin.HueKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.PixelationKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
+import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -113,11 +114,7 @@ fun KraftShadeEffectViewTestWindow() {
 
     LaunchedEffect(Unit) {
         state.setEffect { windowSurface ->
-            val bitmap = withContext(Dispatchers.IO) {
-                context.assets.open("sample/cat.jpg").use {
-                    BitmapFactory.decodeStream(it)
-                }
-            }
+            val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
             aspectRatio = bitmap.width.toFloat() / bitmap.height
 
             pipeline(windowSurface.size) {

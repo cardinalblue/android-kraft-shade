@@ -189,6 +189,8 @@ class GlEnv {
     suspend fun terminate() = use {
         egl10.eglDestroyContext(eglDisplay, eglContext)
         egl10.eglTerminate(eglDisplay)
+        logger.d("EGL terminated")
+        dispatcher.close()
     }
 
     private companion object {

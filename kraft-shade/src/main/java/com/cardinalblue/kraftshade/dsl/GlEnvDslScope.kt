@@ -15,6 +15,12 @@ import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 class GlEnvDslScope(
     val env: GlEnv
 ) {
+    suspend fun use(block: GlEnvDslScope.() -> Unit) {
+        env.use {
+            block()
+        }
+    }
+
     /**
      * @param bufferSize The size (width, height) of the rendering target.
      */
@@ -32,8 +38,20 @@ class GlEnvDslScope(
         }
     }
 
+    @PipelineScopeMarker
+    suspend fun GlEnvDslScope.pipeline(
+        bufferWidth: Int,
+        bufferHeight: Int,
+        automaticRecycle: Boolean = true,
+        block: suspend PipelineSetupScope.() -> Unit = {},
+    ): Pipeline {
+        return pipeline(GlSize(bufferWidth, bufferHeight), automaticRecycle, block)
+    }
+
     suspend fun terminateEnv() {
-        env.terminate()
+        env.use {
+            env.terminate()
+        }
     }
 
     fun <S : KraftShader> S.asEffectExecution(

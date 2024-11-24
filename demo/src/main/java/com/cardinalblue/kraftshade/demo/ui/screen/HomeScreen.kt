@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BasicShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BlendingExampleScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.dsl.KraftBitmapTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.shaders.*
 import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.ColorfulCrosshatchTestScreen
@@ -74,6 +75,7 @@ enum class Destination(
     KraftShadeEffectView("compose_effect", "Compose (effect)", screen = { KraftShadeEffectViewTestWindow() }),
     CrosshatchShader("crosshatch_shader", "Crosshatch Shader", screen = { CrosshatchTestScreen() }),
     ColorfulCrosshatchShader("colorful_crosshatch_shader", "Colorful Crosshatch Shader", screen = { ColorfulCrosshatchTestScreen() }),
+    KraftBitmap("kraft_bitmap", "Kraft Bitmap", screen = { KraftBitmapTestScreen() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {

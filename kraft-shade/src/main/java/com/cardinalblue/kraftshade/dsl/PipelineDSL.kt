@@ -129,10 +129,10 @@ open class PipelineSetupScope(
     }
 
     @PipelineScopeMarker
-    fun serialSteps(
+    suspend fun serialSteps(
         inputTexture: TextureProvider,
         targetBuffer: GlBufferProvider,
-        block: SerialTextureInputPipelineScope.() -> Unit
+        block: suspend SerialTextureInputPipelineScope.() -> Unit
     ) {
         val scope = SerialTextureInputPipelineScope(
             currentStepIndex = pipeline.stepCount,
