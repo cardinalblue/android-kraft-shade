@@ -2,7 +2,7 @@ package com.cardinalblue.kraftshade.dsl
 
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 
-class PipelineShaderBuilderScope() {
+class PipelineShaderBuilderScope {
     private val shaders: MutableList<TextureInputKraftShader> = mutableListOf()
 
     suspend fun addShader(block: suspend () -> TextureInputKraftShader) {

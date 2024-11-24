@@ -10,7 +10,6 @@ import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 @DslMarker
 annotation class KraftBitmapScopeMarker
 
-@KraftBitmapScopeMarker
 suspend fun kraftBitmap(
     outputWidth: Int,
     outputHeight: Int,
@@ -24,6 +23,7 @@ suspend fun kraftBitmap(
     }
 }
 
+@KraftBitmapScopeMarker
 class KraftBitmapDslScope(
     private val outputWidth: Int,
     private val outputHeight: Int,
@@ -31,7 +31,6 @@ class KraftBitmapDslScope(
 ) {
     private val envScope = GlEnvDslScope(env)
 
-    @KraftBitmapScopeMarker
     suspend fun withPipeline(
         block: suspend PipelineSetupScope.(outputBuffer: TextureBuffer) -> Unit = {},
     ): Bitmap {
@@ -44,7 +43,6 @@ class KraftBitmapDslScope(
     }
 }
 
-@KraftBitmapScopeMarker
 suspend fun kraftBitmapFrom(
     inputBitmap: Bitmap,
     block: suspend KraftBitmapWithInputDslScope.() -> Bitmap
@@ -57,24 +55,23 @@ suspend fun kraftBitmapFrom(
     }
 }
 
+@KraftBitmapScopeMarker
 class KraftBitmapWithInputDslScope(
     private val input: Bitmap,
     val env: GlEnv,
 ) {
-    @KraftBitmapScopeMarker
     suspend fun withPipeline(
         block: suspend PipelineSetupScope.(inputTexture: Texture, outputBuffer: GlBuffer) -> Unit,
     ): Bitmap {
         val kraftBitmapDslScope = KraftBitmapDslScope(input.width, input.height, env)
         with(kraftBitmapDslScope) {
             return withPipeline { outputBuffer ->
-                val inputTexture = LoadedTexture(input)
+                val inputTexture = LoadedTexture(this@KraftBitmapWithInputDslScope.input)
                 block(inputTexture, outputBuffer)
             }
         }
     }
 
-    @KraftBitmapScopeMarker
     suspend fun serialPipeline(
         block: suspend PipelineShaderBuilderScope.() -> Unit,
     ): Bitmap = withPipeline { inputTexture, outputBuffer ->

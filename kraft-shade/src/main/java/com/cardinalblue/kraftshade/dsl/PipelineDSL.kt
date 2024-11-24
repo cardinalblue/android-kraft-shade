@@ -15,20 +15,18 @@ import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 @DslMarker
 annotation class PipelineScopeMarker
 
-open class PipelineSetupScope(
-    protected val pipeline: Pipeline,
+@PipelineScopeMarker
+class PipelineSetupScope(
+    private val pipeline: Pipeline,
 ) {
-    @PipelineScopeMarker
-    fun createBufferReferences(
-        vararg namesForDebug: String
-    ): BufferReferenceCreator = BufferReferenceCreator(pipeline.bufferPool, *namesForDebug)
-
-    @PipelineScopeMarker
     fun withPipeline(block: Pipeline.() -> Unit) {
         block(pipeline)
     }
 
-    @PipelineScopeMarker
+    fun createBufferReferences(
+        vararg namesForDebug: String
+    ): BufferReferenceCreator = BufferReferenceCreator(pipeline.bufferPool, *namesForDebug)
+
     fun step(
         purposeForDebug: String = "",
         block: suspend GlEnv.() -> Unit
@@ -46,7 +44,6 @@ open class PipelineSetupScope(
      * The setup action should include the input texture if the [KraftShader] needs it. Unless it's
      * a shader doesn't need any input texture.
      */
-    @PipelineScopeMarker
     suspend fun <S : KraftShader> step(
         shader: S,
         inputs: List<Input<*>> = emptyList(),
@@ -68,7 +65,6 @@ open class PipelineSetupScope(
      *  set up the input texture if this KraftShader is [TextureInputKraftShader]. See
      *  [addAsStepWithInput] if you are actually working on the setup of [TextureInputKraftShader].
      */
-    @PipelineScopeMarker
     suspend fun <S : KraftShader> S.addAsStep(
         vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
@@ -88,7 +84,6 @@ open class PipelineSetupScope(
      *  the WindowSurfaceBuffer changes, the texture will be deleted by [TextureBufferPool]. However,
      *  the texture id is set to the shader, and it won't change since it's not using a reference.
      */
-    @PipelineScopeMarker
     suspend fun <S : TextureInputKraftShader> S.addAsStepWithInput(
         constantTexture: Texture,
         vararg inputs: Input<*>,
@@ -107,7 +102,6 @@ open class PipelineSetupScope(
         )
     }
 
-    @PipelineScopeMarker
     suspend fun <S : TextureInputKraftShader> S.addAsStepWithInput(
         inputBufferReference: BufferReference,
         vararg inputs: Input<*>,
@@ -150,6 +144,7 @@ open class PipelineSetupScope(
     }
 }
 
+@PipelineScopeMarker
 class SerialTextureInputPipelineScope internal constructor(
     currentStepIndex: Int,
     private val pipeline: Pipeline,
@@ -169,7 +164,6 @@ class SerialTextureInputPipelineScope internal constructor(
      * know which step is the last step that we have to draw to the target buffer until all the steps
      * are added.
      */
-    @PipelineScopeMarker
     fun <S : TextureInputKraftShader> step(
         shader: S,
         vararg inputs: Input<*>,
@@ -178,13 +172,11 @@ class SerialTextureInputPipelineScope internal constructor(
         steps.add(InternalStep(shader, inputs.toList(), setupAction))
     }
 
-    @PipelineScopeMarker
     fun <S : TextureInputKraftShader> S.addAsStep(
         vararg inputs: Input<*>,
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) = step(this, *inputs, setupAction = setupAction)
 
-    @PipelineScopeMarker
     internal fun applyToPipeline() {
         val stepIterator = steps.iterator()
 
@@ -231,7 +223,10 @@ class SerialTextureInputPipelineScope internal constructor(
         if (!pipeline.automaticRecycle) {
             with(pipelineSetupScope) {
                 step("clean up ping pong buffers") {
-                    pipeline.bufferPool.recycle(buffer1, buffer2)
+                    this@SerialTextureInputPipelineScope
+                        .pipeline
+                        .bufferPool
+                        .recycle(buffer1, buffer2)
                 }
             }
         }

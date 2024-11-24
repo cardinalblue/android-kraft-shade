@@ -24,8 +24,7 @@ class GlEnvDslScope(
     /**
      * @param bufferSize The size (width, height) of the rendering target.
      */
-    @PipelineScopeMarker
-    suspend fun GlEnvDslScope.pipeline(
+    suspend fun pipeline(
         bufferSize: GlSize,
         automaticRecycle: Boolean = true,
         block: suspend PipelineSetupScope.() -> Unit = {},
@@ -38,8 +37,7 @@ class GlEnvDslScope(
         }
     }
 
-    @PipelineScopeMarker
-    suspend fun GlEnvDslScope.pipeline(
+    suspend fun pipeline(
         bufferWidth: Int,
         bufferHeight: Int,
         automaticRecycle: Boolean = true,
