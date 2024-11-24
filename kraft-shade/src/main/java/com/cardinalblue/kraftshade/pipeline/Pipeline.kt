@@ -12,10 +12,6 @@ import com.cardinalblue.kraftshade.util.KraftLogger
 /**
  * This will be renamed to Pipeline later
  * Implementation will be added based on future instructions
- *
- * TODO:
- * [ ] Recycle buffers
- * [ ] Sampled inputs dirty mechanism
  */
 class Pipeline internal constructor(
     internal val glEnv: GlEnv,
