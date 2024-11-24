@@ -232,7 +232,7 @@ KraftShade aims to address these limitations with:
 - [ ] Directional Non Maximum Suppression
 - [ ] Opacity
 - [ ] Weak Pixel Inclusion Filter
-- [ ] Color Matrix
+- [x] Color Matrix
 - [ ] Directional Sobel Edge Detection
 - [x] Lookup (LUT)
 - [ ] Tone Curve (*.acv files)

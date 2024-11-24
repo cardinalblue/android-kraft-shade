@@ -1,6 +1,5 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,18 +10,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
-import com.cardinalblue.kraftshade.pipeline.input.sampledInput
-import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
-import com.cardinalblue.kraftshade.shader.builtin.ContrastKraftShader
-import com.cardinalblue.kraftshade.shader.builtin.GammaKraftShader
-import com.cardinalblue.kraftshade.shader.builtin.HueKraftShader
-import com.cardinalblue.kraftshade.shader.builtin.PixelationKraftShader
-import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.cardinalblue.kraftshade.model.GlMat4
+import com.cardinalblue.kraftshade.pipeline.input.sampledInput
+import com.cardinalblue.kraftshade.shader.builtin.*
 
 @Composable
 fun KraftShadeEffectViewTestWindow() {
@@ -34,6 +26,7 @@ fun KraftShadeEffectViewTestWindow() {
     var pixelSize by remember { mutableFloatStateOf(1f) }
     var hue by remember { mutableFloatStateOf(0f) }
     var gamma by remember { mutableFloatStateOf(1.2f) }
+    var colorMatrixIntensity by remember { mutableFloatStateOf(0f) }
     val context = LocalContext.current
 
     Column(
@@ -123,6 +116,18 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..3f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Color Inversion",
+                value = colorMatrixIntensity,
+                onValueChange = { 
+                    colorMatrixIntensity = it
+                    state.requestRender()
+                },
+                valueRange = 0f..1f
+            )
         }
     }
 
@@ -165,6 +170,18 @@ fun KraftShadeEffectViewTestWindow() {
                         .addAsStep(sampledInput { gamma }) { (gamma) ->
                             this.gamma = gamma.getCasted()
                         }
+
+                    ColorMatrixKraftShader(
+                        colorMatrix = GlMat4(
+                            -1f, 0f, 0f, 0f,
+                            0f, -1f, 0f, 0f,
+                            0f, 0f, -1f, 0f,
+                            1f, 1f, 1f, 1f
+                        ),
+                        colorOffset = floatArrayOf(1f, 1f, 1f, 0f),
+                    ).addAsStep(sampledInput { colorMatrixIntensity }) { (intensity) ->
+                        this.intensity = intensity.getCasted()
+                    }
                 }
             }
         }

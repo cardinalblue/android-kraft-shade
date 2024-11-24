@@ -23,24 +23,24 @@ open class GlMat(
     }
 }
 
-class GlMat2 : GlMat{
+class GlMat2 : GlMat {
     constructor() : super(2)
-    constructor(arr: FloatArray) : super(arr) {
+    constructor(vararg arr: Float) : super(arr) {
         require(arr.size == 4) { "size has to be 4" }
     }
 }
 
 class GlMat3 : GlMat {
     constructor() : super(3)
-    constructor(arr: FloatArray) : super(arr) {
+    constructor(vararg arr: Float) : super(arr) {
         require(arr.size == 9) { "siz has to be 9" }
     }
 }
 
 
-class GlMat4 : GlMat{
+class GlMat4 : GlMat {
     constructor() : super(4)
-    constructor(arr: FloatArray) : super(arr) {
+    constructor(vararg arr: Float) : super(arr) {
         require(arr.size == 16) { "invalid float array size: ${arr.size}" }
     }
 
@@ -65,9 +65,9 @@ class GlMat4 : GlMat{
 
 fun FloatArray.asGlMat(): GlMat {
     return when (size) {
-        4 -> GlMat2()
-        9 -> GlMat3()
-        16 -> GlMat4()
+        4 -> GlMat2(*this)
+        9 -> GlMat3(*this)
+        16 -> GlMat4(*this)
         else -> throw IllegalArgumentException("Invalid float array size: $size")
     }.also { mat -> copyInto(mat.arr) }
 }

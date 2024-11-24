@@ -18,9 +18,9 @@ open class Convolution3x3KraftShader : TextureInputKraftShader() {
         convolution = mat
     }
 
-    fun setConvolutionMatrix(floatArray: FloatArray) {
-        require(floatArray.size == 9) { "convolution matrix must have 9 elements" }
-        setConvolutionMatrix(GlMat3(floatArray))
+    fun setConvolutionMatrix(vararg arr: Float) {
+        require(arr.size == 9) { "convolution matrix must have 9 elements" }
+        setConvolutionMatrix(GlMat3(*arr))
     }
 }
 
