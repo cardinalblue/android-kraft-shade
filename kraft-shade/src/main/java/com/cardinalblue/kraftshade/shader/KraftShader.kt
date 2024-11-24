@@ -26,7 +26,8 @@ abstract class KraftShader : AutoCloseable {
     private var glAttribPosition = 0
     protected var glAttribTextureCoordinate = 0
 
-    private var resolution: FloatArray by GlUniformDelegate("resolution", required = false)
+    protected var resolution: FloatArray by GlUniformDelegate("resolution", required = false)
+        private set
 
     private val logger = KraftLogger("KraftShader")
 
