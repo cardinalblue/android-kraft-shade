@@ -15,6 +15,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BasicShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BlendingExampleScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.shaders.*
 import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.CrosshatchTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeAnimatedViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeEffectViewTestWindow
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
@@ -70,6 +71,7 @@ enum class Destination(
     TransparencyTest("transparency_test", "Transparency Test", screen = { TransparencyTestWindow() }),
     KraftShadeAnimatedView("compose_animated", "Compose (animated)", screen = { KraftShadeAnimatedViewTestWindow() }),
     KraftShadeEffectView("compose_effect", "Compose (effect)", screen = { KraftShadeEffectViewTestWindow() }),
+    CrosshatchShader("crosshatch_shader", "Crosshatch Shader", screen = { CrosshatchTestScreen() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {

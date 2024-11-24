@@ -14,12 +14,15 @@ fun ParameterSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    numberOfFractionDigits: Int = 2
 ) {
+    require(numberOfFractionDigits >= 0) { "numberOfFractionDigits should be non-negative" }
+
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Text("$label (%.2f)".format(value))
+        Text("$label (%.${numberOfFractionDigits}f)".format(value))
 
         Slider(
             modifier = Modifier

@@ -159,7 +159,7 @@ KraftShade aims to address these limitations with:
 - [x] Pixellate
 - [ ] Polka Dot
 - [ ] Halftone
-- [ ] Crosshatch
+- [x] Crosshatch
 - [ ] Sobel Edge Detection
 - [ ] Prewitt Edge Detection
 - [ ] Canny Edge Detection

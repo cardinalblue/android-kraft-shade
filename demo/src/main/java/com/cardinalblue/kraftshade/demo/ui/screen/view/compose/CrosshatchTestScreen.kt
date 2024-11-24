@@ -1,0 +1,92 @@
+package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
+
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
+import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
+import com.cardinalblue.kraftshade.demo.R
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
+import com.cardinalblue.kraftshade.pipeline.input.sampledInput
+import com.cardinalblue.kraftshade.shader.CrosshatchKraftShader
+import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+@Composable
+fun CrosshatchTestScreen() {
+    val state = rememberKraftShadeEffectState()
+    var aspectRatio by remember { mutableFloatStateOf(1f) }
+    var crossHatchSpacing by remember { mutableFloatStateOf(0.03f) }
+    var lineWidth by remember { mutableFloatStateOf(0.003f) }
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        KraftShadeEffectView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(aspectRatio),
+            state = state
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            ParameterSlider(
+                label = "Cross Hatch Spacing",
+                value = crossHatchSpacing,
+                onValueChange = { crossHatchSpacing = it },
+                valueRange = 0.01f..0.1f
+            )
+
+            ParameterSlider(
+                label = "Line Width",
+                value = lineWidth,
+                onValueChange = { lineWidth = it },
+                valueRange = 0.001f..0.01f,
+                numberOfFractionDigits = 4
+            )
+
+            LaunchedEffect(Unit) {
+                state.setEffect { windowSurface ->
+                    val bitmap = withContext(Dispatchers.IO) {
+                        context.assets.open("sample/cat.jpg").use {
+                            BitmapFactory.decodeStream(it)
+                        }
+                    }
+                    aspectRatio = bitmap.width.toFloat() / bitmap.height
+
+                    CrosshatchKraftShader()
+                        .apply {
+                            setInputTexture(bitmap.asTexture())
+                        }
+                        .asEffectExecution(
+                            sampledInput { crossHatchSpacing },
+                            sampledInput { lineWidth },
+                            targetBuffer = windowSurface,
+                        ) { (crossHatchSpacing, lineWidth) ->
+                            this.crossHatchSpacing = crossHatchSpacing.getCasted()
+                            this.lineWidth = lineWidth.getCasted()
+                        }
+                }
+            }
+
+            LaunchedEffect(crossHatchSpacing, lineWidth) {
+                state.requestRender()
+            }
+        }
+    }
+}
