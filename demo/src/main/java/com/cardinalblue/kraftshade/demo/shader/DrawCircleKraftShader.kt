@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.shader.builtin
+package com.cardinalblue.kraftshade.demo.shader
 
 import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.model.Color
@@ -22,7 +22,7 @@ class DrawCircleKraftShader(
     }
 
     override fun loadFragmentShader(): String {
-        return FRAGMENT_SHADER
+        return DRAW_CIRCLE_FRAGMENT_SHADER
     }
 
     fun setColor(r: Float, g: Float, b: Float, a: Float = 1f) {
@@ -40,10 +40,10 @@ class DrawCircleKraftShader(
     fun setBackgroundColor(color: Color) {
         backgroundColor = color.vec4
     }
+}
 
-    private companion object {
-        @Language("GLSL")
-        const val FRAGMENT_SHADER = """
+@Language("GLSL")
+const val DRAW_CIRCLE_FRAGMENT_SHADER = """
 uniform highp vec2 resolution;
 uniform lowp vec4 color;
 uniform lowp vec4 bgColor;
@@ -58,6 +58,4 @@ void main()
        gl_FragColor = bgColor;
    }
 }
-        """
-    }
-}
+"""

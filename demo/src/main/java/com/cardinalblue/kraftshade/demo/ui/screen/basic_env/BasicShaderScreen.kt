@@ -1,9 +1,9 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.basic_env
 
 import androidx.compose.runtime.Composable
+import com.cardinalblue.kraftshade.demo.shader.DrawCircleKraftShader
 import com.cardinalblue.kraftshade.model.Color
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
-import com.cardinalblue.kraftshade.shader.builtin.DrawCircleKraftShader
 
 @Composable
 fun BasicShaderScreen() {

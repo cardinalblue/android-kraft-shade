@@ -107,6 +107,7 @@ class Pipeline internal constructor(
             }
         }
         bufferPool.recycleAll()
+        logger.d("the pool size is ${bufferPool.poolSize} after execution")
     }
 
     private suspend fun GlEnv.runPostponedTasks() {

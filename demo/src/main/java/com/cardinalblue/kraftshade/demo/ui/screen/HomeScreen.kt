@@ -63,7 +63,6 @@ enum class Destination(
     Home("home", "Home", showInHomeScreen = false, screen = { HomeScreen() }),
     BasicShader("basic_shader", "Basic Shader", screen = { BasicShaderScreen() }),
     BlendingExample("blending_example", "Blending Example", screen = { BlendingExampleScreen() }),
-    DoNothingTextureTest("do_nothing_texture_test", "Do Nothing Texture Test", screen = { DoNothingTextureTestScreen() }),
     SaturationShader("saturation_shader", "Saturation Shader", screen = { SaturationShaderScreen() }),
     SimpleMixShader("alpha_blend_shader", "Alpha Blend Shader", screen = { AlphaBlendShaderScreen() }),
     EmbossShader("emboss_shader", "Emboss Shader", screen = { EmbossShaderScreen() }),

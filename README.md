@@ -250,7 +250,7 @@ KraftShade aims to address these limitations with:
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        KraftLogger.logLevel = KraftLogLevel.DEBUG
+        KraftLogger.logLevel = KraftLogger.Level.DEBUG
         KraftLogger.throwOnError = true
     }
 }
@@ -289,7 +289,7 @@ kraftTextureView.runGlTask { windowSurface ->
 ## Logging
 ```kotlin
 // Configure logging
-KraftLogger.logLevel = KraftLogLevel.DEBUG
+KraftLogger.logLevel = KraftLogger.Level.DEBUG
 KraftLogger.throwOnError = true // Only for development
 ```
 
