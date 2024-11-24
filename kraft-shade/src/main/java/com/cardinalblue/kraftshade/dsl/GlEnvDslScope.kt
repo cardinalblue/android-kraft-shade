@@ -16,7 +16,7 @@ class GlEnvDslScope(
     val env: GlEnv
 ) {
     suspend fun use(block: GlEnvDslScope.() -> Unit) {
-        env.use {
+        env.execute {
             block()
         }
     }
@@ -30,7 +30,7 @@ class GlEnvDslScope(
         automaticRecycle: Boolean = true,
         block: suspend PipelineSetupScope.() -> Unit = {},
     ): Pipeline {
-        return env.use {
+        return env.execute {
             val pipeline = Pipeline(env, TextureBufferPool(bufferSize), automaticRecycle)
             val scope = PipelineSetupScope(pipeline)
             scope.block()
@@ -49,7 +49,7 @@ class GlEnvDslScope(
     }
 
     suspend fun terminateEnv() {
-        env.use {
+        env.execute {
             env.terminate()
         }
     }

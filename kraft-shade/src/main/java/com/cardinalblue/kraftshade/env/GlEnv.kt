@@ -177,7 +177,7 @@ class GlEnv {
      * @param block The suspend function to execute within the GL context
      * @return The result of the block execution
      */
-    suspend fun <T> use(block: suspend GlEnvDslScope.() -> T): T = withContext(dispatcher) {
+    suspend fun <T> execute(block: suspend GlEnvDslScope.() -> T): T = withContext(dispatcher) {
         makeCurrent()
         block(dslScope)
     }
@@ -186,7 +186,7 @@ class GlEnv {
      * Terminates the GL environment, cleaning up all resources.
      * This should be called when the GL environment is no longer needed.
      */
-    suspend fun terminate() = use {
+    suspend fun terminate() = execute {
         egl10.eglDestroyContext(eglDisplay, eglContext)
         egl10.eglTerminate(eglDisplay)
         logger.d("EGL terminated")

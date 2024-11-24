@@ -37,7 +37,7 @@ fun BasicGlEnvScreen(
 
     LaunchedEffect(key1 = Unit) {
         val glEnv = GlEnv()
-        val bitmap = glEnv.use {
+        val bitmap = glEnv.execute {
             imageGeneration
                 .invoke(env)
                 .also { env.terminate() }

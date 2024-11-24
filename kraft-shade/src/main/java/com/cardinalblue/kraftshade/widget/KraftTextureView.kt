@@ -54,7 +54,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                     taskAfterAttached.add(task)
                 } else {
                     logger.tryAndLog {
-                        glEnv.use {
+                        glEnv.execute {
                             task(windowSurface)
                         }
                     }
@@ -66,7 +66,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
     private suspend fun suspendInit() {
         initLock.withLock {
             glEnv = GlEnv().apply {
-                use {
+                execute {
                     val surface = WindowSurfaceBuffer(
                         glEnv = env,
                         listener = this@KraftTextureView,
@@ -102,7 +102,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                 initLock.withLock {
                     taskAfterAttached.clear()
 
-                    glEnv?.use {
+                    glEnv?.execute {
                         windowSurface?.delete()
                         windowSurface = null
                         terminateEnv()
@@ -121,9 +121,9 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
             initLock.withLock {
                 if (taskAfterAttached.isEmpty()) return@withLock
                 logger.tryAndLog {
-                    glEnv.use {
+                    glEnv.execute {
                         logger.d("executing ${taskAfterAttached.size} tasks after buffer ready")
-                        taskAfterAttached.forEach { it.invoke(this@use, surface) }
+                        taskAfterAttached.forEach { it.invoke(this@execute, surface) }
                         taskAfterAttached.clear()
                     }
                 }
