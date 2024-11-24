@@ -33,12 +33,18 @@ fun KraftShadeEffectViewTestWindow() {
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        KraftShadeEffectView(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(aspectRatio),
-            state = state
-        )
+                .fillMaxHeight(0.5f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            KraftShadeEffectView(
+                modifier = Modifier
+                    .aspectRatio(aspectRatio),
+                state = state
+            )
+        }
 
         Column(
             modifier = Modifier
