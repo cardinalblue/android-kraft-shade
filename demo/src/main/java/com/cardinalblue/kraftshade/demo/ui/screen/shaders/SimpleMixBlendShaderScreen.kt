@@ -1,13 +1,13 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.shaders
 
 import androidx.compose.runtime.Composable
-import com.cardinalblue.kraftshade.shader.builtin.AlphaBlendKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.SimpleMixtureBlendKraftShader
 
 @Composable
-fun AlphaBlendShaderScreen() {
+fun SimpleMixBlendShaderScreen() {
     SimpleTwoInputShaderTestScreen { _, bitmap1, bitmap2 ->
-        AlphaBlendKraftShader().apply {
-            mixRatio = 0.5f
+        SimpleMixtureBlendKraftShader().apply {
+            mixturePercent = 0.5f
             val aspectRatio1 = bitmap1.width.toFloat() / bitmap1.height
             val aspectRatio2 = bitmap2.width.toFloat() / bitmap2.height
 

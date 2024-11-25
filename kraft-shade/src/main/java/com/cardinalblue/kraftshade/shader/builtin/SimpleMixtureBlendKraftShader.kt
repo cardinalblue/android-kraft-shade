@@ -1,16 +1,10 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
 import org.intellij.lang.annotations.Language
-import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
-import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
-class AlphaBlendKraftShader : TwoTextureInputKraftShader() {
-    var mixRatio by GlUniformDelegate<Float>("mixRatio")
-
-    init {
-        mixRatio = 0.5f
-    }
-
+class SimpleMixtureBlendKraftShader(
+    mixturePercent: Float = 0.5f,
+) : MixBlendKraftShader(mixturePercent) {
     override fun loadFragmentShader(): String = ALPHA_BLEND_FRAGMENT_SHADER
 }
 
@@ -23,7 +17,7 @@ private const val ALPHA_BLEND_FRAGMENT_SHADER = """
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
 
-    uniform float mixRatio;
+    uniform float mixturePercent;
 
     vec4 sampleInside(sampler2D sampler, vec2 coord) {
         if (coord.x < 0.0 || coord.x > 1.0) return vec4(0.0);
@@ -35,6 +29,6 @@ private const val ALPHA_BLEND_FRAGMENT_SHADER = """
         vec4 textureColor = sampleInside(inputImageTexture, textureCoordinate);
         vec4 textureColor2 = sampleInside(inputImageTexture2, texture2Coordinate);
         
-        gl_FragColor = mix(textureColor, textureColor2, mixRatio);
+        gl_FragColor = mix(textureColor, textureColor2, mixturePercent);
     }
 """
