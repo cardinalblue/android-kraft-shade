@@ -148,45 +148,60 @@ fun KraftShadeEffectViewTestWindow() {
                     inputTexture = bitmap.asTexture(),
                     targetBuffer = windowSurface,
                 ) {
-                    SaturationKraftShader()
-                        .addAsStep(sampledInput { saturation }) { (saturation) ->
-                            this.saturation = saturation.getCasted()
-                        }
+                    step(
+                        SaturationKraftShader(),
+                        sampledInput { saturation }
+                    ) { (saturation) ->
+                        this.saturation = saturation.getCasted()
+                    }
 
-                    HueKraftShader()
-                        .addAsStep(sampledInput { hue }) { (hue) ->
-                            this.setHueInDegree(hue.getCasted())
-                        }
+                    step(
+                        HueKraftShader(),
+                        sampledInput { hue }
+                    ) { (hue) ->
+                        this.setHueInDegree(hue.getCasted())
+                    }
 
-                    BrightnessKraftShader()
-                        .addAsStep(sampledInput { brightness }) { (brightness) ->
-                            this.brightness = brightness.getCasted()
-                        }
+                    step(
+                        BrightnessKraftShader(),
+                        sampledInput { brightness }
+                    ) { (brightness) ->
+                        this.brightness = brightness.getCasted()
+                    }
 
-                    ContrastKraftShader()
-                        .addAsStep(sampledInput { contrast }) { (contrast) ->
-                            this.contrast = contrast.getCasted()
-                        }
+                    step(
+                        ContrastKraftShader(),
+                        sampledInput { contrast }
+                    ) { (contrast) ->
+                        this.contrast = contrast.getCasted()
+                    }
 
-                    PixelationKraftShader()
-                        .addAsStep(sampledInput { pixelSize }) { (pixelSize) ->
-                            this.pixel = pixelSize.getCasted()
-                        }
+                    step(
+                        PixelationKraftShader(),
+                        sampledInput { pixelSize }
+                    ) { (pixelSize) ->
+                        this.pixel = pixelSize.getCasted()
+                    }
 
-                    GammaKraftShader()
-                        .addAsStep(sampledInput { gamma }) { (gamma) ->
-                            this.gamma = gamma.getCasted()
-                        }
+                    step(
+                        GammaKraftShader(),
+                        sampledInput { gamma }
+                    ) { (gamma) ->
+                        this.gamma = gamma.getCasted()
+                    }
 
-                    ColorMatrixKraftShader(
-                        colorMatrix = GlMat4(
-                            -1f, 0f, 0f, 0f,
-                            0f, -1f, 0f, 0f,
-                            0f, 0f, -1f, 0f,
-                            1f, 1f, 1f, 1f
+                    step(
+                        ColorMatrixKraftShader(
+                            colorMatrix = GlMat4(
+                                -1f, 0f, 0f, 0f,
+                                0f, -1f, 0f, 0f,
+                                0f, 0f, -1f, 0f,
+                                1f, 1f, 1f, 1f
+                            ),
+                            colorOffset = floatArrayOf(1f, 1f, 1f, 0f),
                         ),
-                        colorOffset = floatArrayOf(1f, 1f, 1f, 0f),
-                    ).addAsStep(sampledInput { colorMatrixIntensity }) { (intensity) ->
+                        sampledInput { colorMatrixIntensity }
+                    ) { (intensity) ->
                         this.intensity = intensity.getCasted()
                     }
                 }

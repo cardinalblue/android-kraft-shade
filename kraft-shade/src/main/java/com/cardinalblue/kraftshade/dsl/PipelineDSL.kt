@@ -160,6 +160,7 @@ class SerialTextureInputPipelineScope internal constructor(
      * know which step is the last step that we have to draw to the target buffer until all the steps
      * are added.
      */
+    @KraftShadeDsl
     fun <S : TextureInputKraftShader> step(
         shader: S,
         vararg inputs: Input<*>,
@@ -168,6 +169,7 @@ class SerialTextureInputPipelineScope internal constructor(
         steps.add(InternalStep(shader, inputs.toList(), setupAction))
     }
 
+    @KraftShadeDsl
     fun <S : TextureInputKraftShader> S.addAsStep(
         vararg inputs: Input<*>,
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
