@@ -179,7 +179,7 @@ KraftShade aims to address these limitations with:
 - [ ] Posterize
 - [x] Convolution 3x3
 - [x] Emboss Filter
-- [ ] Laplacian
+- [x] Laplacian
 - [ ] Chroma Keying
 - [ ] Kuwahara Filter
 - [ ] Kuwahara Radius3 Filter
@@ -233,7 +233,7 @@ KraftShade aims to address these limitations with:
 - [ ] Opacity
 - [ ] Weak Pixel Inclusion Filter
 - [x] Color Matrix
-- [ ] Directional Sobel Edge Detection
+- [x] Directional Sobel Edge Detection
 - [x] Lookup (LUT)
 - [ ] Tone Curve (*.acv files)
 
