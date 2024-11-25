@@ -28,6 +28,8 @@ fun KraftShadeEffectViewTestWindow() {
     var hue by remember { mutableFloatStateOf(0f) }
     var gamma by remember { mutableFloatStateOf(1.2f) }
     var colorMatrixIntensity by remember { mutableFloatStateOf(0f) }
+    var directionalSobelMixture by remember { mutableFloatStateOf(0f) }
+
     val context = LocalContext.current
 
     Column(
@@ -135,6 +137,18 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..1f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Directional Sobel Mixture",
+                value = directionalSobelMixture,
+                onValueChange = {
+                    directionalSobelMixture = it
+                    state.requestRender()
+                },
+                valueRange = 0f..1f
+            )
         }
     }
 
@@ -204,6 +218,11 @@ fun KraftShadeEffectViewTestWindow() {
                     ) { (intensity) ->
                         this.intensity = intensity.getCasted()
                     }
+
+                    stepWithMixture(
+                        DirectionalSobelEdgeDetectionKraftShader(),
+                        sampledInput { directionalSobelMixture }
+                    )
                 }
             }
         }

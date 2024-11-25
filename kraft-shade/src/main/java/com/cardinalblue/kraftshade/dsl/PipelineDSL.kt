@@ -9,6 +9,7 @@ import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
+import com.cardinalblue.kraftshade.shader.builtin.SimpleMixtureBlendKraftShader
 
 @KraftShadeDsl
 class PipelineSetupScope(
@@ -163,7 +164,32 @@ class SerialTextureInputPipelineScope internal constructor(
         vararg inputs: Input<*>,
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) {
-        steps.add(InternalStep(shader, inputs.toList(), setupAction))
+        steps.add(InternalSimpleStep(shader, inputs.toList(), setupAction))
+    }
+
+    /**
+     * This is a convenient way to add a step that mix the shader output with its input texture
+     * using [mixturePercentInput]. Some of the [KraftShader] has intensity which is usually jus a
+     * value to control the intensity of the effect by mixing the output of the shader with the
+     * original input texture. This method provides the exactly same functionality, but [shader]
+     * doesn't need to have the intensity parameter.
+     *
+     * For example, you can use [GrayScaleKraftShader] with this method, to control how colorful it
+     * is by setting the [mixturePercentInput] to 0f to 1f. By doing this, the shader turns into a
+     * saturation filter that only drop the saturation value.
+     *
+     * @param mixturePercentInput the valid range of this parameter is [0f, 1f].
+     *  - 0f means the output of the shader is ignored (bypass)
+     *  - 1f means the result is exactly the output of the shader (no input texture is mixed)
+     */
+    @KraftShadeDsl
+    fun <S : TextureInputKraftShader> stepWithMixture(
+        shader: S,
+        mixturePercentInput: Input<Float>,
+        vararg inputs: Input<*>,
+        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+    ) {
+        steps.add(InternalMixtureStep(shader, mixturePercentInput, inputs.toList(), setupAction))
     }
 
     internal fun applyToPipeline() {
@@ -186,23 +212,18 @@ class SerialTextureInputPipelineScope internal constructor(
         while (stepIterator.hasNext()) {
             val step = stepIterator.next()
             val isLastStep = !stepIterator.hasNext()
-            val targetBuffer: GlBufferProvider = if (isLastStep) this.targetBuffer else {
+            val targetBufferForStep: GlBufferProvider = if (isLastStep) this.targetBuffer else {
                 if (drawToBuffer1) buffer1 else buffer2
             }
 
-            val inputTextureProvider: TextureProvider = if (isFirstStep) inputTexture else {
+            val inputTextureForStep: TextureProvider = if (isFirstStep) inputTexture else {
                 if (drawToBuffer1) buffer2 else buffer1
             }
 
-            pipeline.addStep(
-                shader = step.shader,
-                inputs = (step.inputs + inputTextureProvider.asTextureInput()).toTypedArray(),
-                targetBuffer = targetBuffer,
-                setupAction = { inputs ->
-                    val textureInput = inputs.last() as TextureInput
-                    step.shader.setInputTexture(textureInput.get())
-                    step.setup()
-                },
+            addSingleStepToPipeline(
+                step = step,
+                textureForStep = inputTextureForStep,
+                targetBufferForStep = targetBufferForStep,
             )
 
             isFirstStep = false
@@ -221,7 +242,56 @@ class SerialTextureInputPipelineScope internal constructor(
         }
     }
 
-    private class InternalStep<S : TextureInputKraftShader>(
+    private fun addSingleStepToPipeline(
+        step: InternalStep<*>,
+        textureForStep: TextureProvider,
+        targetBufferForStep: GlBufferProvider,
+    ) {
+        fun addStepForEffect(
+            target: GlBufferProvider,
+        ) {
+            pipeline.addStep(
+                shader = step.shader,
+                // this is needed to trigger the automatic recycle mechanism
+                inputs = (step.inputs + textureForStep.asTextureInput()).toTypedArray(),
+                targetBuffer = target,
+                setupAction = { inputs ->
+                    val input = inputs.last() as TextureInput
+                    step.shader.setInputTexture(input.get())
+                    step.setup()
+                },
+            )
+        }
+        when (step) {
+            is InternalSimpleStep<*> -> {
+                addStepForEffect(targetBufferForStep)
+            }
+
+            is InternalMixtureStep<*> -> {
+                val (effectResult) = BufferReferenceCreator(
+                    pipeline.bufferPool,
+                    "$bufferReferencePrefix-serial-mixture",
+                )
+
+                addStepForEffect(effectResult)
+
+                pipeline.addStep(
+                    shader = SimpleMixtureBlendKraftShader(),
+                    textureForStep.asTextureInput(),
+                    effectResult.asTextureInput(),
+                    step.mixturePercentInput,
+                    targetBuffer = targetBufferForStep,
+                    setupAction = { (originalTextureInput, fullyAppliedInput, mixturePercentInput) ->
+                        setInputTexture(originalTextureInput.getCasted())
+                        secondInputTextureId = fullyAppliedInput.getCasted<Texture>().textureId
+                        mixturePercent = mixturePercentInput.getCasted()
+                    },
+                )
+            }
+        }
+    }
+
+    private sealed class InternalStep<S : TextureInputKraftShader>(
         val shader: S,
         val inputs: List<Input<*>> = emptyList(),
         val setupAction: suspend (S, List<Input<*>>) -> Unit = { _, _ ->},
@@ -230,4 +300,17 @@ class SerialTextureInputPipelineScope internal constructor(
             setupAction.invoke(shader, inputs)
         }
     }
+
+    private class InternalSimpleStep<S : TextureInputKraftShader>(
+        shader: S,
+        inputs: List<Input<*>> = emptyList(),
+        setupAction: suspend (S, List<Input<*>>) -> Unit = { _, _ ->},
+    )  : InternalStep<S>(shader, inputs, setupAction)
+
+    private class InternalMixtureStep<S : TextureInputKraftShader>(
+        shader: S,
+        val mixturePercentInput: Input<Float>,
+        inputs: List<Input<*>> = emptyList(),
+        setupAction: suspend (S, List<Input<*>>) -> Unit = { _, _ ->},
+    )  : InternalStep<S>(shader, inputs, setupAction)
 }
