@@ -238,7 +238,7 @@ KraftShade aims to address these limitations with:
 - [ ] Tone Curve (*.acv files)
 
 ## Others
-- [ ] Texture 3x3
+- [x] Texture 3x3
 - [x] Gray Scale
 
 ## Usage

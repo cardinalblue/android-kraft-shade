@@ -5,11 +5,9 @@ import com.cardinalblue.kraftshade.shader.builtin.EmbossKraftShader
 
 @Composable
 fun EmbossShaderScreen() {
-    SimpleShaderTestScreen { _, bitmap ->
+    SimpleShaderTestScreen { _, _ ->
         EmbossKraftShader().apply {
             intensity = 50f
-            texelWidth = 1f / bitmap.width
-            texelHeight = 1f / bitmap.height
         }
     }
 }
