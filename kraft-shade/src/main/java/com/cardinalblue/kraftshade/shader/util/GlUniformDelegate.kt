@@ -11,6 +11,7 @@ import kotlin.reflect.KProperty
 open class GlUniformDelegate<T : Any>(
     protected val name: String,
     protected val required: Boolean = true,
+    protected val checkValueForSet: (T) -> Unit = {},
 ) : ReadWriteProperty<KraftShader, T> {
     private val location: Int by lazy {
         GLES20.glGetUniformLocation(shader.glProgId, name).also { location ->
@@ -31,6 +32,7 @@ open class GlUniformDelegate<T : Any>(
     }
 
     override fun setValue(thisRef: KraftShader, property: KProperty<*>, value: T) {
+        checkValueForSet(value)
         updateThis(thisRef)
         setValue(value)
     }
