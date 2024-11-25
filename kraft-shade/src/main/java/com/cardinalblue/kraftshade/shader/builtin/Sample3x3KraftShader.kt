@@ -8,14 +8,15 @@ import org.intellij.lang.annotations.Language
 abstract class Sample3x3KraftShader : TextureInputKraftShader() {
     private var texelWidth: Float by GlUniformDelegate("texelWidth")
     private var texelHeight: Float by GlUniformDelegate("texelHeight")
+    var lineSize: Float = 1.0f
 
     override fun loadVertexShader(): String = SAMPLE_3x3_VERTEX_SHADER
 
     @CallSuper
     override fun beforeActualDraw() {
         super.beforeActualDraw()
-        texelWidth = 1f / resolution[0]
-        texelHeight = 1f / resolution[1]
+        texelWidth = lineSize / resolution[0]
+        texelHeight = lineSize / resolution[1]
     }
 }
 
