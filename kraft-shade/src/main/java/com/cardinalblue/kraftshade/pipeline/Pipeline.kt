@@ -67,7 +67,7 @@ class Pipeline internal constructor(
 
     fun <T : KraftShader> addStep(
         shader: T,
-        inputs: List<Input<*>> = emptyList(),
+        vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
         setupAction: suspend T.(List<Input<*>>) -> Unit = {},
     ) {
@@ -78,7 +78,7 @@ class Pipeline internal constructor(
         RunShaderStep(
             stepIndex = steps.size,
             shader = shader,
-            inputs = inputs,
+            inputs = inputs.toList(),
             targetBuffer = targetBuffer,
             setupAction = setupAction,
         ).let(this::addStep)

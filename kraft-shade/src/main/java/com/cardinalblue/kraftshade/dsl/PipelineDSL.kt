@@ -1,6 +1,5 @@
 package com.cardinalblue.kraftshade.dsl
 
-import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.*
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.TextureInput
@@ -23,15 +22,16 @@ class PipelineSetupScope(
         vararg namesForDebug: String
     ): BufferReferenceCreator = BufferReferenceCreator(pipeline.bufferPool, *namesForDebug)
 
+    @KraftShadeDsl
     fun step(
         purposeForDebug: String = "",
-        block: suspend GlEnv.() -> Unit
+        block: suspend GlEnvDslScope.() -> Unit
     ) {
         RunTaskStep(
             stepIndex = pipeline.stepCount,
             purposeForDebug = purposeForDebug,
             task = {
-                block(pipeline.glEnv)
+                block(GlEnvDslScope(pipeline.glEnv))
             },
         ).let(pipeline::addStep)
     }
@@ -39,10 +39,15 @@ class PipelineSetupScope(
     /**
      * The setup action should include the input texture if the [KraftShader] needs it. Unless it's
      * a shader doesn't need any input texture.
+     *
+     * @param oneTimeSetupAction This is immediately applied to the shader. A useful example is to
+     *  set up the input texture if this KraftShader is [TextureInputKraftShader]. See
+     *  [stepWithInputTexture] if you are actually working on the setup of [TextureInputKraftShader].
      */
+    @KraftShadeDsl
     suspend fun <S : KraftShader> step(
         shader: S,
-        inputs: List<Input<*>> = emptyList(),
+        vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
         oneTimeSetupAction: suspend S.() -> Unit = {},
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
@@ -57,18 +62,6 @@ class PipelineSetupScope(
     }
 
     /**
-     * @param oneTimeSetupAction This is immediately applied to the shader. A useful example is to
-     *  set up the input texture if this KraftShader is [TextureInputKraftShader]. See
-     *  [addAsStepWithInput] if you are actually working on the setup of [TextureInputKraftShader].
-     */
-    suspend fun <S : KraftShader> S.addAsStep(
-        vararg inputs: Input<*>,
-        targetBuffer: GlBufferProvider,
-        oneTimeSetupAction: suspend S.() -> Unit = {},
-        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
-    ) = step(this, inputs.toList(), targetBuffer, oneTimeSetupAction, setupAction)
-
-    /**
      * If the the shader is [TextureInputKraftShader], this function is more convenient to use. It
      * sets the input texture as a constant and adds the shader as a step to the pipeline. If you
      * use [addAsStep], you can easily forget to set the input texture.
@@ -80,25 +73,28 @@ class PipelineSetupScope(
      *  the WindowSurfaceBuffer changes, the texture will be deleted by [TextureBufferPool]. However,
      *  the texture id is set to the shader, and it won't change since it's not using a reference.
      */
-    suspend fun <S : TextureInputKraftShader> S.addAsStepWithInput(
+    suspend fun <S : TextureInputKraftShader> stepWithInputTexture(
+        shader: S,
         constantTexture: Texture,
         vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
         oneTimeSetupAction: suspend S.() -> Unit = {},
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) {
-        addAsStep(
+        step(
+            shader = shader,
             inputs = inputs,
             targetBuffer = targetBuffer,
             oneTimeSetupAction = {
                 setInputTexture(constantTexture)
                 oneTimeSetupAction()
             },
-            setupAction = setupAction,
+            setupAction = setupAction
         )
     }
 
-    suspend fun <S : TextureInputKraftShader> S.addAsStepWithInput(
+    suspend fun <S : TextureInputKraftShader> stepWithInputTexture(
+        shader: S,
         inputBufferReference: BufferReference,
         vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
@@ -106,7 +102,8 @@ class PipelineSetupScope(
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) {
         val inputsPlusTextureInput = inputs.toList() + inputBufferReference.asTextureInput()
-        addAsStep(
+        step(
+            shader,
             inputs = inputsPlusTextureInput.toTypedArray(),
             targetBuffer = targetBuffer,
             oneTimeSetupAction = oneTimeSetupAction,
@@ -169,12 +166,6 @@ class SerialTextureInputPipelineScope internal constructor(
         steps.add(InternalStep(shader, inputs.toList(), setupAction))
     }
 
-    @KraftShadeDsl
-    fun <S : TextureInputKraftShader> S.addAsStep(
-        vararg inputs: Input<*>,
-        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
-    ) = step(this, *inputs, setupAction = setupAction)
-
     internal fun applyToPipeline() {
         val stepIterator = steps.iterator()
 
@@ -205,7 +196,7 @@ class SerialTextureInputPipelineScope internal constructor(
 
             pipeline.addStep(
                 shader = step.shader,
-                inputs = step.inputs + inputTextureProvider.asTextureInput(),
+                inputs = (step.inputs + inputTextureProvider.asTextureInput()).toTypedArray(),
                 targetBuffer = targetBuffer,
                 setupAction = { inputs ->
                     val textureInput = inputs.last() as TextureInput
