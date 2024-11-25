@@ -30,6 +30,7 @@ fun KraftShadeEffectViewTestWindow() {
     var colorMatrixIntensity by remember { mutableFloatStateOf(0f) }
     var directionalSobelMixture by remember { mutableFloatStateOf(0f) }
     var laplacianMixture by remember { mutableFloatStateOf(0f) }
+    var laplacianMagnitudeMixture by remember { mutableFloatStateOf(0f) }
 
     val context = LocalContext.current
 
@@ -162,6 +163,18 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..1f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Laplacian Magnitude Mixture",
+                value = laplacianMagnitudeMixture,
+                onValueChange = {
+                    laplacianMagnitudeMixture = it
+                    state.requestRender()
+                },
+                valueRange = 0f..1f
+            )
         }
     }
 
@@ -240,6 +253,11 @@ fun KraftShadeEffectViewTestWindow() {
                     stepWithMixture(
                         LaplacianKraftShader(),
                         sampledInput { laplacianMixture }
+                    )
+
+                    stepWithMixture(
+                        LaplacianMagnitudeKraftShader(),
+                        sampledInput { laplacianMagnitudeMixture }
                     )
                 }
             }
