@@ -239,7 +239,7 @@ KraftShade aims to address these limitations with:
 
 ## Others
 - [ ] Texture 3x3
-- [ ] Gray Scale
+- [x] Gray Scale
 
 ## Usage
 
