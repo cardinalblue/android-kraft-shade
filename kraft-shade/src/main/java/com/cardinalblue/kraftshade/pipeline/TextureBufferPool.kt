@@ -48,12 +48,12 @@ internal class TextureBufferPool(
             val buffer = map.remove(ref)
             if (buffer == null) {
                 logger.w("${ref.nameForDebug} is not in the pool")
-                return
+                return@forEach
             }
             numberRecycled++
             availableBuffers.add(buffer)
             logger.d {
-                "recycle [${ref.nameForDebug}] after step $stepNameForDebug"
+                "recycle [${ref.nameForDebug}] after step [$stepNameForDebug]"
             }
         }
         logger.d { "recycled $numberRecycled buffers ($availableSize / $poolSize)" }
@@ -61,9 +61,7 @@ internal class TextureBufferPool(
 
     fun recycleAll(stepNameForDebug: String) {
         logger.d("recycle all buffers")
-        map.keys
-            .toList()
-            .forEach { recycle(stepNameForDebug, it) }
+        recycle(stepNameForDebug, *map.keys.toTypedArray())
     }
 
     // Do not remove suspend modifier here. This is only to ensure the thread is right.
