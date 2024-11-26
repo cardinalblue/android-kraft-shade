@@ -51,9 +51,9 @@ value class KraftLogger(private val tag: String) {
         val endNano = System.nanoTime()
         val time = (endNano - startNano).nanoseconds
         if (configuration == null) {
-            d("$[taskName] took $time")
+            d("[$taskName] took $time")
         } else {
-            d("$[taskName] with [$configuration] took $time")
+            d("[$taskName] with [$configuration] took $time")
         }
         return result
     }

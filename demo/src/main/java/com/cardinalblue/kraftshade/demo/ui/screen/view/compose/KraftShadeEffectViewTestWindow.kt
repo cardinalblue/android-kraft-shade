@@ -33,6 +33,8 @@ fun KraftShadeEffectViewTestWindow() {
     var laplacianMagnitudeMixture by remember { mutableFloatStateOf(0f) }
     var blurAmount by remember { mutableFloatStateOf(0f) }
     var blurRepeat by remember { mutableFloatStateOf(30f) }
+    var whiteBalanceTemperature by remember { mutableFloatStateOf(5000f) }
+    var whiteBalanceTint by remember { mutableFloatStateOf(0f) }
 
     val context = LocalContext.current
 
@@ -201,6 +203,30 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 1f..120f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "White Balance - Temperature",
+                value = whiteBalanceTemperature,
+                onValueChange = {
+                    whiteBalanceTemperature = it
+                    state.requestRender()
+                },
+                valueRange = 3000f..7000f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "White Balance - Tint",
+                value = whiteBalanceTint,
+                onValueChange = {
+                    whiteBalanceTint = it
+                    state.requestRender()
+                },
+                valueRange = -100f..100f
+            )
         }
     }
 
@@ -293,6 +319,15 @@ fun KraftShadeEffectViewTestWindow() {
                     ) { (amountInput, repeatInput) ->
                         amount = amountInput.getCasted()
                         repeat = repeatInput.getCasted()
+                    }
+
+                    step(
+                        WhiteBalanceKraftShader(),
+                        sampledInput { whiteBalanceTemperature },
+                        sampledInput { whiteBalanceTint },
+                    ) { (temperatureInput, tintInput) ->
+                        temperature = temperatureInput.getCasted()
+                        tint = tintInput.getCasted()
                     }
                 }
             }

@@ -57,7 +57,6 @@ class Pipeline internal constructor(
 
         if (buffersToRecycle.isNotEmpty()) {
             bufferPool.recycle(currentStep.toString(), *buffersToRecycle)
-            buffersToRecycle.forEach { bufferReferenceUsage.remove(it) }
         }
     }
 
@@ -85,29 +84,31 @@ class Pipeline internal constructor(
     }
 
     override suspend fun run() {
-        with(glEnv) { runPostponedTasks() }
+        logger.measureAndLog("render with the whole pipeline") {
+            with(glEnv) { runPostponedTasks() }
 
-        // Mark all sampled inputs as dirty at the start of the frame
-        sampledInputs.forEach { it.markDirty() }
-        sampledInputs.forEach { it.get() }
+            // Mark all sampled inputs as dirty at the start of the frame
+            sampledInputs.forEach { it.markDirty() }
+            sampledInputs.forEach { it.get() }
 
-        logger.d("run $stepCount steps")
-        steps.forEach { step ->
-            step.run()
-            logger.d {
-                when (step) {
-                    is RunShaderStep<*> -> "step [${step.type}:${step.stepIndex}] done with ${step.shader::class.simpleName}"
-                    is RunTaskStep -> "step [${step.type}:${step.stepIndex}] for [${step.purposeForDebug}] done"
+            logger.d("run $stepCount steps")
+            steps.forEach { step ->
+                step.run()
+                logger.d {
+                    when (step) {
+                        is RunShaderStep<*> -> "step [${step.type}:${step.stepIndex}] done with ${step.shader::class.simpleName}"
+                        is RunTaskStep -> "step [${step.type}:${step.stepIndex}] for [${step.purposeForDebug}] done"
+                    }
+                }
+
+                // Recycle buffers that won't be used anymore
+                if (automaticRecycle) {
+                    recycleUnusedBuffers(step.stepIndex)
                 }
             }
-
-            // Recycle buffers that won't be used anymore
-            if (automaticRecycle) {
-                recycleUnusedBuffers(step.stepIndex)
-            }
+            bufferPool.recycleAll("pipeline_end")
+            logger.d("the pool size is ${bufferPool.poolSize} after execution")
         }
-        bufferPool.recycleAll("pipeline_end")
-        logger.d("the pool size is ${bufferPool.poolSize} after execution")
     }
 
     private suspend fun GlEnv.runPostponedTasks() {
