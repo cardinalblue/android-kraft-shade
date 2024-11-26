@@ -181,7 +181,7 @@ fun KraftShadeEffectViewTestWindow() {
             Spacer(modifier = Modifier.height(8.dp))
 
             ParameterSlider(
-                label = "Blur Amount",
+                label = "Circular Gaussian Blur - Amount",
                 value = blurAmount,
                 onValueChange = {
                     blurAmount = it
@@ -193,7 +193,7 @@ fun KraftShadeEffectViewTestWindow() {
             Spacer(modifier = Modifier.height(8.dp))
 
             ParameterSlider(
-                label = "Blur Repeat",
+                label = "Circular Gaussian Blur - Repeat",
                 value = blurRepeat,
                 onValueChange = {
                     blurRepeat = it

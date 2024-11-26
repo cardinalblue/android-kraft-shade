@@ -56,7 +56,7 @@ class Pipeline internal constructor(
             .toTypedArray()
 
         if (buffersToRecycle.isNotEmpty()) {
-            bufferPool.recycle(*buffersToRecycle, afterStepIndex = currentStep)
+            bufferPool.recycle(currentStep.toString(), *buffersToRecycle)
             buffersToRecycle.forEach { bufferReferenceUsage.remove(it) }
         }
     }
@@ -106,7 +106,7 @@ class Pipeline internal constructor(
                 recycleUnusedBuffers(step.stepIndex)
             }
         }
-        bufferPool.recycleAll()
+        bufferPool.recycleAll("pipeline_end")
         logger.d("the pool size is ${bufferPool.poolSize} after execution")
     }
 

@@ -80,6 +80,26 @@ value class KraftLogger(private val tag: String) {
 
         var logLevel = Level.NONE
         var throwOnError = false
+
+        /**
+         * This is useful for logging debug information that is expensive to compute.
+         */
+        fun stringOrEmptyBasedOnLevel(
+            level: Level,
+            stringBuilder: () -> String
+        ): String {
+            return if (logLevel.isLoggable(level)) {
+                stringBuilder()
+            } else ""
+        }
+
+        /**
+         * This is useful for logging debug information that is expensive to compute, so if the
+         * logLevel is higher than DEBUG, we can avoid the computation.
+         */
+        fun debugStringOrEmpty(stringBuilder: () -> String): String {
+            return stringOrEmptyBasedOnLevel(Level.DEBUG, stringBuilder)
+        }
     }
 
     enum class Level {

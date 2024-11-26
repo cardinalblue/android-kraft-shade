@@ -2,15 +2,16 @@ package com.cardinalblue.kraftshade.shader.buffer
 
 import android.opengl.GLES20
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
 
-interface GlBuffer : AutoCloseable, GlBufferProvider {
+interface GlBuffer : SuspendAutoCloseable, GlBufferProvider {
     val isScreenCoordinate: Boolean
     val size: GlSize
-    fun beforeDraw()
-    fun afterDraw()
-    fun delete()
+    suspend fun beforeDraw()
+    suspend fun afterDraw()
+    suspend fun delete()
 
-    fun draw(draw: GlBuffer.() -> Unit) {
+    suspend fun draw(draw: GlBuffer.() -> Unit) {
         beforeDraw()
         GLES20.glViewport(0, 0, size.width, size.height)
         draw()

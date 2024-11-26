@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import com.cardinalblue.kraftshade.demo.shader.DrawCircleKraftShader
 import com.cardinalblue.kraftshade.model.GlColor
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
+import com.cardinalblue.kraftshade.util.use
 
 @Composable
 fun BlendingExampleScreen() {

@@ -2,8 +2,9 @@ package com.cardinalblue.kraftshade.shader.buffer
 
 import android.opengl.GLES20
 import com.cardinalblue.kraftshade.OpenGlUtils
+import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
 
-open class Texture : AutoCloseable, TextureProvider {
+open class Texture : SuspendAutoCloseable, TextureProvider {
     var textureId: Int
         private set
 
@@ -32,13 +33,13 @@ open class Texture : AutoCloseable, TextureProvider {
 
     fun isValid() = textureId != OpenGlUtils.NO_TEXTURE_ID
 
-    open fun delete() {
+    open suspend fun delete() {
         if (!isValid()) return
         GLES20.glDeleteTextures(1, intArrayOf(textureId), 0)
         textureId = OpenGlUtils.NO_TEXTURE_ID
     }
 
-    override fun close() {
+    override suspend fun close() {
         delete()
     }
 

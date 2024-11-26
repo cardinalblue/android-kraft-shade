@@ -38,12 +38,12 @@ class TextureBuffer(
 
     constructor(width: Int, height: Int) : this(GlSize(width, height))
 
-    override fun beforeDraw() {
+    override suspend fun beforeDraw() {
         logger.v("Drawing to texture buffer")
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, bufferId)
     }
 
-    override fun afterDraw() {
+    override suspend fun afterDraw() {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
     }
 
@@ -54,7 +54,7 @@ class TextureBuffer(
         }
     }
 
-    override fun delete() {
+    override suspend fun delete() {
         logger.i("Deleting texture buffer")
         super.delete()
         GLES20.glDeleteFramebuffers(1, intArrayOf(bufferId), 0)

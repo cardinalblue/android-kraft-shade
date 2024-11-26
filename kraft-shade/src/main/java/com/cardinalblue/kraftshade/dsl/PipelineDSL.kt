@@ -10,6 +10,8 @@ import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.builtin.SimpleMixtureBlendKraftShader
+import com.cardinalblue.kraftshade.util.KraftLogger
+import com.cardinalblue.kraftshade.util.shortHash
 
 @KraftShadeDsl
 class PipelineSetupScope(
@@ -146,7 +148,7 @@ class SerialTextureInputPipelineScope internal constructor(
     private val inputTexture: TextureProvider,
     private val targetBuffer: GlBufferProvider,
 ) {
-    private val bufferReferencePrefix = "$currentStepIndex"
+    private val bufferReferencePrefix = "s$currentStepIndex"
     private val steps = mutableListOf<InternalStep<*>>()
 
     /**
@@ -199,8 +201,8 @@ class SerialTextureInputPipelineScope internal constructor(
         var drawToBuffer1 = true
         val (buffer1, buffer2) = BufferReferenceCreator(
             pipeline.bufferPool,
-            "$bufferReferencePrefix-serial-ping",
-            "$bufferReferencePrefix-serial-pong",
+            "$bufferReferencePrefix-ping",
+            "$bufferReferencePrefix-pong",
         )
 
         check(stepIterator.hasNext()) {
@@ -236,7 +238,7 @@ class SerialTextureInputPipelineScope internal constructor(
                     this@SerialTextureInputPipelineScope
                         .pipeline
                         .bufferPool
-                        .recycle(buffer1, buffer2)
+                        .recycle("serial_end", buffer1, buffer2)
                 }
             }
         }
@@ -268,9 +270,15 @@ class SerialTextureInputPipelineScope internal constructor(
             }
 
             is InternalMixtureStep<*> -> {
+                val debugStepName = KraftLogger.debugStringOrEmpty {
+                    val currentIndex = pipeline.stepCount
+                    val effectType = step.shader::class.java.simpleName
+                    "m$currentIndex-$effectType"
+                }
+
                 val (effectResult) = BufferReferenceCreator(
                     pipeline.bufferPool,
-                    "$bufferReferencePrefix-serial-mixture",
+                    "$bufferReferencePrefix-$debugStepName",
                 )
 
                 addStepForEffect(effectResult)

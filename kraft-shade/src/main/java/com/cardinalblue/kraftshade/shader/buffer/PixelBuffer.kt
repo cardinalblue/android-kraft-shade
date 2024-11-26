@@ -31,7 +31,7 @@ class PixelBuffer internal constructor(
         glEnv.makeCurrent(pbufferSurface)
     }
 
-    override fun delete() {
+    override suspend fun delete() {
         logger.i("Deleting pixel buffer")
         with(glEnv.egl10) {
             eglMakeCurrent(
@@ -42,24 +42,26 @@ class PixelBuffer internal constructor(
         }
     }
 
-    override fun close() {
+    override suspend fun close() {
         delete()
     }
 
-    override fun beforeDraw() {
+    override suspend fun beforeDraw() {
         makeCurrent()
     }
 
-    override fun afterDraw() {
+    override suspend fun afterDraw() {
         // do nothing
     }
 
-    fun getBitmap(): Bitmap {
-        makeCurrent()
-        return OpenGlUtils.createBitmapFromBuffer(size)
+    suspend fun getBitmap(): Bitmap {
+        return glEnv.execute {
+            makeCurrent()
+            OpenGlUtils.createBitmapFromBuffer(size)
+        }
     }
 
-    fun render(drawBlock: GlBuffer.() -> Unit): Bitmap {
+    suspend fun render(drawBlock: GlBuffer.() -> Unit): Bitmap {
         draw(drawBlock)
         return getBitmap()
     }

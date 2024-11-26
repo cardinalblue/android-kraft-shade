@@ -79,18 +79,18 @@ class WindowSurfaceBuffer(
         glEnv.swapBuffers(windowSurface)
     }
 
-    override fun beforeDraw() {
+    override suspend fun beforeDraw() {
         glEnv.makeCurrent(windowSurface)
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
-    override fun afterDraw() {
+    override suspend fun afterDraw() {
         swapBuffers()
         logger.d { "drawn ($size)" }
     }
 
-    override fun delete() {
+    override suspend fun delete() {
         // in this case, windowSurface is not created yet, so we don't have to destroy it
         if (surfaceTexture == null) return
 
@@ -103,7 +103,7 @@ class WindowSurfaceBuffer(
         }
     }
 
-    override fun close() {
+    override suspend fun close() {
         delete()
     }
 

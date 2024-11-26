@@ -40,8 +40,8 @@ internal class TextureBufferPool(
     }
 
     fun recycle(
+        stepNameForDebug: String,
         vararg bufferReferences: BufferReference,
-        afterStepIndex: Int? = null
     ) {
         var numberRecycled = 0
         bufferReferences.forEach { ref ->
@@ -53,17 +53,17 @@ internal class TextureBufferPool(
             numberRecycled++
             availableBuffers.add(buffer)
             logger.d {
-                "recycle [${ref.nameForDebug}] after step $afterStepIndex"
+                "recycle [${ref.nameForDebug}] after step $stepNameForDebug"
             }
         }
         logger.d { "recycled $numberRecycled buffers ($availableSize / $poolSize)" }
     }
 
-    fun recycleAll() {
+    fun recycleAll(stepNameForDebug: String) {
         logger.d("recycle all buffers")
         map.keys
             .toList()
-            .forEach { recycle(it) }
+            .forEach { recycle(stepNameForDebug, it) }
     }
 
     // Do not remove suspend modifier here. This is only to ensure the thread is right.
