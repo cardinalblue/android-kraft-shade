@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.env
 
+import android.content.Context
 import android.graphics.SurfaceTexture
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
@@ -15,7 +16,11 @@ import javax.microedition.khronos.opengles.GL10
  * Manages the OpenGL ES environment and EGL context.
  * This class handles the initialization of EGL, creation of surfaces, and management of the GL context.
  */
-class GlEnv {
+class GlEnv(
+    context: Context,
+) {
+    val appContext: Context = context.applicationContext
+
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val logger = KraftLogger("GlEnv")
 

@@ -65,7 +65,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
 
     private suspend fun suspendInit() {
         initLock.withLock {
-            glEnv = GlEnv().apply {
+            glEnv = GlEnv(context).apply {
                 execute {
                     val surface = WindowSurfaceBuffer(
                         glEnv = env,

@@ -30,7 +30,7 @@ fun KraftBitmapTestScreen() {
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         val inputBitmap = context.loadBitmapFromAsset("sample/cat.jpg")
-        bitmap = kraftBitmapFrom(inputBitmap) { // compare to GPUImage
+        bitmap = kraftBitmapFrom(context, inputBitmap) { // compare to GPUImage
             // compare to GPUImageFilterGroup
             serialPipeline {
                 addShader { ContrastKraftShader(4f) }

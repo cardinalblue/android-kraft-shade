@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import com.cardinalblue.kraftshade.env.GlEnv
 
 @Composable
@@ -35,8 +36,9 @@ fun BasicGlEnvScreen(
         }
     }
 
+    val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
-        val glEnv = GlEnv()
+        val glEnv = GlEnv(context)
         val bitmap = glEnv.execute {
             imageGeneration
                 .invoke(env)

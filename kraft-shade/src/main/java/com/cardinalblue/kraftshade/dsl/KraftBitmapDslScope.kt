@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.dsl
 
+import android.content.Context
 import android.graphics.Bitmap
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
@@ -8,11 +9,12 @@ import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 
 suspend fun kraftBitmap(
+    context: Context,
     outputWidth: Int,
     outputHeight: Int,
     block: suspend KraftBitmapDslScope.() -> Bitmap
 ) : Bitmap {
-    return GlEnv().use {
+    return GlEnv(context).use {
         env.execute {
             val scope = KraftBitmapDslScope(outputWidth, outputHeight, env)
             scope.block()
@@ -47,10 +49,11 @@ class KraftBitmapDslScope(
 }
 
 suspend fun kraftBitmapFrom(
+    context: Context,
     inputBitmap: Bitmap,
     block: suspend KraftBitmapWithInputDslScope.() -> Bitmap
 ): Bitmap {
-    return GlEnv().use {
+    return GlEnv(context).use {
         env.execute {
             val scope = KraftBitmapWithInputDslScope(inputBitmap, env)
             scope.block()
