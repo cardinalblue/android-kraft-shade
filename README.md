@@ -29,7 +29,7 @@ While GPUImage has been a popular choice for Android graphics processing, it com
    - Insufficient development tooling
    - Limited View component support
    - No active maintenance since 2021
-   
+
 
 ## Goals
 
@@ -224,8 +224,8 @@ KraftShade aims to address these limitations with:
 - [ ] Hue Blend
 - [ ] Saturation Blend
 - [ ] Luminosity Blend
-- [ ] Normal Blend
-- [ ] Source Over Blend
+- [x] Normal Blend
+- [x] Source Over Blend
 - [x] Alpha Blend
 - [ ] Non Maximum Suppression
 - [ ] Thresholded Non Maximum Suppression
@@ -264,7 +264,7 @@ class MyCustomShader : KraftShader() {
         precision mediump float;
         varying vec2 textureCoordinate;
         uniform sampler2D inputImageTexture;
-        
+
         void main() {
             vec4 color = texture2D(inputImageTexture, textureCoordinate);
             gl_FragColor = color;
@@ -300,11 +300,11 @@ Create custom effects by extending `KraftShader`:
 ```kotlin
 class CustomEffect : KraftShader() {
     private var intensity by GlUniformDelegate("intensity")
-    
+
     override fun loadFragmentShader(): String = """
         // Your shader code here
     """.trimIndent()
-    
+
     fun setIntensity(value: Float) {
         // no need to get the location anymore. GlUniformDelegate will handle it.
         intensity = value

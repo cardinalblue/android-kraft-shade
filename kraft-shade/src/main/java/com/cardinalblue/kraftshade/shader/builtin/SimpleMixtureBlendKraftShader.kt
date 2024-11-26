@@ -28,7 +28,7 @@ private const val ALPHA_BLEND_FRAGMENT_SHADER = """
     void main() {
         vec4 textureColor = sampleInside(inputImageTexture, textureCoordinate);
         vec4 textureColor2 = sampleInside(inputImageTexture2, texture2Coordinate);
-        
+
         gl_FragColor = mix(textureColor, textureColor2, mixturePercent);
     }
 """

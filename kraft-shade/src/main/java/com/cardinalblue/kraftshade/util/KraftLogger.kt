@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.util
 
 import android.util.Log
+import kotlinx.coroutines.CancellationException
 
 @JvmInline
 value class KraftLogger(private val tag: String) {
@@ -42,7 +43,12 @@ value class KraftLogger(private val tag: String) {
         try {
             block()
         } catch (e: Exception) {
-            e("$LOG_PREFIX ${e.message}", e)
+            if (e is CancellationException) {
+                d("a job was cancelled (probably due to slow)")
+                return
+            }
+
+            e("${e.message}", e)
 
             if (throwOnError) {
                 throw e

@@ -73,19 +73,19 @@ class ColorMappingKraftShader(
 private const val COLOR_MAPPING_FRAGMENT_SHADER = """
     precision mediump float;
     varying vec2 textureCoordinate;
-    
+
     uniform sampler2D inputImageTexture;
     uniform float colorMappings[64]; // Max 8 mappings (8 * 8 floats)
     uniform int numMappings;         // Number of mappings (pairs of source/target)
     uniform float tolerance;         // Tolerance for matching
-    
+
     void main() {
         vec4 inputColor = texture2D(inputImageTexture, textureCoordinate);
         vec4 outputColor = inputColor;
-        
+
         for (int i = 0; i < 8; i++) { // Max 8 mappings
             if (i >= numMappings) break;
-            
+
             // Read source and target colors
             vec4 sourceColor = vec4(
                 colorMappings[i * 8 + 0],
@@ -99,14 +99,14 @@ private const val COLOR_MAPPING_FRAGMENT_SHADER = """
                 colorMappings[i * 8 + 6],
                 colorMappings[i * 8 + 7]
             );
-            
+
             // Check if the input color matches the source color within the tolerance
             if (length(inputColor - sourceColor) <= tolerance) {
                 outputColor = targetColor;
                 break; // Match found, exit loop
             }
         }
-        
+
         gl_FragColor = outputColor;
     }
 """

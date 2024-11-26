@@ -41,7 +41,7 @@ void main()
 {
     lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
     lowp vec4 outputColor = textureColor * colorMatrix + colorOffset;
-    
+
     gl_FragColor = mix(textureColor, outputColor, intensity);
 }
 """

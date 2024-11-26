@@ -26,7 +26,7 @@ class Pipeline internal constructor(
      * Used for tracking the index of the last step using a [BufferReference]
      */
     private val bufferReferenceUsage = mutableMapOf<BufferReference, Int>()
-    
+
     private val postponedTasks: MutableList<suspend GlEnv.() -> Unit> = mutableListOf()
 
     protected fun runDeferred(block: suspend GlEnv.() -> Unit) {

@@ -15,13 +15,13 @@ class TransparencyShader : KraftShader() {
     override fun loadFragmentShader(): String = """
         precision mediump float;
         varying vec2 textureCoordinate;
-        
+
         void main() {
             // Create a circular mask
             vec2 center = vec2(0.5, 0.5);
             float radius = 0.4;
             float dist = distance(textureCoordinate, center);
-            
+
             // Inside the circle: semi-transparent blue
             // Outside the circle: fully transparent
             if (dist < radius) {
@@ -62,7 +62,7 @@ fun TransparencyTestWindow() {
         state.runGlTask { windowSurface ->
             // Set a 1:1 aspect ratio for the circular shader
             imageAspectRatio = 1.0f
-            
+
             TransparencyShader().apply {
                 drawTo(windowSurface)
             }

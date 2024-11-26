@@ -31,6 +31,8 @@ fun KraftShadeEffectViewTestWindow() {
     var directionalSobelMixture by remember { mutableFloatStateOf(0f) }
     var laplacianMixture by remember { mutableFloatStateOf(0f) }
     var laplacianMagnitudeMixture by remember { mutableFloatStateOf(0f) }
+    var blurAmount by remember { mutableFloatStateOf(0f) }
+    var blurRepeat by remember { mutableFloatStateOf(30f) }
 
     val context = LocalContext.current
 
@@ -175,6 +177,30 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..1f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Blur Amount",
+                value = blurAmount,
+                onValueChange = {
+                    blurAmount = it
+                    state.requestRender()
+                },
+                valueRange = 0f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Blur Repeat",
+                value = blurRepeat,
+                onValueChange = {
+                    blurRepeat = it
+                    state.requestRender()
+                },
+                valueRange = 1f..120f
+            )
         }
     }
 
@@ -191,43 +217,43 @@ fun KraftShadeEffectViewTestWindow() {
                     step(
                         SaturationKraftShader(),
                         sampledInput { saturation }
-                    ) { (saturation) ->
-                        this.saturation = saturation.getCasted()
+                    ) { (saturationInput) ->
+                        this.saturation = saturationInput.getCasted()
                     }
 
                     step(
                         HueKraftShader(),
                         sampledInput { hue }
-                    ) { (hue) ->
-                        this.setHueInDegree(hue.getCasted())
+                    ) { (hueInput) ->
+                        setHueInDegree(hueInput.getCasted())
                     }
 
                     step(
                         BrightnessKraftShader(),
                         sampledInput { brightness }
-                    ) { (brightness) ->
-                        this.brightness = brightness.getCasted()
+                    ) { (brightnessInput) ->
+                        this.brightness = brightnessInput.getCasted()
                     }
 
                     step(
                         ContrastKraftShader(),
                         sampledInput { contrast }
-                    ) { (contrast) ->
-                        this.contrast = contrast.getCasted()
+                    ) { (contrastInput) ->
+                        this.contrast = contrastInput.getCasted()
                     }
 
                     step(
                         PixelationKraftShader(),
                         sampledInput { pixelSize }
-                    ) { (pixelSize) ->
-                        this.pixel = pixelSize.getCasted()
+                    ) { (pixelSizeInput) ->
+                        pixel = pixelSizeInput.getCasted()
                     }
 
                     step(
                         GammaKraftShader(),
                         sampledInput { gamma }
-                    ) { (gamma) ->
-                        this.gamma = gamma.getCasted()
+                    ) { (gammaInput) ->
+                        this.gamma = gammaInput.getCasted()
                     }
 
                     step(
@@ -241,8 +267,8 @@ fun KraftShadeEffectViewTestWindow() {
                             colorOffset = floatArrayOf(1f, 1f, 1f, 0f),
                         ),
                         sampledInput { colorMatrixIntensity }
-                    ) { (intensity) ->
-                        this.intensity = intensity.getCasted()
+                    ) { (intensityInput) ->
+                        intensity = intensityInput.getCasted()
                     }
 
                     stepWithMixture(
@@ -259,6 +285,15 @@ fun KraftShadeEffectViewTestWindow() {
                         LaplacianMagnitudeKraftShader(),
                         sampledInput { laplacianMagnitudeMixture }
                     )
+
+                    step(
+                        CircularGaussianBlurKraftShader(),
+                        sampledInput { blurAmount },
+                        sampledInput { blurRepeat },
+                    ) { (amountInput, repeatInput) ->
+                        amount = amountInput.getCasted()
+                        repeat = repeatInput.getCasted()
+                    }
                 }
             }
         }
