@@ -1,3 +1,4 @@
+@file:OptIn(DangerousKraftShadeApi::class)
 package com.cardinalblue.kraftshade.widget
 
 import android.content.Context
@@ -11,6 +12,7 @@ import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.pipeline.input.TimeInput
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
+import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

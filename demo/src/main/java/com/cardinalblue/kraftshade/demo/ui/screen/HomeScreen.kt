@@ -20,6 +20,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.ColorfulCrosshatc
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.CrosshatchTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeAnimatedViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeEffectViewTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.CircularGaussianPerformanceTestWindow
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
 
 @Composable
@@ -76,6 +77,7 @@ enum class Destination(
     CrosshatchShader("crosshatch_shader", "Crosshatch Shader", screen = { CrosshatchTestScreen() }),
     ColorfulCrosshatchShader("colorful_crosshatch_shader", "Colorful Crosshatch Shader", screen = { ColorfulCrosshatchTestScreen() }),
     KraftBitmap("kraft_bitmap", "Kraft Bitmap", screen = { KraftBitmapTestScreen() }),
+    CircularGaussianPerformance("circular_gaussian_performance", "Circular Gaussian Performance", screen = { CircularGaussianPerformanceTestWindow() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {

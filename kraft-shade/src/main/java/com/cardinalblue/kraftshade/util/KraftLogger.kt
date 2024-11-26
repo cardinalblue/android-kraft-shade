@@ -2,6 +2,8 @@ package com.cardinalblue.kraftshade.util
 
 import android.util.Log
 import kotlinx.coroutines.CancellationException
+import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.TimedValue
 
 @JvmInline
 value class KraftLogger(private val tag: String) {
@@ -37,6 +39,23 @@ value class KraftLogger(private val tag: String) {
         } else {
             Log.e(tag, "$LOG_PREFIX $message")
         }
+    }
+
+    inline fun <T> measureAndLog(
+        taskName: String,
+        configuration: String? = null,
+        block: () -> T
+    ) : T {
+        val startNano = System.nanoTime()
+        val result = block()
+        val endNano = System.nanoTime()
+        val time = (endNano - startNano).nanoseconds
+        if (configuration == null) {
+            d("$[taskName] took $time")
+        } else {
+            d("$[taskName] with [$configuration] took $time")
+        }
+        return result
     }
 
     inline fun tryAndLog(block: () -> Unit) {

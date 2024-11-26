@@ -1,3 +1,4 @@
+@file:OptIn(DangerousKraftShadeApi::class)
 package com.cardinalblue.kraftshade.widget
 
 import android.content.Context
@@ -5,9 +6,8 @@ import android.util.AttributeSet
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.EffectExecution
-import com.cardinalblue.kraftshade.pipeline.Pipeline
-import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
+import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -21,7 +21,10 @@ open class KraftEffectTextureView : KraftTextureView {
     private val logger = KraftLogger("KraftEffectTextureView")
     private var attachScope: CoroutineScope? = null
 
-    protected var effectExecution: EffectExecution? = null
+    @DangerousKraftShadeApi
+    var effectExecution: EffectExecution? = null
+        private set
+
     protected var job: Job? = null
 
     private val renderFlow = MutableSharedFlow<Unit>()
