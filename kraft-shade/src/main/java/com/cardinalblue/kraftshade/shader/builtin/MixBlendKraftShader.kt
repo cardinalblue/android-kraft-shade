@@ -7,4 +7,8 @@ abstract class MixBlendKraftShader(
     mixturePercent: Float = 0.5f,
 ) : TwoTextureInputKraftShader() {
     var mixturePercent: Float by GlUniformDelegate("mixturePercent")
+
+    init {
+        this.mixturePercent = mixturePercent
+    }
 }
