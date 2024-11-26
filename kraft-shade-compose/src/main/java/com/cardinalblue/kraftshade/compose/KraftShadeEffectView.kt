@@ -1,3 +1,4 @@
+@file:OptIn(DangerousKraftShadeApi::class)
 package com.cardinalblue.kraftshade.compose
 
 import androidx.compose.runtime.Composable
@@ -53,7 +54,7 @@ open class KraftShadeEffectState(scope: CoroutineScope) : KraftShadeBaseState<Kr
      * You have to make sure the effect is already set before calling this method.
      * Usually, you would do it with the [afterSet] param in [setEffect] method.
      */
-    @OptIn(DangerousKraftShadeApi::class)
+    @DangerousKraftShadeApi
     suspend fun renderBlocking(): Unit = withContext(Dispatchers.Default) {
         mutex.withLock {
             val view = requireNotNull(view)

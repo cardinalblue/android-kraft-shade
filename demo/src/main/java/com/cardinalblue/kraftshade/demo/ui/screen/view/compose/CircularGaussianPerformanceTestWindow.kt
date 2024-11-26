@@ -16,6 +16,7 @@ import com.cardinalblue.kraftshade.pipeline.asEffectExecution
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.CircularGaussianBlurKraftShader
+import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlin.time.Duration
 import kotlin.time.measureTime
@@ -57,6 +58,7 @@ fun CircularGaussianPerformanceTestWindow() {
                     var totalTime: Duration = Duration.ZERO
                     for (i in 1..5) {
                         val time = measureTime {
+                            @OptIn(DangerousKraftShadeApi::class)
                             state.renderBlocking()
                         }
                         totalTime += time
