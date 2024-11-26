@@ -6,6 +6,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.cardinalblue.kraftshade.widget.KraftTextureView
 import com.cardinalblue.kraftshade.widget.KraftTextureViewTask
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -29,7 +30,7 @@ open class KraftShadeBaseState<V : KraftTextureView> internal constructor(
     }
 
     fun launchWithLock(block: suspend (view: V) -> Unit): Job {
-        return scope.launch {
+        return scope.launch(Dispatchers.Default) {
             mutex.withLock {
                 block(view!!)
             }

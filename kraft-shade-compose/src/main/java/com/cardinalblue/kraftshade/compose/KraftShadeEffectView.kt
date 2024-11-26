@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.pipeline.EffectExecution
+import com.cardinalblue.kraftshade.pipeline.EffectExecutionProvider
+import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -43,7 +45,7 @@ open class KraftShadeEffectState(scope: CoroutineScope) : KraftShadeBaseState<Kr
     private val logger = KraftLogger("KraftEffectTextureView")
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
-        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> EffectExecution
+        effectExecutionProvider: EffectExecutionProvider,
     ) {
         launchWithLock { view ->
             view.setEffect(afterSet, effectExecutionProvider)

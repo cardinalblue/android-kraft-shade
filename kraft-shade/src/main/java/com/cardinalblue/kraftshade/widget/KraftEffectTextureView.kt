@@ -2,6 +2,7 @@
 package com.cardinalblue.kraftshade.widget
 
 import android.content.Context
+import android.opengl.GLES20
 import android.util.AttributeSet
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
@@ -33,7 +34,11 @@ open class KraftEffectTextureView : KraftTextureView {
         override fun onWindowSurfaceBufferReady() {}
 
         override fun onWindowSurfaceBufferSizeChanged(size: GlSize) {
-            runGlTask {
+            runGlTask { windowSurface ->
+                windowSurface.beforeDraw()
+                GLES20.glClearColor(0f, 0f, 0f, 1f)
+                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+                windowSurface.afterDraw()
                 effectExecution?.onBufferSizeChanged(size)
                 requestRender()
             }

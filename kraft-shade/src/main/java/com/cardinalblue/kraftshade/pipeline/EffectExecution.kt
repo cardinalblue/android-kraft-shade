@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.pipeline
 
+import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
@@ -45,3 +46,5 @@ fun <S : KraftShader> S.asEffectExecution(
         // no need to do anything since the shader is not aware of the buffer size
     }
 }
+
+typealias EffectExecutionProvider = suspend GlEnvDslScope.(glBuffer: GlBuffer) -> EffectExecution

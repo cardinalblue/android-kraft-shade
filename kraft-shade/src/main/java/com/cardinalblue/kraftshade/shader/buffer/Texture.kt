@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.shader.buffer
 
+import android.graphics.Bitmap
 import android.opengl.GLES20
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
@@ -55,4 +56,26 @@ open class Texture : SuspendAutoCloseable, TextureProvider {
  */
 fun interface TextureProvider {
     fun provideTexture(): Texture
+}
+
+class ExternalBitmapTextureProvider(
+    private val provider: () -> Bitmap?,
+) : TextureProvider {
+    private val loadedTexture = LoadedTexture()
+    private var bitmapHash: Int = 0
+
+    override fun provideTexture(): Texture {
+        val bitmap = provider()
+        if (bitmap != null) {
+            if (bitmap.hashCode() != bitmapHash) {
+                loadedTexture.load(bitmap)
+                bitmapHash = bitmap.hashCode()
+            }
+        }
+        return loadedTexture
+    }
+}
+
+fun externalBitmapTextureProvider(provider: () -> Bitmap?): TextureProvider {
+    return ExternalBitmapTextureProvider(provider)
 }
