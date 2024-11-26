@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.shader.util
 
 import android.opengl.GLES20
+import com.cardinalblue.kraftshade.model.GlColor
 import com.cardinalblue.kraftshade.model.GlMat2
 import com.cardinalblue.kraftshade.model.GlMat3
 import com.cardinalblue.kraftshade.model.GlMat4
@@ -69,6 +70,10 @@ open class GlUniformDelegate<T : Any>(
 
                 is GlMat4 -> {
                     GLES20.glUniformMatrix4fv(location, 1, false, value.arr, 0)
+                }
+
+                is GlColor -> {
+                    GLES20.glUniform4fv(location, 1, value.vec4, 0)
                 }
 
                 else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
