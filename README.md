@@ -241,6 +241,16 @@ KraftShade aims to address these limitations with:
 - [x] Texture 3x3
 - [x] Gray Scale
 
+## Roadmap
+
+1. **Dynamic Shader Bypass Mechanism**
+   - Implement a mechanism to map GlReference outputs to inputs, allowing steps to skip shader execution
+   - Steps can decide not to run shaders based on inputs and mark output target buffers as mapped from its input buffer (the main texture of TextureInputKraftShader)
+   - Modify automatic recycling mechanism to check if any BufferReferences in later steps are mapped to the current buffer to decide whether to recycle or not
+   - This optimization will improve performance by avoiding unnecessary shader executions based on dynamic inputs
+   - We may need a DSL scope for the block of setting up the shader for this
+   - GlReference mapping state will be cleared at the beginning of each Pipeline run
+
 ## Usage
 
 ### Basic Setup

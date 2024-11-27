@@ -11,7 +11,6 @@ import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.builtin.SimpleMixtureBlendKraftShader
 import com.cardinalblue.kraftshade.util.KraftLogger
-import com.cardinalblue.kraftshade.util.shortHash
 
 @KraftShadeDsl
 class PipelineSetupScope(
