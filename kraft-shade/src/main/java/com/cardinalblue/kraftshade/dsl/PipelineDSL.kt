@@ -264,11 +264,11 @@ class SerialTextureInputPipelineScope internal constructor(
             )
         }
         when (step) {
-            is InternalSimpleStep<*> -> {
+            is InternalSimpleStep -> {
                 addStepForEffect(targetBufferForStep)
             }
 
-            is InternalMixtureStep<*> -> {
+            is InternalMixtureStep -> {
                 val debugStepName = KraftLogger.debugStringOrEmpty {
                     val currentIndex = pipeline.stepCount
                     val effectType = step.shader::class.java.simpleName
