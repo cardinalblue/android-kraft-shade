@@ -131,7 +131,7 @@ KraftShade aims to address these limitations with:
 - [ ] RGB
 - [ ] RGB Diation
 - [x] Hue
-- [ ] White Balance
+- [x] White Balance
 - [ ] Monochrome
 - [ ] False Color
 - [ ] Sharpen
@@ -214,7 +214,7 @@ KraftShade aims to address these limitations with:
 - [ ] Color Burn Blend
 - [ ] Color Dodge Blend
 - [ ] Linear Burn Blend
-- [ ] Screen Blend
+- [x] Screen Blend
 - [ ] Difference Blend
 - [ ] Subtract Blend
 - [ ] Exclusion Blend
