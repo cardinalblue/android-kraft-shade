@@ -3,7 +3,7 @@ package com.cardinalblue.kraftshade.pipeline.input
 import org.junit.Assert
 import org.junit.Test
 
-class MappedInputTest {
+class MappedSampledInputTest {
     @Test
     fun `mapping as double`() {
         var testValue = 2

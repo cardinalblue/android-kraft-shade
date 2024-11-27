@@ -82,12 +82,11 @@ fun ColorfulCrosshatchTestScreen() {
                         }
 
                         stepWithInputTexture(
-                            MultiplyBlendKraftShader(),
+                            MultiplyBlendKraftShader().apply {
+                                setSecondInputTexture(inputTexture)
+                            },
                             invertedCrosshatch,
                             targetBuffer = windowSurface,
-                            oneTimeSetupAction = {
-                                setSecondInputTexture(inputTexture)
-                            }
                         )
                     }
                 }

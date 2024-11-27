@@ -41,20 +41,14 @@ class PipelineSetupScope(
     /**
      * The setup action should include the input texture if the [KraftShader] needs it. Unless it's
      * a shader doesn't need any input texture.
-     *
-     * @param oneTimeSetupAction This is immediately applied to the shader. A useful example is to
-     *  set up the input texture if this KraftShader is [TextureInputKraftShader]. See
-     *  [stepWithInputTexture] if you are actually working on the setup of [TextureInputKraftShader].
      */
     @KraftShadeDsl
     suspend fun <S : KraftShader> step(
         shader: S,
-        vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
-        oneTimeSetupAction: suspend S.() -> Unit = {},
+        vararg inputs: Input<*>,
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) {
-        oneTimeSetupAction.invoke(shader)
         pipeline.addStep(
             shader = shader,
             inputs = inputs,
@@ -78,19 +72,16 @@ class PipelineSetupScope(
     suspend fun <S : TextureInputKraftShader> stepWithInputTexture(
         shader: S,
         constantTexture: Texture,
-        vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
-        oneTimeSetupAction: suspend S.() -> Unit = {},
+        vararg inputs: Input<*>,
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) {
+        shader.setInputTexture(constantTexture)
+
         step(
             shader = shader,
             inputs = inputs,
             targetBuffer = targetBuffer,
-            oneTimeSetupAction = {
-                setInputTexture(constantTexture)
-                oneTimeSetupAction()
-            },
             setupAction = setupAction
         )
     }
@@ -100,7 +91,6 @@ class PipelineSetupScope(
         inputBufferReference: BufferReference,
         vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
-        oneTimeSetupAction: suspend S.() -> Unit = {},
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},
     ) {
         val inputsPlusTextureInput = inputs.toList() + inputBufferReference.asTextureInput()
@@ -108,7 +98,6 @@ class PipelineSetupScope(
             shader,
             inputs = inputsPlusTextureInput.toTypedArray(),
             targetBuffer = targetBuffer,
-            oneTimeSetupAction = oneTimeSetupAction,
             setupAction = { _inputs ->
                 val textureInput = _inputs.last() as TextureInput
                 setInputTexture(textureInput.get())
