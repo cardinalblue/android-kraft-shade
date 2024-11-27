@@ -1,10 +1,7 @@
 package com.cardinalblue.kraftshade.shader.util
 
 import android.opengl.GLES20
-import com.cardinalblue.kraftshade.model.GlColor
-import com.cardinalblue.kraftshade.model.GlMat2
-import com.cardinalblue.kraftshade.model.GlMat3
-import com.cardinalblue.kraftshade.model.GlMat4
+import com.cardinalblue.kraftshade.model.*
 import com.cardinalblue.kraftshade.shader.KraftShader
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -58,6 +55,10 @@ open class GlUniformDelegate<T : Any>(
                         4 -> GLES20.glUniform4fv(location, 1, value, 0)
                         else -> GLES20.glUniform1fv(location, value.size, value, 0)
                     }
+                }
+
+                is GlSizeF -> {
+                    GLES20.glUniform2fv(location, 1, value.vec2, 0)
                 }
 
                 is GlMat2 -> {
