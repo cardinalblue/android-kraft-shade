@@ -1,0 +1,42 @@
+package com.cardinalblue.kraftshade.shader.builtin.bypass
+
+import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
+import org.intellij.lang.annotations.Language
+
+/**
+ * TODO: temporary solution
+ * A better solution will be bypassing by marking a [BufferReference] mapped to another
+ * [BufferReference]. Look for 'Dynamic Shader Bypass Mechanism' in README.md.
+ */
+class ByPassableTextureInputKraftShader<T : TextureInputKraftShader>(
+    val wrappedShader: T,
+    bypass: Boolean = false
+) : TextureInputKraftShader() {
+    var bypass: Boolean = bypass
+
+    override fun setInputTexture(textureId: Int) {
+        super.setInputTexture(textureId)
+        wrappedShader.setInputTexture(textureId)
+    }
+
+    override fun draw(bufferSize: GlSize, isScreenCoordinate: Boolean) {
+        if (bypass) {
+            super.draw(bufferSize, isScreenCoordinate)
+        } else {
+            wrappedShader.draw(bufferSize, isScreenCoordinate)
+        }
+    }
+
+    override fun loadFragmentShader(): String = BYPASS_FRAGMENT_SHADER
+}
+
+@Language("GLSL")
+internal const val BYPASS_FRAGMENT_SHADER = """
+varying highp vec2 textureCoordinate;
+uniform sampler2D inputImageTexture;
+
+void main() {
+    gl_FragColor = texture2D(inputImageTexture, textureCoordinate);
+}
+"""

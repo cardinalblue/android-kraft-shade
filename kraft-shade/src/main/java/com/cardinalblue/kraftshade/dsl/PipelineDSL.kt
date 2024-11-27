@@ -289,8 +289,8 @@ class SerialTextureInputPipelineScope internal constructor(
                     step.mixturePercentInput,
                     targetBuffer = targetBufferForStep,
                     setupAction = { (originalTextureInput, fullyAppliedInput, mixturePercentInput) ->
-                        setInputTexture(originalTextureInput.getCasted())
-                        secondInputTextureId = fullyAppliedInput.getCasted<Texture>().textureId
+                        setInputTexture(originalTextureInput.getCasted<Texture>())
+                        setSecondInputTexture(fullyAppliedInput.getCasted<Texture>())
                         mixturePercent = mixturePercentInput.getCasted()
                     },
                 )

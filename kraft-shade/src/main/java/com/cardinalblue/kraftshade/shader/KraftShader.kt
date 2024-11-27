@@ -50,7 +50,7 @@ abstract class KraftShader : SuspendAutoCloseable {
         initialized = true
     }
 
-    fun draw(bufferSize: GlSize, isScreenCoordinate: Boolean) {
+    open fun draw(bufferSize: GlSize, isScreenCoordinate: Boolean) {
         init()
         GLES20.glUseProgram(glProgId)
         // it's fine if the shader doesn't include the definition of resolution

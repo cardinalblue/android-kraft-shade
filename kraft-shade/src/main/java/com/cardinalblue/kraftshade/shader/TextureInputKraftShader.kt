@@ -8,24 +8,24 @@ import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
 abstract class TextureInputKraftShader : KraftShader() {
-    private val inputTexture = KraftShaderTextureInput(
+    private val _inputTexture = KraftShaderTextureInput(
         0, "inputImageTexture", required = false)
-    private var _inputTextureId: Int by inputTexture.textureIdDelegate
+    private var _inputTextureId: Int by _inputTexture.textureIdDelegate
 
-    fun setInputTextureId(textureId: Int) {
+    open fun setInputTexture(textureId: Int) {
         _inputTextureId = textureId
     }
 
     fun setInputTexture(texture: TextureProvider) {
-        setInputTextureId(texture.provideTexture().textureId)
+        setInputTexture(texture.provideTexture().textureId)
     }
 
-    open fun draw(
+    open fun drawWithInput(
         inputTexture: Texture,
         size: GlSize,
         isScreenCoordinate: Boolean,
     ) {
-        this._inputTextureId = inputTexture.textureId
+        setInputTexture(inputTexture.textureId)
         draw(size, isScreenCoordinate)
     }
 
@@ -35,7 +35,7 @@ abstract class TextureInputKraftShader : KraftShader() {
             "input texture is not set for ${this::class.simpleName}"
         }
         super.beforeActualDraw()
-        inputTexture.activate()
+        _inputTexture.activate()
     }
 
     override fun afterActualDraw() {

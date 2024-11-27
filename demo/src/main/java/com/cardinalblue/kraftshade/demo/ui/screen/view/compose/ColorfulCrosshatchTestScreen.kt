@@ -86,7 +86,7 @@ fun ColorfulCrosshatchTestScreen() {
                             invertedCrosshatch,
                             targetBuffer = windowSurface,
                             oneTimeSetupAction = {
-                                secondInputTextureId = inputTexture.textureId
+                                setSecondInputTexture(inputTexture)
                             }
                         )
                     }

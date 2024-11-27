@@ -4,13 +4,17 @@ import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.model.GlMat4
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
+import com.cardinalblue.kraftshade.shader.builtin.bypass.ByPassableTwoTextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
 abstract class TwoTextureInputKraftShader : TextureInputKraftShader() {
+    /**
+     * TODO change required back to true after removing [ByPassableTwoTextureInputKraftShader].
+     */
     private val secondTextureInput = KraftShaderTextureInput(
-        1, "inputImageTexture2", required = true)
+        1, "inputImageTexture2", required = false)
 
-    var secondInputTextureId: Int by secondTextureInput.textureIdDelegate
+    private var secondInputTextureId: Int by secondTextureInput.textureIdDelegate
 
     var texture2SamplingTransformMatrix: GlMat4 by GlUniformDelegate("textureTransformMatrix", required = false)
 
@@ -20,15 +24,23 @@ abstract class TwoTextureInputKraftShader : TextureInputKraftShader() {
         }
     }
 
+    open fun setSecondInputTexture(textureId: Int) {
+        this.secondInputTextureId = textureId
+    }
+
+    fun setSecondInputTexture(texture: Texture) {
+        setSecondInputTexture(texture.textureId)
+    }
+
     override fun loadVertexShader(): String = TWO_TEXTURE_INPUT_VERTEX_SHADER
 
-    override fun draw(inputTexture: Texture, size: GlSize, isScreenCoordinate: Boolean) {
+    override fun drawWithInput(inputTexture: Texture, size: GlSize, isScreenCoordinate: Boolean) {
         error("call the other draw method with two input textures")
     }
 
     fun draw(texture1: Texture, texture2: Texture, size: GlSize, isScreenCoordinate: Boolean) {
-        secondInputTextureId = texture2.textureId
-        super.draw(texture1, size, isScreenCoordinate)
+        setSecondInputTexture(texture2)
+        super.drawWithInput(texture1, size, isScreenCoordinate)
     }
 
     override fun beforeActualDraw() {
