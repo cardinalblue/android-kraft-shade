@@ -9,7 +9,7 @@ import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
  * A better solution will be bypassing by marking a [BufferReference] mapped to another
  * [BufferReference]. Look for 'Dynamic Shader Bypass Mechanism' in README.md.
  */
-class ByPassableTwoTextureInputKraftShader<T : TwoTextureInputKraftShader>(
+class BypassableTwoTextureInputKraftShader<T : TwoTextureInputKraftShader>(
     val wrappedShader: T,
     var bypass: Boolean = false,
     var passTexture1: Boolean = true,
@@ -39,4 +39,8 @@ class ByPassableTwoTextureInputKraftShader<T : TwoTextureInputKraftShader>(
     }
 
     override fun loadFragmentShader(): String = BYPASS_FRAGMENT_SHADER
+
+    override fun toString(): String {
+        return "${this::class.simpleName}(${wrappedShader::class.simpleName})"
+    }
 }

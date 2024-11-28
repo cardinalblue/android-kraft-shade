@@ -157,6 +157,10 @@ abstract class KraftShader : SuspendAutoCloseable {
         this.activate(this@KraftShader)
     }
 
+    override fun toString(): String {
+        return this::class.simpleName ?: "Unknown KraftShader"
+    }
+
     companion object {
         val DEFAULT_VERTEX_SHADER: String get() = DEFAULT_VERTEX_SHADER_INTERNAL
         val DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE: String get() = DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_INTERNAL

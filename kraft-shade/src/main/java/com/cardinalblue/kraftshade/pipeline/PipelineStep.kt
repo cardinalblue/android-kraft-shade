@@ -34,7 +34,11 @@ class RunShaderStep<T : KraftShader> internal constructor(
 ) : PipelineStep(stepIndex) {
     override suspend fun run() {
         shader.setupAction(inputs)
-        shader.drawTo(targetBuffer.provideBuffer())
+        try {
+            shader.drawTo(targetBuffer.provideBuffer())
+        } catch (e: Exception) {
+            throw RuntimeException("failed to draw shader at step $stepIndex: $shader", e)
+        }
     }
 }
 

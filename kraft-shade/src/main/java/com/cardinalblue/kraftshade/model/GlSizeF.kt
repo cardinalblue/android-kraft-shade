@@ -5,6 +5,7 @@ data class GlSizeF(
     val height: Float,
 ) {
     val aspectRatio: Float get() = width / height
+    val area: Float get() = width * height
 
     val vec2: FloatArray by lazy { floatArrayOf(width, height) }
 }

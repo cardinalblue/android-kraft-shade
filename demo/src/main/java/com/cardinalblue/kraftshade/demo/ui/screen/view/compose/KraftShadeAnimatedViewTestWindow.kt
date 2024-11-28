@@ -64,7 +64,7 @@ fun KraftShadeAnimatedViewTestWindow() {
                     saturationInput,
                     targetBuffer = windowSurface
                 ) { (saturationInput) ->
-                    this.saturation = saturationInput.getCasted()
+                    this.saturation = saturationInput.cast()
                 }
         }
     }

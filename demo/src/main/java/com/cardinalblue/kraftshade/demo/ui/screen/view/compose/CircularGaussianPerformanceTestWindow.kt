@@ -84,8 +84,8 @@ fun CircularGaussianPerformanceTestWindow() {
                     sampledInput { currentAmount },
                     targetBuffer = windowSurface,
                 ) { (repeatInput, amountInput) ->
-                    repeat = repeatInput.getCasted()
-                    amount = amountInput.getCasted()
+                    repeat = repeatInput.cast()
+                    amount = amountInput.cast()
                 }
         }
     }

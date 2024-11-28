@@ -231,3 +231,16 @@ inline fun <T> withViewPortRestored(action: () -> T): T {
         GLES20.glViewport(viewPort[0], viewPort[1], viewPort[2], viewPort[3])
     }
 }
+
+class IncompleteFrameBufferAccess(status: Int) : RuntimeException(
+    "Framebuffer not complete, status: $status"
+) {
+    companion object {
+        fun checkAndThrow() {
+            val status = GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER)
+            if (status != GLES20.GL_FRAMEBUFFER_COMPLETE) {
+                throw IncompleteFrameBufferAccess(status)
+            }
+        }
+    }
+}

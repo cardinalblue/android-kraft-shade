@@ -11,5 +11,5 @@ interface Input<T : Any> : ReadOnlyProperty<Any?, T> {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <P> getCasted(): P = get() as P
+    fun <P> cast(): P = get() as P
 }

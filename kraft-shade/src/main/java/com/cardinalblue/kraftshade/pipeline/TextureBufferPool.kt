@@ -9,8 +9,14 @@ import com.cardinalblue.kraftshade.util.KraftLogger
  * [KraftShader]s or child [Pipeline].
  */
 internal class TextureBufferPool(
-    private var bufferSize: GlSize
+    bufferSize: GlSize
 ) {
+    /**
+     * Change the size using [changeSize] which is a suspend function.
+     */
+    var bufferSize: GlSize = bufferSize
+        private set
+
     private val map = mutableMapOf<BufferReference, TextureBuffer>()
     private val availableBuffers: MutableList<TextureBuffer> = mutableListOf()
 

@@ -244,42 +244,42 @@ fun KraftShadeEffectViewTestWindow() {
                         SaturationKraftShader(),
                         sampledInput { saturation }
                     ) { (saturationInput) ->
-                        this.saturation = saturationInput.getCasted()
+                        this.saturation = saturationInput.cast()
                     }
 
                     step(
                         HueKraftShader(),
                         sampledInput { hue }
                     ) { (hueInput) ->
-                        setHueInDegree(hueInput.getCasted())
+                        setHueInDegree(hueInput.cast())
                     }
 
                     step(
                         BrightnessKraftShader(),
                         sampledInput { brightness }
                     ) { (brightnessInput) ->
-                        this.brightness = brightnessInput.getCasted()
+                        this.brightness = brightnessInput.cast()
                     }
 
                     step(
                         ContrastKraftShader(),
                         sampledInput { contrast }
                     ) { (contrastInput) ->
-                        this.contrast = contrastInput.getCasted()
+                        this.contrast = contrastInput.cast()
                     }
 
                     step(
                         PixelationKraftShader(),
                         sampledInput { pixelSize }
                     ) { (pixelSizeInput) ->
-                        pixel = pixelSizeInput.getCasted()
+                        pixel = pixelSizeInput.cast()
                     }
 
                     step(
                         GammaKraftShader(),
                         sampledInput { gamma }
                     ) { (gammaInput) ->
-                        this.gamma = gammaInput.getCasted()
+                        this.gamma = gammaInput.cast()
                     }
 
                     step(
@@ -294,7 +294,7 @@ fun KraftShadeEffectViewTestWindow() {
                         ),
                         sampledInput { colorMatrixIntensity }
                     ) { (intensityInput) ->
-                        intensity = intensityInput.getCasted()
+                        intensity = intensityInput.cast()
                     }
 
                     stepWithMixture(
@@ -317,8 +317,8 @@ fun KraftShadeEffectViewTestWindow() {
                         sampledInput { blurAmount },
                         sampledInput { blurRepeat },
                     ) { (amountInput, repeatInput) ->
-                        amount = amountInput.getCasted()
-                        repeat = repeatInput.getCasted()
+                        amount = amountInput.cast()
+                        repeat = repeatInput.cast()
                     }
 
                     step(
@@ -326,8 +326,8 @@ fun KraftShadeEffectViewTestWindow() {
                         sampledInput { whiteBalanceTemperature },
                         sampledInput { whiteBalanceTint },
                     ) { (temperatureInput, tintInput) ->
-                        temperature = temperatureInput.getCasted()
-                        tint = tintInput.getCasted()
+                        temperature = temperatureInput.cast()
+                        tint = tintInput.cast()
                     }
                 }
             }

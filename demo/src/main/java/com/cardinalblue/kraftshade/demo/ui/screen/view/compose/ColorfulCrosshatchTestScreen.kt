@@ -74,8 +74,8 @@ fun ColorfulCrosshatchTestScreen() {
                                 sampledInput { crossHatchSpacing },
                                 sampledInput { lineWidth },
                             ) { (crossHatchSpacing, lineWidth) ->
-                                this.crossHatchSpacing = crossHatchSpacing.getCasted()
-                                this.lineWidth = lineWidth.getCasted()
+                                this.crossHatchSpacing = crossHatchSpacing.cast()
+                                this.lineWidth = lineWidth.cast()
                             }
 
                             step(ColorInvertKraftShader())

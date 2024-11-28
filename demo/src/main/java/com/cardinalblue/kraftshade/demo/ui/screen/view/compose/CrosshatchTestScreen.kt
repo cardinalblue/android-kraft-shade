@@ -72,8 +72,8 @@ fun CrosshatchTestScreen() {
                             sampledInput { lineWidth },
                             targetBuffer = windowSurface,
                         ) { (crossHatchSpacing, lineWidth) ->
-                            this.crossHatchSpacing = crossHatchSpacing.getCasted()
-                            this.lineWidth = lineWidth.getCasted()
+                            this.crossHatchSpacing = crossHatchSpacing.cast()
+                            this.lineWidth = lineWidth.cast()
                         }
                 }
             }

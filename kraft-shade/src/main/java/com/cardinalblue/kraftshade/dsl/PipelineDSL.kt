@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.dsl
 
+import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.*
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.TextureInput
@@ -16,8 +17,10 @@ import com.cardinalblue.kraftshade.util.KraftLogger
 class PipelineSetupScope(
     private val pipeline: Pipeline,
 ) {
-    fun withPipeline(block: Pipeline.() -> Unit) {
-        block(pipeline)
+    fun getBufferSize(): GlSize = pipeline.bufferPool.bufferSize
+
+    suspend fun <T> withPipeline(block: suspend Pipeline.() -> T): T {
+        return block(pipeline)
     }
 
     fun createBufferReferences(
@@ -278,9 +281,9 @@ class SerialTextureInputPipelineScope internal constructor(
                     step.mixturePercentInput,
                     targetBuffer = targetBufferForStep,
                     setupAction = { (originalTextureInput, fullyAppliedInput, mixturePercentInput) ->
-                        setInputTexture(originalTextureInput.getCasted<Texture>())
-                        setSecondInputTexture(fullyAppliedInput.getCasted<Texture>())
-                        mixturePercent = mixturePercentInput.getCasted()
+                        setInputTexture(originalTextureInput.cast<Texture>())
+                        setSecondInputTexture(fullyAppliedInput.cast<Texture>())
+                        mixturePercent = mixturePercentInput.cast()
                     },
                 )
             }

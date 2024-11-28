@@ -9,7 +9,7 @@ import org.intellij.lang.annotations.Language
  * A better solution will be bypassing by marking a [BufferReference] mapped to another
  * [BufferReference]. Look for 'Dynamic Shader Bypass Mechanism' in README.md.
  */
-class ByPassableTextureInputKraftShader<T : TextureInputKraftShader>(
+class BypassableTextureInputKraftShader<T : TextureInputKraftShader>(
     val wrappedShader: T,
     bypass: Boolean = false
 ) : TextureInputKraftShader() {
@@ -29,6 +29,10 @@ class ByPassableTextureInputKraftShader<T : TextureInputKraftShader>(
     }
 
     override fun loadFragmentShader(): String = BYPASS_FRAGMENT_SHADER
+
+    override fun toString(): String {
+        return "${this::class.simpleName}(${wrappedShader::class.simpleName})"
+    }
 }
 
 @Language("GLSL")

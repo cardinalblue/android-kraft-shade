@@ -8,9 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
-import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.EffectExecutionProvider
-import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -41,8 +39,16 @@ fun KraftShadeEffectView(
     }
 }
 
-open class KraftShadeEffectState(scope: CoroutineScope) : KraftShadeBaseState<KraftEffectTextureView>(scope) {
+/**
+ * @param skipRender Disable the rendering temporarily. [requestRender] will be ignored when this is
+ *  set.
+ */
+open class KraftShadeEffectState(
+    scope: CoroutineScope,
+    var skipRender: Boolean = false,
+) : KraftShadeBaseState<KraftEffectTextureView>(scope) {
     private val logger = KraftLogger("KraftEffectTextureView")
+
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
         effectExecutionProvider: EffectExecutionProvider,
@@ -69,14 +75,23 @@ open class KraftShadeEffectState(scope: CoroutineScope) : KraftShadeBaseState<Kr
     }
 
     fun requestRender() {
+        if (skipRender) {
+            logger.d("render is skipped")
+            return
+        }
         launchWithLock { view ->
             view.requestRender()
         }
     }
 }
 
+/**
+ * @param skipRendering Disable the rendering temporarily. [requestRender] will be ignored when set.
+ */
 @Composable
-fun rememberKraftShadeEffectState(): KraftShadeEffectState {
+fun rememberKraftShadeEffectState(
+    skipRendering: Boolean = false,
+): KraftShadeEffectState {
     val scope = rememberCoroutineScope()
-    return remember { KraftShadeEffectState(scope = scope) }
+    return remember { KraftShadeEffectState(scope = scope, skipRender = skipRendering) }
 }
