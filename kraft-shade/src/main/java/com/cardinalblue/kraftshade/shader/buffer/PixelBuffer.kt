@@ -57,7 +57,7 @@ class PixelBuffer internal constructor(
     suspend fun getBitmap(): Bitmap {
         return glEnv.execute {
             makeCurrent()
-            OpenGlUtils.createBitmapFromBuffer(size)
+            OpenGlUtils.createBitmapFromContext(size)
         }
     }
 

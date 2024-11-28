@@ -16,6 +16,8 @@ abstract class TextureInputKraftShader : KraftShader() {
         _inputTextureId = textureId
     }
 
+    internal fun getInputTextureId() = _inputTextureId
+
     fun setInputTexture(texture: TextureProvider) {
         setInputTexture(texture.provideTexture().textureId)
     }

@@ -202,12 +202,49 @@ object OpenGlUtils {
         }
     }
 
-    fun createBitmapFromBuffer(size: GlSize): Bitmap {
+    fun createBitmapFromContext(size: GlSize): Bitmap {
         val pixels = IntArray(size.width * size.height)
         val buffer = IntBuffer.wrap(pixels)
         GLES20.glReadPixels(0, 0, size.width, size.height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer)
         return Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888).apply {
             copyPixelsFromBuffer(buffer)
+        }
+    }
+
+    fun getBitmapFromTextureId(
+        textureId: Int,
+        width: Int,
+        height: Int,
+    ): Bitmap {
+        val frameBuffer = IntArray(1) { -1 }
+        try {
+            return withFrameBufferRestored {
+                withViewPortRestored {
+                    GLES20.glViewport(0, 0, width, height)
+                    // Create framebuffer
+                    GLES20.glGenFramebuffers(1, frameBuffer, 0)
+                    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer[0])
+
+                    // Attach texture to framebuffer
+                    GLES20.glFramebufferTexture2D(
+                        GLES20.GL_FRAMEBUFFER,
+                        GLES20.GL_COLOR_ATTACHMENT0,
+                        GLES20.GL_TEXTURE_2D,
+                        textureId,
+                        0
+                    )
+
+                    // Check framebuffer status
+                    IncompleteFrameBufferAccess.checkAndThrow()
+
+                    // Read pixels
+                    createBitmapFromContext(GlSize(width, height))
+                }
+            }
+        } finally {
+            if (frameBuffer[0] != -1) {
+                GLES20.glDeleteFramebuffers(1, frameBuffer, 0)
+            }
         }
     }
 }
