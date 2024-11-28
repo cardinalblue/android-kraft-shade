@@ -26,6 +26,11 @@ open class KraftEffectTextureView : KraftTextureView {
     var effectExecution: EffectExecution? = null
         private set
 
+    /**
+     * When the view size changed, rendering won't be triggered if this is set to false.
+     */
+    var renderOnSizeChange: Boolean = true
+
     protected var job: Job? = null
 
     private val renderFlow = MutableSharedFlow<Unit>()
@@ -40,7 +45,9 @@ open class KraftEffectTextureView : KraftTextureView {
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
                 windowSurface.afterDraw()
                 effectExecution?.onBufferSizeChanged(size)
-                requestRender()
+                if (renderOnSizeChange) {
+                    requestRender()
+                }
             }
         }
     }

@@ -58,6 +58,12 @@ open class KraftShadeEffectState(
         }
     }
 
+    fun setRenderOnSizeChange(enabled: Boolean) {
+        launchWithLock { view ->
+            view.renderOnSizeChange = enabled
+        }
+    }
+
     /**
      * You have to make sure the effect is already set before calling this method.
      * Usually, you would do it with the [afterSet] param in [setEffect] method.
@@ -91,7 +97,14 @@ open class KraftShadeEffectState(
 @Composable
 fun rememberKraftShadeEffectState(
     skipRendering: Boolean = false,
+    renderOnSizeChange: Boolean = true,
 ): KraftShadeEffectState {
     val scope = rememberCoroutineScope()
-    return remember { KraftShadeEffectState(scope = scope, skipRender = skipRendering) }
+    return remember {
+        KraftShadeEffectState(scope = scope, skipRender = skipRendering).apply {
+            if (!renderOnSizeChange) {
+                this.setRenderOnSizeChange(renderOnSizeChange)
+            }
+        }
+    }
 }
