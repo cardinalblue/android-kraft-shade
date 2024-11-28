@@ -22,6 +22,8 @@ class Pipeline internal constructor(
     private val steps: MutableList<PipelineStep> = mutableListOf()
     val stepCount: Int get() = steps.size
 
+    internal val runContext = PipelineRunContext()
+
     /**
      * Used for tracking the index of the last step using a [BufferReference]
      */
@@ -91,21 +93,31 @@ class Pipeline internal constructor(
             sampledInputs.forEach { it.markDirty() }
             sampledInputs.forEach { it.get() }
 
+            runContext.reset()
+
             logger.d("start to run $stepCount steps")
-            steps.forEach { step ->
-                step.run()
-                logger.d {
-                    when (step) {
-                        is RunShaderStep<*> -> "step ${step.stepIndex} [${step.type}] with ${step.shader.debugName} done"
-                        is RunTaskStep -> "step ${step.stepIndex} [${step.type}] for [${step.purposeForDebug}] done"
+            run runSteps@{
+                steps.forEach { step ->
+                    step.run()
+                    if (runContext.forceAbort) {
+                        logger.w("force abort the pipeline run")
+                        return@runSteps
+                    }
+
+                    logger.d {
+                        when (step) {
+                            is RunShaderStep<*> -> "step ${step.stepIndex} [${step.type}] with ${step.shader.debugName} done"
+                            is RunTaskStep -> "step ${step.stepIndex} [${step.type}] for [${step.purposeForDebug}] done"
+                        }
+                    }
+
+                    // Recycle buffers that won't be used anymore
+                    if (automaticRecycle) {
+                        recycleUnusedBuffers(step.stepIndex)
                     }
                 }
-
-                // Recycle buffers that won't be used anymore
-                if (automaticRecycle) {
-                    recycleUnusedBuffers(step.stepIndex)
-                }
             }
+
             bufferPool.recycleAll("pipeline_end")
             logger.d("the pool size is ${bufferPool.poolSize} after execution")
         }
@@ -128,5 +140,17 @@ class Pipeline internal constructor(
 
     private companion object {
         val logger = KraftLogger("Pipeline")
+    }
+
+    class PipelineRunContext {
+        internal var forceAbort: Boolean = false
+
+        fun abort() {
+            forceAbort = true
+        }
+
+        fun reset() {
+            forceAbort = false
+        }
     }
 }

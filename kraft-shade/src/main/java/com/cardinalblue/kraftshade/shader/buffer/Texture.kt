@@ -132,6 +132,8 @@ class ExternalBitmapTextureProvider(
                 loadedTexture.load(bitmap)
                 bitmapHash = bitmap.hashCode()
             }
+        } else {
+            bitmapHash = 0
         }
         return loadedTexture
     }

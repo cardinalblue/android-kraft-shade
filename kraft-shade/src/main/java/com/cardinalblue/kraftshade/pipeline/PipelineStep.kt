@@ -45,9 +45,10 @@ class RunShaderStep<T : KraftShader> internal constructor(
 class RunTaskStep(
     stepIndex: Int,
     val purposeForDebug: String = "",
-    private val task: suspend () -> Unit,
+    private val runContext: Pipeline.PipelineRunContext,
+    private val task: suspend (runContext: Pipeline.PipelineRunContext) -> Unit,
 ) : PipelineStep(stepIndex) {
     override suspend fun run() {
-        task()
+        task(runContext)
     }
 }

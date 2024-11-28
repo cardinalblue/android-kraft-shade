@@ -31,13 +31,14 @@ class PipelineSetupScope(
     @KraftShadeDsl
     fun step(
         purposeForDebug: String = "",
-        block: suspend GlEnvDslScope.() -> Unit
+        block: suspend GlEnvDslScope.(runContext: Pipeline.PipelineRunContext) -> Unit
     ) {
         RunTaskStep(
             stepIndex = pipeline.stepCount,
             purposeForDebug = purposeForDebug,
-            task = {
-                block(GlEnvDslScope(pipeline.glEnv))
+            runContext = pipeline.runContext,
+            task = { runContext: Pipeline.PipelineRunContext ->
+                block(GlEnvDslScope(pipeline.glEnv), runContext)
             },
         ).let(pipeline::addStep)
     }
