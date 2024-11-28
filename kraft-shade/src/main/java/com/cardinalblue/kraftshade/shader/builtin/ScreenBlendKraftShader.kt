@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
+import android.opengl.GLES20
 import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
 

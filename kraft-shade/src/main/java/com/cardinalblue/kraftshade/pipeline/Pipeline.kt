@@ -91,13 +91,13 @@ class Pipeline internal constructor(
             sampledInputs.forEach { it.markDirty() }
             sampledInputs.forEach { it.get() }
 
-            logger.d("run $stepCount steps")
+            logger.d("start to run $stepCount steps")
             steps.forEach { step ->
                 step.run()
                 logger.d {
                     when (step) {
-                        is RunShaderStep<*> -> "step [${step.type}:${step.stepIndex}] done with ${step.shader::class.simpleName}"
-                        is RunTaskStep -> "step [${step.type}:${step.stepIndex}] for [${step.purposeForDebug}] done"
+                        is RunShaderStep<*> -> "step ${step.stepIndex} [${step.type}] with ${step.shader.debugName} done"
+                        is RunTaskStep -> "step ${step.stepIndex} [${step.type}] for [${step.purposeForDebug}] done"
                     }
                 }
 

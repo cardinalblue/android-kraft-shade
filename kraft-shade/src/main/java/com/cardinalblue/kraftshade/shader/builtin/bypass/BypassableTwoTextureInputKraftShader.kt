@@ -18,6 +18,8 @@ class BypassableTwoTextureInputKraftShader<T : TwoTextureInputKraftShader>(
     private var inputTexture1Id = OpenGlUtils.NO_TEXTURE_ID
     private var inputTexture2Id = OpenGlUtils.NO_TEXTURE_ID
 
+    override val debugName: String get() = "${super.debugName}(${wrappedShader.debugName})"
+
     override fun setInputTexture(textureId: Int) {
         wrappedShader.setInputTexture(textureId)
         inputTexture1Id = textureId

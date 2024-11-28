@@ -15,6 +15,8 @@ class BypassableTextureInputKraftShader<T : TextureInputKraftShader>(
 ) : TextureInputKraftShader() {
     var bypass: Boolean = bypass
 
+    override val debugName: String get() = "${super.debugName}(${wrappedShader.debugName})"
+
     override fun setInputTexture(textureId: Int) {
         super.setInputTexture(textureId)
         wrappedShader.setInputTexture(textureId)

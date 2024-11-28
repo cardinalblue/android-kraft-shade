@@ -30,6 +30,8 @@ abstract class KraftShader : SuspendAutoCloseable {
 
     private val logger = KraftLogger("KraftShader")
 
+    open val debugName: String = this::class.simpleName ?: "Unknown"
+
     fun log(message: String) {
         if (!debug) return
         Log.d("KraftShader", "[${this.javaClass.simpleName}] $message")

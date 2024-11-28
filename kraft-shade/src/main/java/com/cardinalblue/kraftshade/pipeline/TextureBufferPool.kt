@@ -34,7 +34,7 @@ internal class TextureBufferPool(
                 .removeFirstOrNull()
                 ?.let { availableBuffer ->
                     map[bufferReference] = availableBuffer
-                    logger.d { "reuse a buffer for ${bufferReference.nameForDebug} ($availableSize / $poolSize)" }
+                    logger.d { "reuse a buffer for [${bufferReference.nameForDebug}] ($availableSize / $poolSize)" }
                     return availableBuffer
                 }
 
@@ -49,7 +49,9 @@ internal class TextureBufferPool(
         stepNameForDebug: String,
         vararg bufferReferences: BufferReference,
     ) {
+        if (bufferReferences.isEmpty()) return
         var numberRecycled = 0
+        val recycledDebugNames = mutableListOf<String?>()
         bufferReferences.forEach { ref ->
             val buffer = map.remove(ref)
             if (buffer == null) {
@@ -58,11 +60,9 @@ internal class TextureBufferPool(
             }
             numberRecycled++
             availableBuffers.add(buffer)
-            logger.d {
-                "recycle [${ref.nameForDebug}] after step [$stepNameForDebug]"
-            }
+            recycledDebugNames.add(ref.nameForDebug)
         }
-        logger.d { "recycled $numberRecycled buffers ($availableSize / $poolSize)" }
+        logger.d { "recycled $numberRecycled buffers ($availableSize / $poolSize) after step [$stepNameForDebug] [${recycledDebugNames.joinToString(",")}]" }
     }
 
     fun recycleAll(stepNameForDebug: String) {

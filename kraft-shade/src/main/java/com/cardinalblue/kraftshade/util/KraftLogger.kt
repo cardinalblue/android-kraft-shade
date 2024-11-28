@@ -3,18 +3,20 @@ package com.cardinalblue.kraftshade.util
 import android.util.Log
 import kotlinx.coroutines.CancellationException
 import kotlin.time.Duration.Companion.nanoseconds
-import kotlin.time.TimedValue
 
 @JvmInline
 value class KraftLogger(private val tag: String) {
+    constructor(parentLogger: KraftLogger, childTag: String) :
+        this("${parentLogger.tag}-$childTag")
+
     fun v(message: String) {
         if (!logLevel.isLoggable(Level.VERBOSE)) return
-        Log.v(tag, "$LOG_PREFIX $message")
+        Log.v(TAG, "[$tag] $message")
     }
 
     fun d(message: String) {
         if (!logLevel.isLoggable(Level.DEBUG)) return
-        Log.d(tag, "$LOG_PREFIX $message")
+        Log.d(TAG, "[$tag] $message")
     }
 
     inline fun d(messageProvider: () -> String) {
@@ -24,20 +26,20 @@ value class KraftLogger(private val tag: String) {
 
     fun i(message: String) {
         if (!logLevel.isLoggable(Level.INFO)) return
-        Log.i(tag, "$LOG_PREFIX $message")
+        Log.i(TAG, "[$tag] $message")
     }
 
     fun w(message: String) {
         if (!logLevel.isLoggable(Level.WARNING)) return
-        Log.w(tag, "$LOG_PREFIX $message")
+        Log.w(TAG, "[$tag] $message")
     }
 
     fun e(message: String, e: Throwable? = null) {
         if (!logLevel.isLoggable(Level.ERROR)) return
         if (e != null) {
-            Log.e(tag, "$LOG_PREFIX $message", e)
+            Log.e(TAG, "[$tag] $message", e)
         } else {
-            Log.e(tag, "$LOG_PREFIX $message")
+            Log.e(TAG, "[$tag] $message")
         }
     }
 
@@ -76,7 +78,7 @@ value class KraftLogger(private val tag: String) {
     }
 
     companion object {
-        const val LOG_PREFIX = "[Kraft]"
+        const val TAG = "Kraft"
 
         var logLevel = Level.NONE
         var throwOnError = false
