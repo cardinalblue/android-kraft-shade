@@ -2,13 +2,12 @@ package com.cardinalblue.kraftshade.env
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.withContext
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL10
