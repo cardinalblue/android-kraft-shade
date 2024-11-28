@@ -31,6 +31,10 @@ class Pipeline internal constructor(
 
     private val postponedTasks: MutableList<suspend GlEnv.() -> Unit> = mutableListOf()
 
+    init {
+        logger.d("initialized with buffer pool buffer size ${bufferPool.bufferSize}")
+    }
+
     protected fun runDeferred(block: suspend GlEnv.() -> Unit) {
         postponedTasks.add(block)
     }
