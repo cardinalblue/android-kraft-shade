@@ -12,4 +12,8 @@ data class GlSize(
     fun toGlSizeF(): GlSizeF {
         return GlSizeF(width.toFloat(), height.toFloat())
     }
+
+    companion object {
+        val ZERO = GlSize(0, 0)
+    }
 }

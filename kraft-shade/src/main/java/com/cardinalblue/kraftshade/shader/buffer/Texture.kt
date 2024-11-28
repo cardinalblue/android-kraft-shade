@@ -10,9 +10,11 @@ import com.cardinalblue.kraftshade.withFrameBufferRestored
 import com.cardinalblue.kraftshade.withViewPortRestored
 import java.nio.IntBuffer
 
-open class Texture : SuspendAutoCloseable, TextureProvider {
+abstract class Texture : SuspendAutoCloseable, TextureProvider {
     var textureId: Int
         private set
+
+    abstract val size: GlSize
 
     init {
         val textures = intArrayOf(0)
@@ -55,7 +57,7 @@ open class Texture : SuspendAutoCloseable, TextureProvider {
      * If you are working with [TextureBuffer], the size is known by [TextureBuffer.size]. You can use
      * [TextureBuffer.getBitmap] without parameter instead.
      */
-    fun getBitmap(size: GlSize): Bitmap {
+    open fun getBitmap(): Bitmap {
         val buffer = getIntBufferFromTexture(textureId, size)
         // Convert to bitmap
         val bitmap = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888)
@@ -63,7 +65,7 @@ open class Texture : SuspendAutoCloseable, TextureProvider {
         return bitmap
     }
 
-    fun getIntBufferFromTexture(
+    protected fun getIntBufferFromTexture(
         textureId: Int,
         size: GlSize,
     ): IntBuffer {

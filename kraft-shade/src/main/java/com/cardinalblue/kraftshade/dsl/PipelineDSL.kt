@@ -15,6 +15,7 @@ import com.cardinalblue.kraftshade.util.KraftLogger
 
 @KraftShadeDsl
 class PipelineSetupScope(
+    val glEnvDslScope: GlEnvDslScope,
     private val pipeline: Pipeline,
 ) {
     fun getBufferSize(): GlSize = pipeline.bufferPool.bufferSize
@@ -39,6 +40,10 @@ class PipelineSetupScope(
                 block(GlEnvDslScope(pipeline.glEnv))
             },
         ).let(pipeline::addStep)
+    }
+
+    suspend fun loadAssetTexture(assetPath: String): Texture {
+        return glEnvDslScope.loadAssetTexture(assetPath)
     }
 
     /**

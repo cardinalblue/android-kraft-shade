@@ -1,6 +1,5 @@
 package com.cardinalblue.kraftshade.dsl
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
@@ -28,7 +27,7 @@ class GlEnvDslScope(
     ): Pipeline {
         return env.execute {
             val pipeline = Pipeline(env, TextureBufferPool(bufferSize), automaticRecycle)
-            val scope = PipelineSetupScope(pipeline)
+            val scope = PipelineSetupScope(this, pipeline)
             scope.block()
             pipeline
         }

@@ -47,7 +47,7 @@ class TextureBuffer(
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
     }
 
-    fun getBitmap(): Bitmap {
+    override fun getBitmap(): Bitmap {
         return withFrameBufferRestored {
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, bufferId)
             com.cardinalblue.kraftshade.OpenGlUtils.createBitmapFromBuffer(size)
