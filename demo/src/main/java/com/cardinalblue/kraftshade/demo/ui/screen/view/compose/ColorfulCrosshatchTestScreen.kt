@@ -64,7 +64,7 @@ fun ColorfulCrosshatchTestScreen() {
                     val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
                     aspectRatio = bitmap.width.toFloat() / bitmap.height
 
-                    pipeline(windowSurface.size) {
+                    pipeline(windowSurface) {
                         val (invertedCrosshatch) = createBufferReferences("inverted_crosshatch")
 
                         val inputTexture = bitmap.asTexture()

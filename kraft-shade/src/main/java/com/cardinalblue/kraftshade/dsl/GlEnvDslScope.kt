@@ -2,15 +2,16 @@ package com.cardinalblue.kraftshade.dsl
 
 import android.graphics.BitmapFactory
 import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
+import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 
 @KraftShadeDsl
-class GlEnvDslScope(
+open class GlEnvDslScope(
     val env: GlEnv
 ) {
+    @KraftShadeDsl
     suspend fun use(block: GlEnvDslScope.() -> Unit) {
         env.execute {
             block()
@@ -20,26 +21,18 @@ class GlEnvDslScope(
     /**
      * @param bufferSize The size (width, height) of the rendering target.
      */
+    @KraftShadeDsl
     suspend fun pipeline(
-        bufferSize: GlSize,
+        targetBuffer: GlBuffer,
         automaticRecycle: Boolean = true,
-        block: suspend PipelineSetupScope.() -> Unit = {},
+        block: suspend GraphPipelineSetupScope.() -> Unit = {},
     ): Pipeline {
         return env.execute {
-            val pipeline = Pipeline(env, TextureBufferPool(bufferSize), automaticRecycle)
-            val scope = PipelineSetupScope(this, pipeline)
+            val pipeline = Pipeline(env, TextureBufferPool(targetBuffer.size), automaticRecycle)
+            val scope = GraphPipelineSetupScope(env, pipeline, targetBuffer)
             scope.block()
             pipeline
         }
-    }
-
-    suspend fun pipeline(
-        bufferWidth: Int,
-        bufferHeight: Int,
-        automaticRecycle: Boolean = true,
-        block: suspend PipelineSetupScope.() -> Unit = {},
-    ): Pipeline {
-        return pipeline(GlSize(bufferWidth, bufferHeight), automaticRecycle, block)
     }
 
     suspend fun loadAssetTexture(assetPath: String): LoadedTexture {

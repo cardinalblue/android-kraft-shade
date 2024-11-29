@@ -261,7 +261,7 @@ fun KraftShadeEffectViewTestWindow() {
             val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
             aspectRatio = bitmap.width.toFloat() / bitmap.height
 
-            pipeline(windowSurface.size) {
+            pipeline(windowSurface) {
                 serialSteps(
                     inputTexture = bitmap.asTexture(),
                     targetBuffer = windowSurface,

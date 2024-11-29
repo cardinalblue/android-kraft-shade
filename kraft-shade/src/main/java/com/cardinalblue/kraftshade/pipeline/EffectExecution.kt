@@ -1,7 +1,7 @@
 package com.cardinalblue.kraftshade.pipeline
 
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
-import com.cardinalblue.kraftshade.dsl.PipelineSetupScope
+import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
@@ -50,18 +50,18 @@ fun <S : KraftShader> S.asEffectExecution(
 
 typealias EffectExecutionProvider = suspend GlEnvDslScope.(glBuffer: GlBuffer) -> EffectExecution
 
-typealias PipelineModifier = suspend PipelineSetupScope.(targetBuffer: GlBuffer) -> Unit
+typealias PipelineModifier = suspend GraphPipelineSetupScope.() -> Unit
 
-fun PipelineModifier.asEffectExecutionProvider(): EffectExecutionProvider = { targetBuffer: GlBuffer ->
-    pipeline(targetBuffer.provideBuffer().size) {
-        this@asEffectExecutionProvider(this, targetBuffer)
+fun PipelineModifier.asEffectExecutionProvider(): EffectExecutionProvider = { targetBuffer ->
+    pipeline(targetBuffer.provideBuffer()) {
+        graphSteps(targetBuffer) {
+            this@asEffectExecutionProvider()
+        }
     }
 }
 
 fun createEffectExecutionProviderWithPipeline(
-    pipelineModifier: PipelineModifier,
-): EffectExecutionProvider = { glBuffer ->
-    pipeline(glBuffer.size) {
-        pipelineModifier(glBuffer)
-    }
+    pipelineModifier: PipelineModifier
+): EffectExecutionProvider {
+    return pipelineModifier.asEffectExecutionProvider()
 }
