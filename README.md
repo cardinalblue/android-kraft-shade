@@ -238,7 +238,7 @@ pipeline(windowSurface) {
 - [x] AlphaInvertKraftShader
 - [x] ApplyAlphaMaskKraftShader
 
-### Texture Effects
+### Texture & Artistic Effects
 - [x] CrosshatchKraftShader (GPUImageCrosshatchFilter)
 
 ### Convolution & Edge Detection
@@ -267,6 +267,74 @@ pipeline(windowSurface) {
 
 ### Coming Soon
 
+#### Blend Modes
+- [ ] AddBlendKraftShader (GPUImageAddBlendFilter)
+- [ ] ColorBlendKraftShader (GPUImageColorBlendFilter)
+- [ ] ColorBurnBlendKraftShader (GPUImageColorBurnBlendFilter)
+- [ ] ColorDodgeBlendKraftShader (GPUImageColorDodgeBlendFilter)
+- [ ] DarkenBlendKraftShader (GPUImageDarkenBlendFilter)
+- [ ] DifferenceBlendKraftShader (GPUImageDifferenceBlendFilter)
+- [ ] DissolveBlendKraftShader (GPUImageDissolveBlendFilter)
+- [ ] DivideBlendKraftShader (GPUImageDivideBlendFilter)
+- [ ] ExclusionBlendKraftShader (GPUImageExclusionBlendFilter)
+- [ ] HardLightBlendKraftShader (GPUImageHardLightBlendFilter)
+- [ ] HueBlendKraftShader (GPUImageHueBlendFilter)
+- [ ] LightenBlendKraftShader (GPUImageLightenBlendFilter)
+- [ ] LinearBurnBlendKraftShader (GPUImageLinearBurnBlendFilter)
+- [ ] LuminosityBlendKraftShader (GPUImageLuminosityBlendFilter)
+- [ ] OverlayBlendKraftShader (GPUImageOverlayBlendFilter)
+- [ ] SaturationBlendKraftShader (GPUImageSaturationBlendFilter)
+- [ ] SoftLightBlendKraftShader (GPUImageSoftLightBlendFilter)
+- [ ] SubtractBlendKraftShader (GPUImageSubtractBlendFilter)
+
+#### Color Effects
+- [ ] ColorBalanceKraftShader (GPUImageColorBalanceFilter)
+- [ ] ExposureKraftShader (GPUImageExposureFilter)
+- [ ] FalseColorKraftShader (GPUImageFalseColorFilter)
+- [ ] LevelsKraftShader (GPUImageLevelsFilter)
+- [ ] MonochromeKraftShader (GPUImageMonochromeFilter)
+- [ ] OpacityKraftShader (GPUImageOpacityFilter)
+- [ ] PosterizeKraftShader (GPUImagePosterizeFilter)
+- [ ] RGBKraftShader (GPUImageRGBFilter)
+- [ ] SepiaToneKraftShader (GPUImageSepiaToneFilter)
+- [ ] SolarizeKraftShader (GPUImageSolarizeFilter)
+- [ ] ToneCurveKraftShader (GPUImageToneCurveFilter)
+- [ ] VibranceKraftShader (GPUImageVibranceFilter)
+- [ ] VignetteKraftShader (GPUImageVignetteFilter)
+
+#### Blur & Distortion
+- [ ] BilateralBlurKraftShader (GPUImageBilateralBlurFilter)
+- [ ] BoxBlurKraftShader (GPUImageBoxBlurFilter)
+- [ ] BulgeDistortionKraftShader (GPUImageBulgeDistortionFilter)
+- [ ] GaussianBlurKraftShader (GPUImageGaussianBlurFilter)
+- [ ] GlassSphereKraftShader (GPUImageGlassSphereFilter)
+- [ ] SphereRefractionKraftShader (GPUImageSphereRefractionFilter)
+- [ ] SwirlKraftShader (GPUImageSwirlFilter)
+- [ ] ZoomBlurKraftShader (GPUImageZoomBlurFilter)
+
+#### Artistic Effects
+- [ ] CGAColorspaceKraftShader (GPUImageCGAColorspaceFilter)
+- [ ] DilationKraftShader (GPUImageDilationFilter)
+- [ ] HalftoneKraftShader (GPUImageHalftoneFilter)
+- [ ] KuwaharaKraftShader (GPUImageKuwaharaFilter)
+- [ ] RGBDilationKraftShader (GPUImageRGBDilationFilter)
+- [ ] SharpenKraftShader (GPUImageSharpenFilter)
+- [ ] SketchKraftShader (GPUImageSketchFilter)
+- [ ] SmoothToonKraftShader (GPUImageSmoothToonFilter)
+- [ ] ToonKraftShader (GPUImageToonFilter)
+
+#### Edge Detection & Processing
+- [ ] NonMaximumSuppressionKraftShader (GPUImageNonMaximumSuppressionFilter)
+- [ ] SobelEdgeDetectionKraftShader (GPUImageSobelEdgeDetectionFilter)
+- [ ] SobelThresholdKraftShader (GPUImageSobelThresholdFilter)
+- [ ] ThresholdEdgeDetectionKraftShader (GPUImageThresholdEdgeDetectionFilter)
+- [ ] WeakPixelInclusionKraftShader (GPUImageWeakPixelInclusionFilter)
+
+#### Other
+- [ ] ChromaKeyBlendKraftShader (GPUImageChromaKeyBlendFilter)
+- [ ] LuminanceKraftShader (GPUImageLuminanceFilter)
+- [ ] LuminanceThresholdKraftShader (GPUImageLuminanceThresholdFilter)
+- [ ] TransformKraftShader (GPUImageTransformFilter)
 
 ## Usage
 
