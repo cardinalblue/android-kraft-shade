@@ -222,24 +222,32 @@ pipeline(windowSurface) {
 - [x] BypassableTextureInputKraftShader
 - [x] BypassableTwoTextureInputKraftShader
 
-### Basic Effects
+### Color Effects
 - [x] SaturationKraftShader (GPUImageSaturationFilter)
 - [x] ContrastKraftShader (GPUImageContrastFilter)
 - [x] BrightnessKraftShader (GPUImageBrightnessFilter)
 - [x] HueKraftShader (GPUImageHueFilter)
 - [x] WhiteBalanceKraftShader (GPUImageWhiteBalanceFilter)
 - [x] GammaKraftShader (GPUImageGammaFilter)
-- [x] HazeKraftShader (GPUImageHazeFilter)
-- [x] PixelationKraftShader (GPUImagePixelationFilter)
-- [x] GrayscaleKraftShader (GPUImageGrayscaleFilter)
-- [x] Sample3x3KraftShader (GPUImage3x3TextureSamplingFilter)
-- [x] HighlightShadowKraftShader (GPUImageHighlightShadowFilter)
 - [x] ColorInversionKraftShader
+- [x] GrayscaleKraftShader (GPUImageGrayscaleFilter)
+- [x] HighlightShadowKraftShader (GPUImageHighlightShadowFilter)
+- [x] ColorMatrixKraftShader (GPUImageColorMatrixFilter)
+  - Additionally supports color offset
+- [x] LookUpTableKraftShader (GPUImageLookupFilter)
+- [x] ColorMappingKraftShader
+  - For mapping specific colors to other colors
+  - At most 8 color mappings. If you need to map more colors, you can use it multiple times.
+
+### Alpha & Transparency Effects
+- [x] HazeKraftShader (GPUImageHazeFilter)
 - [x] AlphaInvertKraftShader
 - [x] ApplyAlphaMaskKraftShader
 
 ### Texture & Artistic Effects
 - [x] CrosshatchKraftShader (GPUImageCrosshatchFilter)
+- [x] PixelationKraftShader (GPUImagePixelationFilter)
+- [x] Sample3x3KraftShader (GPUImage3x3TextureSamplingFilter)
 
 ### Convolution & Edge Detection
 - [x] Convolution3x3KraftShader (GPUImage3x3ConvolutionFilter)
@@ -256,14 +264,6 @@ pipeline(windowSurface) {
 - [x] SourceOverBlendKraftShader (GPUImageSourceOverBlendFilter)
 - [x] AlphaBlendKraftShader (GPUImageAlphaBlendFilter)
 - [x] SimpleMixtureBlendKraftShader
-
-### Color Adjustments
-- [x] ColorMatrixKraftShader (GPUImageColorMatrixFilter)
-  - Additionally supports color offset
-- [x] LookUpTableKraftShader (GPUImageLookupFilter)
-- [x] ColorMappingKraftShader
-  - For mapping specific colors to other colors
-  - At most 8 color mappings. If you need to map more colors, you can use it multiple times.
 
 ### Coming Soon
 
