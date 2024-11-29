@@ -372,8 +372,9 @@ We welcome contributions to KraftShade! Here's how you can help:
 3. **Pull Requests**
    - Fork the repository
    - Create a feature branch
+   - Make your changes
+   - Include tests in the demo app to show the change is working
    - Submit a pull request with a clear description
-   - Include tests for new features
 
 ## License
 
