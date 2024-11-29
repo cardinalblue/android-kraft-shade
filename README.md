@@ -172,12 +172,15 @@ pipeline(windowSurface) {
     }
 
     step(
-        BlendingShader(),
+        BlendingShader().apply {
+            mixRatio = 0.5f
+        },
         targetBuffer = blendResult,
         step1Result.asTextureInput(),
         step2Result.asTextureInput()
-    ) { (input1) ->
-        setParameter(input1.cast())
+    ) { (texture1, texture2) ->
+        setTexture1(texture1)
+        setTexture2(texture2)
     }
 }
 ```
