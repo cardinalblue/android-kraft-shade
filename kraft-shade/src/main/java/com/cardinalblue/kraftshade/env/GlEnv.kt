@@ -2,12 +2,14 @@ package com.cardinalblue.kraftshade.env
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.opengl.GLES20
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
+import java.util.Collections
 import java.util.concurrent.Executors
 import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL10
@@ -70,6 +72,8 @@ class GlEnv(
 
     private val dslScope: GlEnvDslScope by lazy { GlEnvDslScope(this) }
 
+    private val deferredTasks: MutableList<suspend GlEnvDslScope.() -> Unit> = Collections.synchronizedList(mutableListOf())
+
     /**
      * Chooses an appropriate EGL configuration that matches our rendering requirements.
      * 
@@ -102,6 +106,28 @@ class GlEnv(
         }
 
         return configs[0] ?: throw IllegalStateException("No config chosen")
+    }
+
+    init {
+        post {
+            GLES20.glEnable(GLES20.GL_BLEND)
+            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+        }
+    }
+
+    /**
+     * The [task] posted here will be deferred to next [execute] call. It will be executed before
+     * the block passed to [execute] is executed.
+     */
+    fun post(task: suspend GlEnvDslScope.() -> Unit) {
+        deferredTasks.add(task)
+    }
+
+    private suspend fun executeDeferredTasks() {
+        deferredTasks.forEach { task ->
+            task(dslScope)
+        }
+        deferredTasks.clear()
     }
 
     /**
@@ -184,6 +210,7 @@ class GlEnv(
      */
     suspend fun <T> execute(block: suspend GlEnvDslScope.() -> T): T = withContext(dispatcher) {
         makeCurrent()
+        executeDeferredTasks()
         block(dslScope)
     }
 

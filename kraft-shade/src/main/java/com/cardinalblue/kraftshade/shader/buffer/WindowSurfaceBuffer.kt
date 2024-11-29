@@ -1,7 +1,6 @@
 package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
 import android.view.TextureView
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
@@ -81,8 +80,6 @@ class WindowSurfaceBuffer(
 
     override suspend fun beforeDraw() {
         glEnv.makeCurrent(windowSurface)
-        GLES20.glEnable(GLES20.GL_BLEND)
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     override suspend fun afterDraw() {

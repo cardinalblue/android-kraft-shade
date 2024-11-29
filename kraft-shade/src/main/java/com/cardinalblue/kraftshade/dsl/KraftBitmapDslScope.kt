@@ -2,7 +2,6 @@ package com.cardinalblue.kraftshade.dsl
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.opengl.GLES20
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.EffectExecutionProvider
@@ -68,8 +67,6 @@ suspend fun kraftBitmapFrom(
     effectExecutionProvider: EffectExecutionProvider,
 ): Bitmap {
     return GlEnv(context).use {
-        GLES20.glEnable(GLES20.GL_BLEND)
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
         val targetBuffer = TextureBuffer(inputSize)
         effectExecutionProvider(this, targetBuffer).run()
         targetBuffer.getBitmap()

@@ -1,6 +1,5 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.view
 
-import android.opengl.GLES20
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -8,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.cardinalblue.kraftshade.compose.*
+import com.cardinalblue.kraftshade.compose.KraftShadeState
+import com.cardinalblue.kraftshade.compose.KraftShadeView
+import com.cardinalblue.kraftshade.compose.rememberKraftShadeState
 import com.cardinalblue.kraftshade.shader.KraftShader
 
 class TransparencyShader : KraftShader() {
@@ -31,12 +32,6 @@ class TransparencyShader : KraftShader() {
             }
         }
     """.trimIndent()
-
-    override fun beforeActualDraw() {
-        super.beforeActualDraw()
-        GLES20.glEnable(GLES20.GL_BLEND)
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
-    }
 }
 
 @Composable
