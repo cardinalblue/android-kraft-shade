@@ -29,7 +29,7 @@ fun SimpleTwoInputShaderTestScreen(
         val shader = createShader(context, bitmap1, bitmap2).apply {
             setInputTexture(texture1)
             setSecondInputTexture(texture2)
-            draw(texture1, texture2, resultBuffer.size, false)
+            drawWithInput(texture1, texture2, resultBuffer.size, false)
         }
 
         shader.drawTo(resultBuffer)

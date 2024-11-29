@@ -16,10 +16,10 @@ abstract class TwoTextureInputKraftShader : TextureInputKraftShader() {
 
     private var secondInputTextureId: Int by secondTextureInput.textureIdDelegate
 
-    var texture2SamplingTransformMatrix: GlMat4 by GlUniformDelegate("textureTransformMatrix", required = false)
+    var texture2TransformMatrix: GlMat4 by GlUniformDelegate("texture2TransformMatrix", required = false)
 
     init {
-        texture2SamplingTransformMatrix = GlMat4().apply {
+        texture2TransformMatrix = GlMat4().apply {
             setIdentity()
         }
     }
@@ -35,10 +35,10 @@ abstract class TwoTextureInputKraftShader : TextureInputKraftShader() {
     override fun loadVertexShader(): String = TWO_TEXTURE_INPUT_VERTEX_SHADER
 
     override fun drawWithInput(inputTexture: Texture, size: GlSize, isScreenCoordinate: Boolean) {
-        error("call the other draw method with two input textures")
+        error("call the other drawWithInput method with two input textures")
     }
 
-    fun draw(texture1: Texture, texture2: Texture, size: GlSize, isScreenCoordinate: Boolean) {
+    fun drawWithInput(texture1: Texture, texture2: Texture, size: GlSize, isScreenCoordinate: Boolean) {
         setSecondInputTexture(texture2)
         super.drawWithInput(texture1, size, isScreenCoordinate)
     }
@@ -49,7 +49,7 @@ abstract class TwoTextureInputKraftShader : TextureInputKraftShader() {
     }
 
     fun updateTexture2SamplingTransformMatrix(block: GlMat4.() -> Unit) {
-        texture2SamplingTransformMatrix = texture2SamplingTransformMatrix.apply {
+        texture2TransformMatrix = texture2TransformMatrix.apply {
             block()
         }
     }
@@ -57,21 +57,21 @@ abstract class TwoTextureInputKraftShader : TextureInputKraftShader() {
     companion object {
         @Language("GLSL")
         const val TWO_TEXTURE_INPUT_VERTEX_SHADER = """
-    attribute vec4 position;
-    attribute vec4 inputTextureCoordinate;
-    varying vec2 textureCoordinate;
-    varying vec2 texture2Coordinate;
+attribute vec4 position;
+attribute vec4 inputTextureCoordinate;
+varying vec2 textureCoordinate;
+varying vec2 texture2Coordinate;
 
-    uniform mat4 textureTransformMatrix;
+uniform mat4 texture2TransformMatrix;
 
-    uniform highp vec2 resolution;
+uniform highp vec2 resolution;
 
-    void main()
-    {
-        gl_Position = position;
-        textureCoordinate = inputTextureCoordinate.xy;
-        texture2Coordinate = (textureTransformMatrix * vec4(inputTextureCoordinate.xy, 0.0, 1.0)).xy;
-    }
+void main()
+{
+    gl_Position = position;
+    textureCoordinate = inputTextureCoordinate.xy;
+    texture2Coordinate = (texture2TransformMatrix * vec4(inputTextureCoordinate.xy, 0.0, 1.0)).xy;
+}
 """
     }
 }
