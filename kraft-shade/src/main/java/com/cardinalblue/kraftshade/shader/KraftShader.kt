@@ -1,21 +1,21 @@
 package com.cardinalblue.kraftshade.shader
 
 import android.opengl.GLES20
-import android.util.Log
 import androidx.annotation.CallSuper
-import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
-import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
 import com.cardinalblue.kraftshade.util.KraftLogger
+import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
+import org.intellij.lang.annotations.Language
 import java.util.LinkedList
 
 typealias GlTask = () -> Unit
 
 abstract class KraftShader : SuspendAutoCloseable {
     var debug: Boolean = false
+    var clearColorBeforeDraw: Boolean = true
 
     private var initialized = false
     private val runOnDraw = LinkedList<Pair<String?, GlTask>>()
@@ -28,14 +28,9 @@ abstract class KraftShader : SuspendAutoCloseable {
     protected var resolution: FloatArray by GlUniformDelegate("resolution", required = false)
         private set
 
-    private val logger = KraftLogger("KraftShader")
-
     open val debugName: String = this::class.simpleName ?: "Unknown"
 
-    fun log(message: String) {
-        if (!debug) return
-        Log.d("KraftShader", "[${this.javaClass.simpleName}] $message")
-    }
+    protected val logger = KraftLogger(this::class.simpleName ?: "KraftShader")
 
     open fun loadVertexShader(): String {
         return DEFAULT_VERTEX_SHADER
@@ -68,8 +63,10 @@ abstract class KraftShader : SuspendAutoCloseable {
      */
     @CallSuper
     open fun beforeActualDraw() {
-        GLES20.glClearColor(0f, 0f, 0f, 0f)
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        if (clearColorBeforeDraw) {
+            GLES20.glClearColor(0f, 0f, 0f, 0f)
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        }
 
         GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)
         GLES20.glVertexAttribPointer(
@@ -119,7 +116,7 @@ abstract class KraftShader : SuspendAutoCloseable {
             runOnDraw.forEach { (key, task) ->
                 task()
                 if (key != null) {
-                    log("runOnDraw: $key")
+                    logger.v("runOnDraw: $key")
                 }
             }
             runOnDraw.clear()
