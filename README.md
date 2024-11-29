@@ -212,51 +212,61 @@ pipeline(windowSurface) {
 
 ## Support Status
 
+### Base Shaders
+- [x] TextureInputKraftShader (single texture input)
+- [x] ThreeTextureInputKraftShader
+- [x] TwoTextureInputKraftShader (GPUImageTwoInputFilter)
+- [x] MixBlendKraftShader (GPUImageMixBlendFilter)
+
+### Functional Shaders
+- [x] BypassableTextureInputKraftShader
+- [x] BypassableTwoTextureInputKraftShader
+
 ### Basic Effects
-- [x] Saturation
-- [x] Contrast
-- [x] Brightness
-- [x] Hue
-- [x] White Balance
-- [x] Gamma
-- [x] Haze
-- [x] Color Inversion
-- [x] Pixellate
-- [x] Crosshatch
-- [x] Gray Scale
-- [x] Texture 3x3
+- [x] SaturationKraftShader (GPUImageSaturationFilter)
+- [x] ContrastKraftShader (GPUImageContrastFilter)
+- [x] BrightnessKraftShader (GPUImageBrightnessFilter)
+- [x] HueKraftShader (GPUImageHueFilter)
+- [x] WhiteBalanceKraftShader (GPUImageWhiteBalanceFilter)
+- [x] GammaKraftShader (GPUImageGammaFilter)
+- [x] HazeKraftShader (GPUImageHazeFilter)
+- [x] PixelationKraftShader (GPUImagePixelationFilter)
+- [x] GrayscaleKraftShader (GPUImageGrayscaleFilter)
+- [x] Sample3x3KraftShader (GPUImage3x3TextureSamplingFilter)
+- [x] HighlightShadowKraftShader (GPUImageHighlightShadowFilter)
+- [x] ColorInversionKraftShader
+- [x] AlphaInvertKraftShader
+- [x] ApplyAlphaMaskKraftShader
+
+### Texture Effects
+- [x] CrosshatchKraftShader (GPUImageCrosshatchFilter)
 
 ### Convolution & Edge Detection
-- [x] Convolution 3x3
-- [x] Emboss Filter
-- [x] Laplacian
-- [x] Directional Sobel Edge Detection
+- [x] Convolution3x3KraftShader (GPUImage3x3ConvolutionFilter)
+- [x] Convolution3x3WithColorOffsetKraftShader
+- [x] EmbossKraftShader (GPUImageEmbossFilter)
+- [x] DirectionalSobelEdgeDetectionKraftShader (GPUImageDirectionalSobelEdgeDetectionFilter)
+- [x] LaplacianKraftShader (GPUImageLaplacianFilter)
+- [x] LaplacianMagnitudeKraftShader
 
 ### Blending Modes
-- [x] Multiply Blend
-- [x] Screen Blend
-- [x] Normal Blend
-- [x] Source Over Blend
-- [x] Alpha Blend
+- [x] MultiplyBlendKraftShader (GPUImageMultiplyBlendFilter)
+- [x] ScreenBlendKraftShader (GPUImageScreenBlendFilter)
+- [x] NormalBlendKraftShader (GPUImageNormalBlendFilter)
+- [x] SourceOverBlendKraftShader (GPUImageSourceOverBlendFilter)
+- [x] AlphaBlendKraftShader (GPUImageAlphaBlendFilter)
+- [x] SimpleMixtureBlendKraftShader
 
 ### Color Adjustments
-- [x] Color Matrix
-- [x] Lookup (LUT)
+- [x] ColorMatrixKraftShader (GPUImageColorMatrixFilter)
+  - Additionally supports color offset
+- [x] LookUpTableKraftShader (GPUImageLookupFilter)
+- [x] ColorMappingKraftShader
+  - For mapping specific colors to other colors
+  - At most 8 color mappings. If you need to map more colors, you can use it multiple times.
 
 ### Coming Soon
-- [ ] Levels
-- [ ] Exposure
-- [ ] RGB
-- [ ] RGB Diation
-- [ ] Monochrome
-- [ ] False Color
-- [ ] Sharpen
-- [ ] Unsharp Mask
-- [ ] Transform Operation
-- [ ] Crop
-- [ ] Highlights and Shadows
-- [ ] Various Blur Effects
-- [ ] Additional Blend Modes
+
 
 ## Usage
 
