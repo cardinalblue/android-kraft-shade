@@ -194,6 +194,22 @@ pipeline(windowSurface) {
 }
 ```
 
+### Nested Pipeline
+Combine serial and graph pipelines for complex effects:
+```kotlin
+pipeline(windowSurface) {
+    serialSteps(
+      ...
+    ) {
+        graphStep() { inputTextureProvider ->
+            // create buffer references for intermediate results
+            // graph steps...
+            // write to graphTargetBuffer which is just one of the ping-pong buffers from serialSteps scope that's provided through the child scope
+        }
+    }
+}
+```
+
 ## Support Status
 
 ### Basic Effects
