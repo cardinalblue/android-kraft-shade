@@ -11,7 +11,7 @@ import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
-import com.cardinalblue.kraftshade.shader.builtin.SimpleMixtureBlendKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.AlphaBlendKraftShader
 import com.cardinalblue.kraftshade.util.KraftLogger
 
 @KraftShadeDsl
@@ -326,7 +326,7 @@ class SerialTextureInputPipelineScope internal constructor(
                 addStepForEffect(effectResult)
 
                 pipeline.addStep(
-                    shader = SimpleMixtureBlendKraftShader(),
+                    shader = AlphaBlendKraftShader(),
                     textureForStep.asTextureInput(),
                     effectResult.asTextureInput(),
                     step.mixturePercentInput,
