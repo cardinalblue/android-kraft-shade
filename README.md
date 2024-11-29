@@ -353,6 +353,105 @@ class App : Application() {
 }
 ```
 
+### Compose UI Integration
+
+Here's a simple example of using KraftShade with Jetpack Compose to create an image effect with adjustable saturation and brightness:
+
+```kotlin
+@Composable
+fun ImageEffectDemo() {
+    val state = rememberKraftShadeEffectState()
+    var saturation by remember { mutableFloatStateOf(1f) }
+    var brightness by remember { mutableFloatStateOf(0f) }
+    var aspectRatio by remember { mutableFloatStateOf(1f) }
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Image preview with effects
+        Box(
+            modifier = Modifier
+                .fillMaxHeight(0.5f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            KraftShadeEffectView(
+                modifier = Modifier.aspectRatio(aspectRatio),
+                state = state
+            )
+        }
+
+        // Effect controls
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Slider(
+                value = saturation,
+                onValueChange = { 
+                    saturation = it
+                    state.requestRender()
+                },
+                valueRange = 0f..2f
+            )
+            Text("Saturation: ${String.format("%.1f", saturation)}")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Slider(
+                value = brightness,
+                onValueChange = { 
+                    brightness = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+            Text("Brightness: ${String.format("%.1f", brightness)}")
+        }
+    }
+
+    // Set up the effect pipeline
+    LaunchedEffect(Unit) {
+        state.setEffect { windowSurface ->
+            val bitmap = context.loadBitmapFromAsset("sample/image.jpg")
+            aspectRatio = bitmap.width.toFloat() / bitmap.height
+
+            pipeline(windowSurface) {
+                serialSteps(
+                    inputTexture = bitmap.asTexture(),
+                    targetBuffer = windowSurface,
+                ) {
+                    // Apply saturation effect
+                    step(
+                        SaturationKraftShader(),
+                        sampledInput { saturation }
+                    ) { (saturationInput) ->
+                        this.saturation = saturationInput.cast()
+                    }
+
+                    // Apply brightness effect
+                    step(
+                        BrightnessKraftShader(),
+                        sampledInput { brightness }
+                    ) { (brightnessInput) ->
+                        this.brightness = brightnessInput.cast()
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+This example demonstrates:
+- Using `KraftShadeEffectView` in a Compose UI layout
+- Setting up a simple effect pipeline with two filters
+- Dynamically adjusting effect parameters with Compose state
+- Proper aspect ratio handling for the input image
+
 ### Custom Effects
 
 Create custom effects by extending `KraftShader`:
