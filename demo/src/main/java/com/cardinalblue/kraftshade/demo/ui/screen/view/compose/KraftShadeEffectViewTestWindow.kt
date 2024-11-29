@@ -35,6 +35,8 @@ fun KraftShadeEffectViewTestWindow() {
     var blurRepeat by remember { mutableFloatStateOf(30f) }
     var whiteBalanceTemperature by remember { mutableFloatStateOf(5000f) }
     var whiteBalanceTint by remember { mutableFloatStateOf(0f) }
+    var shadows by remember { mutableFloatStateOf(0f) }
+    var highlights by remember { mutableFloatStateOf(1f) }
 
     val context = LocalContext.current
 
@@ -227,6 +229,30 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = -100f..100f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Shadows",
+                value = shadows,
+                onValueChange = {
+                    shadows = it
+                    state.requestRender()
+                },
+                valueRange = 0f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Highlights",
+                value = highlights,
+                onValueChange = {
+                    highlights = it
+                    state.requestRender()
+                },
+                valueRange = 0f..1f
+            )
         }
     }
 
@@ -328,6 +354,15 @@ fun KraftShadeEffectViewTestWindow() {
                     ) { (temperatureInput, tintInput) ->
                         temperature = temperatureInput.cast()
                         tint = tintInput.cast()
+                    }
+
+                    step(
+                        HighlightShadowKraftShader(),
+                        sampledInput { shadows },
+                        sampledInput { highlights },
+                    ) { (shadowsInput, highlightsInput) ->
+                        this.shadows = shadowsInput.cast()
+                        this.highlights = highlightsInput.cast()
                     }
                 }
             }
