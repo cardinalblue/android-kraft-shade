@@ -62,14 +62,6 @@ KraftShade aims to address these limitations with:
 - Creates a dedicated thread dispatcher and binds the GLES context to that thread
 - Ensures all OpenGL operations run in the correct context
 
-### Buffer System (GlBuffer)
-- Supports multiple buffer types:
-  * PixelBuffer: For raw pixel data operations
-  * TextureBuffer (FBO): For off-screen rendering
-  * WindowSurfaceBuffer: For on-screen rendering
-- Handles screen coordinate transformations
-- Manages rendering target context in `beforeDraw`
-
 ### Shader System
 - `KraftShader`: Base shader implementation with modern Kotlin features
 - `GlUniformDelegate`: Smart uniform handling
@@ -78,6 +70,8 @@ KraftShade aims to address these limitations with:
   * Optional uniforms support (useful for base class implementations)
   * Automatic GLES API selection for value binding
 - `KraftShaderTextureInput`: Simplified texture input management
+- Debug mode support with detailed logging and error tracking
+- Bypassable shader support for conditional effect application
 
 ### Pipeline Architecture
 - Flexible pipeline types:
@@ -121,6 +115,95 @@ KraftShade aims to address these limitations with:
   * `KraftShadeView`: AndroidView wrapper for KraftTextureView
   * `KraftShadeEffectView`: AndroidView wrapper for KraftEffectTextureView
   * `KraftShadeAnimatedView`: AndroidView wrapper for AnimatedKraftTextureView
+
+### Pipeline DSL
+KraftShade provides a powerful DSL for setting up rendering pipelines with different levels of complexity:
+
+#### Serial Pipeline
+Simple linear processing chain, similar to GPUImageFilterGroup:
+```kotlin
+pipeline(windowSurface) {
+    serialSteps(
+        inputTexture = bitmap.asTexture(),
+        targetBuffer = windowSurface,
+    ) {
+        step(
+            SaturationKraftShader(),
+            sampledInput { saturation }
+        ) { (saturationInput) ->
+            this.saturation = saturationInput.cast()
+        }
+
+        step(
+            HueKraftShader(),
+            sampledInput { hue }
+        ) { (hueInput) ->
+            setHueInDegree(hueInput.cast())
+        }
+    }
+}
+```
+
+#### Graph Pipeline
+Complex multi-pass rendering with flexible input/output connections:
+```kotlin
+pipeline(windowSurface) {
+    // Create buffer references for intermediate results
+    val (step1Result, step2Result, blendResult) = createBufferReferences(
+        "graph_step1",
+        "graph_step2",
+        "graph_blend",
+    )
+    step(
+        Shader1(),
+        targetBuffer = step1Result,
+        input1
+    ) { (input1) ->
+        setParameter(input1.cast())
+    }
+
+    step(
+        Shader2(),
+        targetBuffer = step2Result,
+        input2
+    ) { (input2) ->
+        setParameter(input2.cast())
+    }
+
+    step(
+        BlendingShader(),
+        targetBuffer = blendResult,
+        step1Result.asTextureInput(),
+        step2Result.asTextureInput()
+    ) { (input1) ->
+        setParameter(input1.cast())
+    }
+}
+```
+
+#### Nested Pipeline
+Combine serial and graph pipelines for complex effects:
+```kotlin
+pipeline(windowSurface) {
+    serialSteps(
+      ...
+    ) {
+        graphStep() { inputTextureProvider ->
+            // create buffer references for intermediate results
+            // graph steps...
+            // write to graphTargetBuffer which is just one of the ping-pong buffers from serialSteps scope that's provided through the child scope
+        }
+    }
+}
+```
+
+Key Features:
+- Type-safe builder pattern
+- Automatic buffer management
+- Flexible pipeline composition
+- Support for parallel processing
+- Easy debugging with named buffer references
+- Automatic resource cleanup
 
 ## Support status of [GPUImage for iOS](https://github.com/BradLarson/GPUImage2) shaders
 - [x] Saturation
