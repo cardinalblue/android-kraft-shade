@@ -73,15 +73,16 @@ KraftShade aims to address these limitations with:
 - Debug mode support with detailed logging and error tracking
 - Bypassable shader support for conditional effect application
 
-### Pipeline Architecture
-- Flexible pipeline types:
-  * `SerialTextureInputPipeline`: Linear processing chain (similar to GPUImageFilterGroup)
-  * `GraphPipeline`: Complex multi-pass rendering (coming soon)
-- Pipeline execution flow:
-  1. Input updates
-  2. Shader setup and input binding
-  3. Ordered rendering to FBOs
-  4. Final output to target buffer
+### Pipeline Running Flow (per frame)
+1. Input updates (sample from ViewModel or MutableState in Compose UI)
+2. Reset `PipelineRunContext` which is a state you can access in the pipeline. During the execution of the steps, you can abort the running of the pipeline using it. Debug functionalities can be added to this state later.
+3. Iterate through steps in the pipeline and render to either intermediate buffers or the final target buffer
+   - Intermediate buffers are TextureBuffers provided by TextureBufferPool
+   - For the last step, the target buffer is usually the target buffer of the pipeline (window surface or a created TextureBuffer for getting bitmaps off-screen)
+   - Flow for running one step (shader)
+     1. Get values from input and set them as parameters of the shader
+     2. Run the shader to render to the target buffer for the step
+     3. Automatic recycling buffers not referenced anymore back to the pool
 
 ### Input System
 - `Input<T>`: Base input type
