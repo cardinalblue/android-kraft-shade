@@ -15,8 +15,8 @@ abstract class Sample3x3KraftShader : TextureInputKraftShader() {
     @CallSuper
     override fun beforeActualDraw() {
         super.beforeActualDraw()
-        texelWidth = lineSize / resolution[0]
-        texelHeight = lineSize / resolution[1]
+        texelWidth = lineSize / resolution.width
+        texelHeight = lineSize / resolution.height
     }
 }
 

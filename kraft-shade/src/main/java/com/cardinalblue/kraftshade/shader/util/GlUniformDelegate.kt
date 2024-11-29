@@ -57,6 +57,10 @@ open class GlUniformDelegate<T : Any>(
                     }
                 }
 
+                is GlSize -> {
+                    GLES20.glUniform2fv(location, 1, value.vec2, 0)
+                }
+
                 is GlSizeF -> {
                     GLES20.glUniform2fv(location, 1, value.vec2, 0)
                 }

@@ -25,7 +25,7 @@ abstract class KraftShader : SuspendAutoCloseable {
     private var glAttribPosition = 0
     protected var glAttribTextureCoordinate = 0
 
-    protected var resolution: FloatArray by GlUniformDelegate("resolution", required = false)
+    protected var resolution: GlSize by GlUniformDelegate("resolution", required = false)
         private set
 
     open val debugName: String = this::class.simpleName ?: "Unknown"
@@ -51,7 +51,7 @@ abstract class KraftShader : SuspendAutoCloseable {
         init()
         GLES20.glUseProgram(glProgId)
         // it's fine if the shader doesn't include the definition of resolution
-        resolution = bufferSize.vec2
+        resolution = bufferSize
         beforeActualDraw()
         runPendingOnDrawTasks()
         actualDraw(isScreenCoordinate)
