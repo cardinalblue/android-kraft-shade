@@ -22,6 +22,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeAnimate
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeEffectViewTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.CircularGaussianPerformanceTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.CircularBlurTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.ToonEffectTestWindow
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
 
 @Composable
@@ -79,6 +80,7 @@ enum class Destination(
     KraftBitmap("kraft_bitmap", "Kraft Bitmap", screen = { KraftBitmapTestScreen() }),
     CircularGaussianPerformance("circular_gaussian_performance", "Circular Gaussian Performance", screen = { CircularGaussianPerformanceTestWindow() }),
     CircularBlur("circular_blur", "Circular Blur", screen = { CircularBlurTestWindow() }),
+    ToonEffect("toon_effect", "Toon Effect", screen = { ToonEffectTestWindow() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {

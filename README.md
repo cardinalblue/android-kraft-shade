@@ -248,6 +248,7 @@ pipeline(windowSurface) {
 - [x] CrosshatchKraftShader (GPUImageCrosshatchFilter)
 - [x] PixelationKraftShader (GPUImagePixelationFilter)
 - [x] Sample3x3KraftShader (GPUImage3x3TextureSamplingFilter)
+- [x] ToonKraftShader (GPUImageToonFilter)
 
 ### Convolution & Edge Detection
 - [x] Convolution3x3KraftShader (GPUImage3x3ConvolutionFilter)
@@ -321,7 +322,6 @@ pipeline(windowSurface) {
 - [ ] SharpenKraftShader (GPUImageSharpenFilter)
 - [ ] SketchKraftShader (GPUImageSketchFilter)
 - [ ] SmoothToonKraftShader (GPUImageSmoothToonFilter)
-- [ ] ToonKraftShader (GPUImageToonFilter)
 
 #### Edge Detection & Processing
 - [ ] NonMaximumSuppressionKraftShader (GPUImageNonMaximumSuppressionFilter)
