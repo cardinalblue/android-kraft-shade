@@ -340,7 +340,7 @@ Key Features:
 
 ## Usage
 
-### Basic Setup
+### Logging Setup
 
 ```kotlin
 // Initialize in Application class
@@ -351,43 +351,6 @@ class App : Application() {
         KraftLogger.throwOnError = true
     }
 }
-```
-
-### Creating a Simple Effect
-
-```kotlin
-class MyCustomShader : KraftShader() {
-    override fun loadFragmentShader(): String = """
-        precision mediump float;
-        varying vec2 textureCoordinate;
-        uniform sampler2D inputImageTexture;
-
-        void main() {
-            vec4 color = texture2D(inputImageTexture, textureCoordinate);
-            gl_FragColor = color;
-        }
-    """.trimIndent()
-}
-```
-
-### Using the Pipeline
-
-```kotlin
-val pipeline = SerialTextureInputPipeline(glEnv).apply {
-    addEffect(SaturationKraftShader())
-    addEffect(MyCustomShader())
-}
-
-kraftTextureView.runGlTask { windowSurface ->
-    pipeline.drawTo(windowSurface)
-}
-```
-
-## Logging
-```kotlin
-// Configure logging
-KraftLogger.logLevel = KraftLogger.Level.DEBUG
-KraftLogger.throwOnError = true // Only for development
 ```
 
 ### Custom Effects
