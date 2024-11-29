@@ -31,8 +31,6 @@ fun KraftShadeEffectViewTestWindow() {
     var directionalSobelMixture by remember { mutableFloatStateOf(0f) }
     var laplacianMixture by remember { mutableFloatStateOf(0f) }
     var laplacianMagnitudeMixture by remember { mutableFloatStateOf(0f) }
-    var blurAmount by remember { mutableFloatStateOf(0f) }
-    var blurRepeat by remember { mutableFloatStateOf(30f) }
     var whiteBalanceTemperature by remember { mutableFloatStateOf(5000f) }
     var whiteBalanceTint by remember { mutableFloatStateOf(0f) }
     var shadows by remember { mutableFloatStateOf(0f) }
@@ -185,30 +183,6 @@ fun KraftShadeEffectViewTestWindow() {
             Spacer(modifier = Modifier.height(8.dp))
 
             ParameterSlider(
-                label = "Circular Gaussian Blur - Amount",
-                value = blurAmount,
-                onValueChange = {
-                    blurAmount = it
-                    state.requestRender()
-                },
-                valueRange = 0f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Circular Gaussian Blur - Repeat",
-                value = blurRepeat,
-                onValueChange = {
-                    blurRepeat = it
-                    state.requestRender()
-                },
-                valueRange = 1f..120f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
                 label = "White Balance - Temperature",
                 value = whiteBalanceTemperature,
                 onValueChange = {
@@ -337,15 +311,6 @@ fun KraftShadeEffectViewTestWindow() {
                         LaplacianMagnitudeKraftShader(),
                         sampledInput { laplacianMagnitudeMixture }
                     )
-
-                    step(
-                        CircularGaussianBlurKraftShader(),
-                        sampledInput { blurAmount },
-                        sampledInput { blurRepeat },
-                    ) { (amountInput, repeatInput) ->
-                        amount = amountInput.cast()
-                        repeat = repeatInput.cast()
-                    }
 
                     step(
                         WhiteBalanceKraftShader(),
