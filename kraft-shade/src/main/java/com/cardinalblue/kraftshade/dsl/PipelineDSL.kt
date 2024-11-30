@@ -108,11 +108,11 @@ class GraphPipelineSetupScope(
      * use [addAsStep], you can easily forget to set the input texture.
      *
      * @param constantTexture Why we don't use [TextureProvider] here is because the setup of the
-     *  texture id here is immediate, so if it's not a constant texture (LoadedTexture), then can
-     *  change. For example, if it's a [BufferReference], if we take the texture id immediately. For
-     *  the first rendering when WindowSurfaceBuffer is ready, it works fine. If later the size of
-     *  the WindowSurfaceBuffer changes, the texture will be deleted by [TextureBufferPool]. However,
-     *  the texture id is set to the shader, and it won't change since it's not using a reference.
+     * texture id here is immediate, so if it's not a constant texture (LoadedTexture), then can
+     * change. For example, if it's a [BufferReference], if we take the texture id immediately. For
+     * the first rendering when WindowSurfaceBuffer is ready, it works fine. If later the size of
+     * the WindowSurfaceBuffer changes, the texture will be deleted by [TextureBufferPool]. However,
+     * the texture id is set to the shader, and it won't change since it's not using a reference.
      */
     suspend fun <S : TextureInputKraftShader> stepWithInputTexture(
         shader: S,
@@ -196,8 +196,8 @@ class SerialTextureInputPipelineScope internal constructor(
      * saturation filter that only drop the saturation value.
      *
      * @param mixturePercentInput the valid range of this parameter is [0f, 1f].
-     *  - 0f means the output of the shader is ignored (bypass)
-     *  - 1f means the result is exactly the output of the shader (no input texture is mixed)
+     * - 0f means the output of the shader is ignored (bypass)
+     * - 1f means the result is exactly the output of the shader (no input texture is mixed)
      */
     @KraftShadeDsl
     fun <S : TextureInputKraftShader> stepWithMixture(

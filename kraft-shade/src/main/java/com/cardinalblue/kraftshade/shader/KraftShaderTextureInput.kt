@@ -7,7 +7,7 @@ import kotlin.properties.ReadWriteProperty
 
 /**
  * @param textureIndex starting from 0, but if your are extending TextureInputKraftShader, the first
- *  texture will be inputImageTexture, so for the additional textures, the index should start from 1.
+ * texture will be inputImageTexture, so for the additional textures, the index should start from 1.
  */
 class KraftShaderTextureInput(
     val textureIndex: Int,

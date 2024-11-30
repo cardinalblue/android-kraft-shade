@@ -1,23 +1,14 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
-import androidx.annotation.CallSuper
+import com.cardinalblue.kraftshade.model.GlSizeF
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import org.intellij.lang.annotations.Language
 
-abstract class Sample3x3KraftShader : TextureInputKraftShader() {
-    private var texelWidth: Float by GlUniformDelegate("texelWidth")
-    private var texelHeight: Float by GlUniformDelegate("texelHeight")
-    var lineSize: Float = 1.0f
-
+abstract class Sample3x3KraftShader : TextureInputKraftShader(), KraftShaderWithTexelSize {
+    override var texelSize: GlSizeF by GlUniformDelegate("texelSize")
+    override var texelSizeRatio: GlSizeF = GlSizeF(1.0f, 1.0f)
     override fun loadVertexShader(): String = SAMPLE_3x3_VERTEX_SHADER
-
-    @CallSuper
-    override fun beforeActualDraw() {
-        super.beforeActualDraw()
-        texelWidth = lineSize / resolution.width
-        texelHeight = lineSize / resolution.height
-    }
 }
 
 @Language("glsl")
@@ -25,8 +16,7 @@ const val SAMPLE_3x3_VERTEX_SHADER = """
 attribute vec4 position;
 attribute vec4 inputTextureCoordinate;
 
-uniform highp float texelWidth;
-uniform highp float texelHeight;
+uniform highp vec2 texelSize;
 
 varying vec2 textureCoordinate;
 varying vec2 leftTextureCoordinate;
@@ -44,10 +34,10 @@ void main()
 {
     gl_Position = position;
 
-    vec2 widthStep = vec2(texelWidth, 0.0);
-    vec2 heightStep = vec2(0.0, texelHeight);
-    vec2 widthHeightStep = vec2(texelWidth, texelHeight);
-    vec2 widthNegativeHeightStep = vec2(texelWidth, -texelHeight);
+    vec2 widthStep = vec2(texelSize[0], 0.0);
+    vec2 heightStep = vec2(0.0, texelSize[1]);
+    vec2 widthHeightStep = vec2(texelSize[0], texelSize[1]);
+    vec2 widthNegativeHeightStep = vec2(texelSize[0], -texelSize[1]);
 
     textureCoordinate = inputTextureCoordinate.xy;
     leftTextureCoordinate = inputTextureCoordinate.xy - widthStep;

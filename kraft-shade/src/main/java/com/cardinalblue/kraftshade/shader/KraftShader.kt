@@ -4,7 +4,9 @@ import android.opengl.GLES20
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.model.GlSizeF
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
+import com.cardinalblue.kraftshade.shader.builtin.KraftShaderWithTexelSize
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import com.cardinalblue.kraftshade.util.KraftLogger
 import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
@@ -66,6 +68,14 @@ abstract class KraftShader : SuspendAutoCloseable {
         if (clearColorBeforeDraw) {
             GLES20.glClearColor(0f, 0f, 0f, 0f)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        }
+
+        // resolution is now ready for read, so we can calculate the texel size in here
+        if (this is KraftShaderWithTexelSize) {
+            texelSize = GlSizeF(
+                texelSizeRatio.width / resolution.width,
+                texelSizeRatio.height / resolution.height
+            )
         }
 
         GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)
