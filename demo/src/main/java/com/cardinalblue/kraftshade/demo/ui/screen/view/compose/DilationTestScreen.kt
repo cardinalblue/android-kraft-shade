@@ -56,7 +56,7 @@ fun DilationTestScreen() {
                     }
 
                     stepWithTwoPassSamplingFilter(
-                        DilationKraftShader(),
+                        DilationKraftShader(4),
                         circle,
                         windowSurface,
                         sampledInput { sampleRatio },

@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
 import com.cardinalblue.kraftshade.shader.SingleDirectionForTwoPassSamplingKraftShader
+import org.intellij.lang.annotations.Language
 
 /**
  * For each pixel, this sets it to the maximum value of the red channel in a rectangular neighborhood
@@ -14,247 +15,74 @@ class DilationKraftShader(
         require(radius in 1..4) { "Radius must be between 1 and 4" }
     }
 
-    companion object {
-        private const val VERTEX_SHADER_1 = """
-            attribute vec4 position;
-            attribute vec2 inputTextureCoordinate;
+    override fun loadVertexShader(): String = getDilationVertexShader(radius)
+    override fun loadFragmentShader(): String = getDilationFragmentShader(radius)
+}
 
-            uniform vec2 texelSize;
+@Language("GLSL")
+private fun getDilationVertexShader(radius: Int) = """
+attribute vec4 position;
+attribute vec2 inputTextureCoordinate;
 
-            varying vec2 centerTextureCoordinate;
-            varying vec2 oneStepPositiveTextureCoordinate;
-            varying vec2 oneStepNegativeTextureCoordinate;
+uniform vec2 texelSize;
 
-            void main() {
-                gl_Position = position;
+varying vec2 centerTextureCoordinate;
+${stepVaryingVec2Declaration(radius)}
 
-                centerTextureCoordinate = inputTextureCoordinate;
-                oneStepNegativeTextureCoordinate = inputTextureCoordinate - texelSize;
-                oneStepPositiveTextureCoordinate = inputTextureCoordinate + texelSize;
-            }
-        """
+void main() {
+    gl_Position = position;
 
-        private const val VERTEX_SHADER_2 = """
-            attribute vec4 position;
-            attribute vec2 inputTextureCoordinate;
+    centerTextureCoordinate = inputTextureCoordinate;
+    ${stepVaryingVec2Assignment(radius)}
+}
+"""
 
-            uniform vec2 texelSize;
-
-            varying vec2 centerTextureCoordinate;
-            varying vec2 oneStepPositiveTextureCoordinate;
-            varying vec2 oneStepNegativeTextureCoordinate;
-            varying vec2 twoStepsPositiveTextureCoordinate;
-            varying vec2 twoStepsNegativeTextureCoordinate;
-
-            void main() {
-                gl_Position = position;
-
-                centerTextureCoordinate = inputTextureCoordinate;
-                oneStepNegativeTextureCoordinate = inputTextureCoordinate - texelSize;
-                oneStepPositiveTextureCoordinate = inputTextureCoordinate + texelSize;
-                twoStepsNegativeTextureCoordinate = inputTextureCoordinate - (texelSize * 2.0);
-                twoStepsPositiveTextureCoordinate = inputTextureCoordinate + (texelSize * 2.0);
-            }
-        """
-
-        private const val VERTEX_SHADER_3 = """
-            attribute vec4 position;
-            attribute vec2 inputTextureCoordinate;
-
-            uniform vec2 texelSize;
-
-            varying vec2 centerTextureCoordinate;
-            varying vec2 oneStepPositiveTextureCoordinate;
-            varying vec2 oneStepNegativeTextureCoordinate;
-            varying vec2 twoStepsPositiveTextureCoordinate;
-            varying vec2 twoStepsNegativeTextureCoordinate;
-            varying vec2 threeStepsPositiveTextureCoordinate;
-            varying vec2 threeStepsNegativeTextureCoordinate;
-
-            void main() {
-                gl_Position = position;
-
-                centerTextureCoordinate = inputTextureCoordinate;
-                oneStepNegativeTextureCoordinate = inputTextureCoordinate - texelSize;
-                oneStepPositiveTextureCoordinate = inputTextureCoordinate + texelSize;
-                twoStepsNegativeTextureCoordinate = inputTextureCoordinate - (texelSize * 2.0);
-                twoStepsPositiveTextureCoordinate = inputTextureCoordinate + (texelSize * 2.0);
-                threeStepsNegativeTextureCoordinate = inputTextureCoordinate - (texelSize * 3.0);
-                threeStepsPositiveTextureCoordinate = inputTextureCoordinate + (texelSize * 3.0);
-            }
-        """
-
-        private const val VERTEX_SHADER_4 = """
-            attribute vec4 position;
-            attribute vec2 inputTextureCoordinate;
-
-            uniform vec2 texelSize;
-
-            varying vec2 centerTextureCoordinate;
-            varying vec2 oneStepPositiveTextureCoordinate;
-            varying vec2 oneStepNegativeTextureCoordinate;
-            varying vec2 twoStepsPositiveTextureCoordinate;
-            varying vec2 twoStepsNegativeTextureCoordinate;
-            varying vec2 threeStepsPositiveTextureCoordinate;
-            varying vec2 threeStepsNegativeTextureCoordinate;
-            varying vec2 fourStepsPositiveTextureCoordinate;
-            varying vec2 fourStepsNegativeTextureCoordinate;
-
-            void main() {
-                gl_Position = position;
-
-                centerTextureCoordinate = inputTextureCoordinate;
-                oneStepNegativeTextureCoordinate = inputTextureCoordinate - texelSize;
-                oneStepPositiveTextureCoordinate = inputTextureCoordinate + texelSize;
-                twoStepsNegativeTextureCoordinate = inputTextureCoordinate - (texelSize * 2.0);
-                twoStepsPositiveTextureCoordinate = inputTextureCoordinate + (texelSize * 2.0);
-                threeStepsNegativeTextureCoordinate = inputTextureCoordinate - (texelSize * 3.0);
-                threeStepsPositiveTextureCoordinate = inputTextureCoordinate + (texelSize * 3.0);
-                fourStepsNegativeTextureCoordinate = inputTextureCoordinate - (texelSize * 4.0);
-                fourStepsPositiveTextureCoordinate = inputTextureCoordinate + (texelSize * 4.0);
-            }
-        """
-
-        private const val FRAGMENT_SHADER_1 = """
-            precision mediump float;
-
-            varying vec2 centerTextureCoordinate;
-            varying vec2 oneStepPositiveTextureCoordinate;
-            varying vec2 oneStepNegativeTextureCoordinate;
-
-            uniform sampler2D inputImageTexture;
-
-            void main() {
-                float centerIntensity = texture2D(inputImageTexture, centerTextureCoordinate).r;
-                float oneStepPositiveIntensity = texture2D(inputImageTexture, oneStepPositiveTextureCoordinate).r;
-                float oneStepNegativeIntensity = texture2D(inputImageTexture, oneStepNegativeTextureCoordinate).r;
-
-                float maxValue = max(centerIntensity, oneStepPositiveIntensity);
-                maxValue = max(maxValue, oneStepNegativeIntensity);
-
-                gl_FragColor = vec4(vec3(maxValue), 1.0);
-            }
-        """
-
-        private const val FRAGMENT_SHADER_2 = """
-            precision mediump float;
-
-            varying vec2 centerTextureCoordinate;
-            varying vec2 oneStepPositiveTextureCoordinate;
-            varying vec2 oneStepNegativeTextureCoordinate;
-            varying vec2 twoStepsPositiveTextureCoordinate;
-            varying vec2 twoStepsNegativeTextureCoordinate;
-
-            uniform sampler2D inputImageTexture;
-
-            void main() {
-                float centerIntensity = texture2D(inputImageTexture, centerTextureCoordinate).r;
-                float oneStepPositiveIntensity = texture2D(inputImageTexture, oneStepPositiveTextureCoordinate).r;
-                float oneStepNegativeIntensity = texture2D(inputImageTexture, oneStepNegativeTextureCoordinate).r;
-                float twoStepsPositiveIntensity = texture2D(inputImageTexture, twoStepsPositiveTextureCoordinate).r;
-                float twoStepsNegativeIntensity = texture2D(inputImageTexture, twoStepsNegativeTextureCoordinate).r;
-
-                float maxValue = max(centerIntensity, oneStepPositiveIntensity);
-                maxValue = max(maxValue, oneStepNegativeIntensity);
-                maxValue = max(maxValue, twoStepsPositiveIntensity);
-                maxValue = max(maxValue, twoStepsNegativeIntensity);
-
-                gl_FragColor = vec4(vec3(maxValue), 1.0);
-            }
-        """
-
-        private const val FRAGMENT_SHADER_3 = """
-            precision mediump float;
-
-            varying vec2 centerTextureCoordinate;
-            varying vec2 oneStepPositiveTextureCoordinate;
-            varying vec2 oneStepNegativeTextureCoordinate;
-            varying vec2 twoStepsPositiveTextureCoordinate;
-            varying vec2 twoStepsNegativeTextureCoordinate;
-            varying vec2 threeStepsPositiveTextureCoordinate;
-            varying vec2 threeStepsNegativeTextureCoordinate;
-
-            uniform sampler2D inputImageTexture;
-
-            void main() {
-                float centerIntensity = texture2D(inputImageTexture, centerTextureCoordinate).r;
-                float oneStepPositiveIntensity = texture2D(inputImageTexture, oneStepPositiveTextureCoordinate).r;
-                float oneStepNegativeIntensity = texture2D(inputImageTexture, oneStepNegativeTextureCoordinate).r;
-                float twoStepsPositiveIntensity = texture2D(inputImageTexture, twoStepsPositiveTextureCoordinate).r;
-                float twoStepsNegativeIntensity = texture2D(inputImageTexture, twoStepsNegativeTextureCoordinate).r;
-                float threeStepsPositiveIntensity = texture2D(inputImageTexture, threeStepsPositiveTextureCoordinate).r;
-                float threeStepsNegativeIntensity = texture2D(inputImageTexture, threeStepsNegativeTextureCoordinate).r;
-
-                float maxValue = max(centerIntensity, oneStepPositiveIntensity);
-                maxValue = max(maxValue, oneStepNegativeIntensity);
-                maxValue = max(maxValue, twoStepsPositiveIntensity);
-                maxValue = max(maxValue, twoStepsNegativeIntensity);
-                maxValue = max(maxValue, threeStepsPositiveIntensity);
-                maxValue = max(maxValue, threeStepsNegativeIntensity);
-
-                gl_FragColor = vec4(vec3(maxValue), 1.0);
-            }
-        """
-
-        private const val FRAGMENT_SHADER_4 = """
-            precision mediump float;
-
-            varying vec2 centerTextureCoordinate;
-            varying vec2 oneStepPositiveTextureCoordinate;
-            varying vec2 oneStepNegativeTextureCoordinate;
-            varying vec2 twoStepsPositiveTextureCoordinate;
-            varying vec2 twoStepsNegativeTextureCoordinate;
-            varying vec2 threeStepsPositiveTextureCoordinate;
-            varying vec2 threeStepsNegativeTextureCoordinate;
-            varying vec2 fourStepsPositiveTextureCoordinate;
-            varying vec2 fourStepsNegativeTextureCoordinate;
-
-            uniform sampler2D inputImageTexture;
-
-            void main() {
-                float centerIntensity = texture2D(inputImageTexture, centerTextureCoordinate).r;
-                float oneStepPositiveIntensity = texture2D(inputImageTexture, oneStepPositiveTextureCoordinate).r;
-                float oneStepNegativeIntensity = texture2D(inputImageTexture, oneStepNegativeTextureCoordinate).r;
-                float twoStepsPositiveIntensity = texture2D(inputImageTexture, twoStepsPositiveTextureCoordinate).r;
-                float twoStepsNegativeIntensity = texture2D(inputImageTexture, twoStepsNegativeTextureCoordinate).r;
-                float threeStepsPositiveIntensity = texture2D(inputImageTexture, threeStepsPositiveTextureCoordinate).r;
-                float threeStepsNegativeIntensity = texture2D(inputImageTexture, threeStepsNegativeTextureCoordinate).r;
-                float fourStepsPositiveIntensity = texture2D(inputImageTexture, fourStepsPositiveTextureCoordinate).r;
-                float fourStepsNegativeIntensity = texture2D(inputImageTexture, fourStepsNegativeTextureCoordinate).r;
-
-                float maxValue = max(centerIntensity, oneStepPositiveIntensity);
-                maxValue = max(maxValue, oneStepNegativeIntensity);
-                maxValue = max(maxValue, twoStepsPositiveIntensity);
-                maxValue = max(maxValue, twoStepsNegativeIntensity);
-                maxValue = max(maxValue, threeStepsPositiveIntensity);
-                maxValue = max(maxValue, threeStepsNegativeIntensity);
-                maxValue = max(maxValue, fourStepsPositiveIntensity);
-                maxValue = max(maxValue, fourStepsNegativeIntensity);
-
-                gl_FragColor = vec4(vec3(maxValue), 1.0);
-            }
-        """
-
-        private fun getVertexShader(radius: Int): String = when (radius) {
-            1 -> VERTEX_SHADER_1
-            2 -> VERTEX_SHADER_2
-            3 -> VERTEX_SHADER_3
-            else -> VERTEX_SHADER_4
+private fun stepVaryingVec2Assignment(radius: Int): String {
+    return StringBuilder().run {
+        for (i in 1..radius) {
+            appendLine("step${i}NegativeTextureCoordinate = inputTextureCoordinate - texelSize * $i.0;")
+            appendLine("step${i}PositiveTextureCoordinate = inputTextureCoordinate + texelSize * $i.0;")
         }
+        toString()
+    }
+}
 
-        private fun getFragmentShader(radius: Int): String = when (radius) {
-            1 -> FRAGMENT_SHADER_1
-            2 -> FRAGMENT_SHADER_2
-            3 -> FRAGMENT_SHADER_3
-            else -> FRAGMENT_SHADER_4
+private fun stepVaryingVec2Declaration(radius: Int): String {
+    return StringBuilder().run {
+        for (i in 1..radius) {
+            appendLine("varying vec2 step${i}PositiveTextureCoordinate;")
+            appendLine("varying vec2 step${i}NegativeTextureCoordinate;")
         }
+        toString()
     }
+}
 
-    override fun loadVertexShader(): String {
-        return getVertexShader(radius)
-    }
+@Language("GLSL")
+private fun getDilationFragmentShader(radius: Int) = """
+precision mediump float;
 
-    override fun loadFragmentShader(): String {
-        return getFragmentShader(radius)
+varying vec2 centerTextureCoordinate;
+${stepVaryingVec2Declaration(radius)}
+
+uniform sampler2D inputImageTexture;
+
+void main() {
+    float centerIntensity = texture2D(inputImageTexture, centerTextureCoordinate).r;
+    float maxValue = 0.0;
+    ${maxValueCalculation(radius)}
+
+    gl_FragColor = vec4(vec3(maxValue), 1.0);
+}
+"""
+
+fun maxValueCalculation(radius: Int): String {
+    return StringBuilder().run {
+        for (i in 1..radius) {
+            appendLine("float step${i}PositiveIntensity = texture2D(inputImageTexture, step${i}PositiveTextureCoordinate).r;")
+            appendLine("maxValue = max(maxValue, step${i}PositiveIntensity);")
+            appendLine("float step${i}NegativeIntensity = texture2D(inputImageTexture, step${i}NegativeTextureCoordinate).r;")
+            appendLine("maxValue = max(maxValue, step${i}NegativeIntensity);")
+        }
+        toString()
     }
 }
