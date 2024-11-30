@@ -250,13 +250,16 @@ pipeline(windowSurface) {
 - [x] Sample3x3KraftShader (GPUImage3x3TextureSamplingFilter)
 - [x] ToonKraftShader (GPUImageToonFilter)
 
-### Convolution & Edge Detection
-- [x] Convolution3x3KraftShader (GPUImage3x3ConvolutionFilter)
-- [x] Convolution3x3WithColorOffsetKraftShader
-- [x] EmbossKraftShader (GPUImageEmbossFilter)
+### Edge Detection
 - [x] DirectionalSobelEdgeDetectionKraftShader (GPUImageDirectionalSobelEdgeDetectionFilter)
 - [x] LaplacianKraftShader (GPUImageLaplacianFilter)
 - [x] LaplacianMagnitudeKraftShader
+
+### Convolution & Mask Processing
+- [x] Convolution3x3KraftShader (GPUImage3x3ConvolutionFilter)
+- [x] Convolution3x3WithColorOffsetKraftShader
+- [x] EmbossKraftShader (GPUImageEmbossFilter)
+- [x] DilationKraftShader (GPUImageDilationFilter)
 
 ### Blending Modes
 - [x] MultiplyBlendKraftShader (GPUImageMultiplyBlendFilter)
@@ -315,7 +318,6 @@ pipeline(windowSurface) {
 
 #### Artistic Effects
 - [ ] CGAColorspaceKraftShader (GPUImageCGAColorspaceFilter)
-- [ ] DilationKraftShader (GPUImageDilationFilter)
 - [ ] HalftoneKraftShader (GPUImageHalftoneFilter)
 - [ ] KuwaharaKraftShader (GPUImageKuwaharaFilter)
 - [ ] RGBDilationKraftShader (GPUImageRGBDilationFilter)
