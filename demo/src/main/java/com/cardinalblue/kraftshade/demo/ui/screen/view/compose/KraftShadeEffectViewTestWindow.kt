@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.CollapsibleSection
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.model.GlMat4
@@ -77,334 +78,246 @@ fun KraftShadeEffectViewTestWindow() {
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            ParameterSlider(
-                label = "Saturation",
-                value = saturation,
-                onValueChange = { 
-                    saturation = it
-                    state.requestRender()
-                },
-                valueRange = 0f..2f
-            )
+            var colorAdjustmentExpanded by remember { mutableStateOf(true) }
+            var rgbControlsExpanded by remember { mutableStateOf(true) }
+            var colorBalanceExpanded by remember { mutableStateOf(true) }
+            var effectsExpanded by remember { mutableStateOf(true) }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Brightness",
-                value = brightness,
-                onValueChange = { 
-                    brightness = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Contrast",
-                value = contrast,
-                onValueChange = { 
-                    contrast = it
-                    state.requestRender()
-                },
-                valueRange = 0f..4f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Pixel Size",
-                value = pixelSize,
-                onValueChange = { 
-                    pixelSize = it
-                    state.requestRender()
-                },
-                valueRange = 1f..100f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Hue",
-                value = hue,
-                onValueChange = { 
-                    hue = it
-                    state.requestRender()
-                },
-                valueRange = 0f..360f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Gamma",
-                value = gamma,
-                onValueChange = { 
-                    gamma = it
-                    state.requestRender()
-                },
-                valueRange = 0f..3f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Color Inversion",
-                value = colorMatrixIntensity,
-                onValueChange = { 
-                    colorMatrixIntensity = it
-                    state.requestRender()
-                },
-                valueRange = 0f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Directional Sobel Mixture",
-                value = directionalSobelMixture,
-                onValueChange = {
-                    directionalSobelMixture = it
-                    state.requestRender()
-                },
-                valueRange = 0f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Laplacian Mixture",
-                value = laplacianMixture,
-                onValueChange = {
-                    laplacianMixture = it
-                    state.requestRender()
-                },
-                valueRange = 0f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Laplacian Magnitude Mixture",
-                value = laplacianMagnitudeMixture,
-                onValueChange = {
-                    laplacianMagnitudeMixture = it
-                    state.requestRender()
-                },
-                valueRange = 0f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "White Balance - Temperature",
-                value = whiteBalanceTemperature,
-                onValueChange = {
-                    whiteBalanceTemperature = it
-                    state.requestRender()
-                },
-                valueRange = 3000f..7000f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "White Balance - Tint",
-                value = whiteBalanceTint,
-                onValueChange = {
-                    whiteBalanceTint = it
-                    state.requestRender()
-                },
-                valueRange = -100f..100f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Shadows",
-                value = shadows,
-                onValueChange = {
-                    shadows = it
-                    state.requestRender()
-                },
-                valueRange = 0f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Highlights",
-                value = highlights,
-                onValueChange = {
-                    highlights = it
-                    state.requestRender()
-                },
-                valueRange = 0f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Red Multiplier",
-                value = redMultiplier,
-                onValueChange = {
-                    redMultiplier = it
-                    state.requestRender()
-                },
-                valueRange = 0f..2f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Green Multiplier",
-                value = greenMultiplier,
-                onValueChange = {
-                    greenMultiplier = it
-                    state.requestRender()
-                },
-                valueRange = 0f..2f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Blue Multiplier",
-                value = blueMultiplier,
-                onValueChange = {
-                    blueMultiplier = it
-                    state.requestRender()
-                },
-                valueRange = 0f..2f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Shadows - Red",
-                value = shadowsR,
-                onValueChange = {
-                    shadowsR = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Shadows - Green",
-                value = shadowsG,
-                onValueChange = {
-                    shadowsG = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Shadows - Blue",
-                value = shadowsB,
-                onValueChange = {
-                    shadowsB = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Midtones - Red",
-                value = midtonesR,
-                onValueChange = {
-                    midtonesR = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Midtones - Green",
-                value = midtonesG,
-                onValueChange = {
-                    midtonesG = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Midtones - Blue",
-                value = midtonesB,
-                onValueChange = {
-                    midtonesB = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Highlights - Red",
-                value = highlightsR,
-                onValueChange = {
-                    highlightsR = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Highlights - Green",
-                value = highlightsG,
-                onValueChange = {
-                    highlightsG = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            ParameterSlider(
-                label = "Highlights - Blue",
-                value = highlightsB,
-                onValueChange = {
-                    highlightsB = it
-                    state.requestRender()
-                },
-                valueRange = -1f..1f
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            CollapsibleSection(
+                title = "Color Adjustment",
+                expanded = colorAdjustmentExpanded,
+                onExpandedChange = { colorAdjustmentExpanded = it }
             ) {
-                Text("Preserve Luminosity")
-                Switch(
-                    checked = preserveLuminosity,
-                    onCheckedChange = { 
-                        preserveLuminosity = it
+                ParameterSlider(
+                    label = "Saturation",
+                    value = saturation,
+                    onValueChange = { 
+                        saturation = it
                         state.requestRender()
-                    }
+                    },
+                    valueRange = 0f..2f
+                )
+                ParameterSlider(
+                    label = "Brightness",
+                    value = brightness,
+                    onValueChange = { 
+                        brightness = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+                ParameterSlider(
+                    label = "Contrast",
+                    value = contrast,
+                    onValueChange = { 
+                        contrast = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..2f
+                )
+                ParameterSlider(
+                    label = "Gamma",
+                    value = gamma,
+                    onValueChange = { 
+                        gamma = it
+                        state.requestRender()
+                    },
+                    valueRange = 0.5f..2f
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            CollapsibleSection(
+                title = "RGB Controls",
+                expanded = rgbControlsExpanded,
+                onExpandedChange = { rgbControlsExpanded = it }
+            ) {
+                ParameterSlider(
+                    label = "Red Multiplier",
+                    value = redMultiplier,
+                    onValueChange = { 
+                        redMultiplier = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..2f
+                )
+                ParameterSlider(
+                    label = "Green Multiplier",
+                    value = greenMultiplier,
+                    onValueChange = { 
+                        greenMultiplier = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..2f
+                )
+                ParameterSlider(
+                    label = "Blue Multiplier",
+                    value = blueMultiplier,
+                    onValueChange = { 
+                        blueMultiplier = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..2f
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            CollapsibleSection(
+                title = "Color Balance",
+                expanded = colorBalanceExpanded,
+                onExpandedChange = { colorBalanceExpanded = it }
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Preserve Luminosity")
+                    Switch(
+                        checked = preserveLuminosity,
+                        onCheckedChange = {
+                            preserveLuminosity = it
+                            state.requestRender()
+                        }
+                    )
+                }
+
+                Text("Shadows")
+                ParameterSlider(
+                    label = "R",
+                    value = shadowsR,
+                    onValueChange = { 
+                        shadowsR = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+                ParameterSlider(
+                    label = "G",
+                    value = shadowsG,
+                    onValueChange = { 
+                        shadowsG = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+                ParameterSlider(
+                    label = "B",
+                    value = shadowsB,
+                    onValueChange = { 
+                        shadowsB = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+
+                Text("Midtones")
+                ParameterSlider(
+                    label = "R",
+                    value = midtonesR,
+                    onValueChange = { 
+                        midtonesR = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+                ParameterSlider(
+                    label = "G",
+                    value = midtonesG,
+                    onValueChange = { 
+                        midtonesG = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+                ParameterSlider(
+                    label = "B",
+                    value = midtonesB,
+                    onValueChange = { 
+                        midtonesB = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+
+                Text("Highlights")
+                ParameterSlider(
+                    label = "R",
+                    value = highlightsR,
+                    onValueChange = { 
+                        highlightsR = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+                ParameterSlider(
+                    label = "G",
+                    value = highlightsG,
+                    onValueChange = { 
+                        highlightsG = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+                ParameterSlider(
+                    label = "B",
+                    value = highlightsB,
+                    onValueChange = { 
+                        highlightsB = it
+                        state.requestRender()
+                    },
+                    valueRange = -1f..1f
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            CollapsibleSection(
+                title = "Effects",
+                expanded = effectsExpanded,
+                onExpandedChange = { effectsExpanded = it }
+            ) {
+                ParameterSlider(
+                    label = "Pixel Size",
+                    value = pixelSize,
+                    onValueChange = { 
+                        pixelSize = it
+                        state.requestRender()
+                    },
+                    valueRange = 1f..20f
+                )
+                ParameterSlider(
+                    label = "Directional Sobel Mixture",
+                    value = directionalSobelMixture,
+                    onValueChange = { 
+                        directionalSobelMixture = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
+                )
+                ParameterSlider(
+                    label = "Laplacian Mixture",
+                    value = laplacianMixture,
+                    onValueChange = { 
+                        laplacianMixture = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
+                )
+                ParameterSlider(
+                    label = "Laplacian Magnitude Mixture",
+                    value = laplacianMagnitudeMixture,
+                    onValueChange = { 
+                        laplacianMagnitudeMixture = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 
