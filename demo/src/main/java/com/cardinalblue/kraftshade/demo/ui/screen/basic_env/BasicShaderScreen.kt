@@ -17,9 +17,9 @@ fun BasicShaderScreen() {
             // for verifying the runOnDraw only happen once with the same key. There should be only
             // one log like below:
             // D/KraftShader [DrawCircleKraftShader] runOnDraw: color
-            shader.setColor(GlColor.Green)
-            shader.setColor(GlColor.Yellow)
-            shader.setColor(GlColor.Blue)
+            shader.color = GlColor.Green
+            shader.color = GlColor.Yellow
+            shader.color = GlColor.Blue
             TextureBuffer(500, 500).use { buffer ->
                 shader.drawTo(buffer)
                 buffer.getBitmap()

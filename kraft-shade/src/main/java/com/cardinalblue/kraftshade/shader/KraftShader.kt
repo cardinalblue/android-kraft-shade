@@ -54,6 +54,8 @@ abstract class KraftShader : SuspendAutoCloseable {
         GLES20.glUseProgram(glProgId)
         // it's fine if the shader doesn't include the definition of resolution
         resolution = bufferSize
+        // resolution is now ready for read, so we can calculate the texel size in here
+        updateTexelSize()
         beforeActualDraw()
         runPendingOnDrawTasks()
         actualDraw(isScreenCoordinate)
@@ -78,9 +80,6 @@ abstract class KraftShader : SuspendAutoCloseable {
             GLES20.glClearColor(0f, 0f, 0f, 0f)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         }
-
-        // resolution is now ready for read, so we can calculate the texel size in here
-        updateTexelSize()
 
         GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)
         GLES20.glVertexAttribPointer(

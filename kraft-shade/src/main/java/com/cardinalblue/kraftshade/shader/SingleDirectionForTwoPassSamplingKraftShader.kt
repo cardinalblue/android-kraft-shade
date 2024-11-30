@@ -18,7 +18,7 @@ abstract class SingleDirectionForTwoPassSamplingKraftShader : TextureInputKraftS
 
     override fun updateTexelSize() {
         texelSize = if (direction == Direction.Horizontal) {
-            GlSizeF(texelSizeRatio.width / resolution.width, 0f,)
+            GlSizeF(texelSizeRatio.width / resolution.width, 0f)
         } else {
             GlSizeF(0f, texelSizeRatio.height / resolution.height)
         }
@@ -38,13 +38,19 @@ suspend fun <S> SerialTextureInputPipelineScope.stepWithTwoPassSamplingFilter(
     step(
         shader = shader,
         inputs = inputs,
-        setupAction = setupAction,
+        setupAction = {
+            direction = SingleDirectionForTwoPassSamplingKraftShader.Direction.Horizontal
+            setupAction(this, inputs.toList())
+        },
     )
 
     step(
         shader = shader,
         inputs = inputs,
-        setupAction = setupActionForSecondDirection,
+        setupAction = {
+            direction = SingleDirectionForTwoPassSamplingKraftShader.Direction.Vertical
+            setupActionForSecondDirection(this, inputs.toList())
+        },
     )
 }
 

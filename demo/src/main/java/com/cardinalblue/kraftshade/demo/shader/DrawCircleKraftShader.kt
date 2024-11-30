@@ -7,14 +7,17 @@ import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
 class DrawCircleKraftShader(
     color: GlColor = GlColor.Red,
-    backgroundColor: GlColor = GlColor.Transparent
+    backgroundColor: GlColor = GlColor.Transparent,
+    scale: Float = 1f,
 ) : KraftShader() {
-    private var color: FloatArray by GlUniformDelegate("color")
-    private var backgroundColor: FloatArray by GlUniformDelegate("bgColor")
+    var color: GlColor by GlUniformDelegate("color")
+    var backgroundColor: GlColor by GlUniformDelegate("bgColor")
+    var scale: Float  by GlUniformDelegate("scale")
 
     init {
-        this.color = color.vec4
-        this.backgroundColor = backgroundColor.vec4
+        this.color = color
+        this.backgroundColor = backgroundColor
+        this.scale = scale
     }
 
     override fun loadVertexShader(): String {
@@ -26,19 +29,11 @@ class DrawCircleKraftShader(
     }
 
     fun setColor(r: Float, g: Float, b: Float, a: Float = 1f) {
-        color = floatArrayOf(r, g, b, a)
-    }
-
-    fun setColor(color: GlColor) {
-        this.color = color.vec4
+        color = GlColor.normalizedRGBA(r, g, b, a)
     }
 
     fun setBackgroundColor(r: Float, g: Float, b: Float, a: Float = 1f) {
-        backgroundColor = floatArrayOf(r, g, b, a)
-    }
-
-    fun setBackgroundColor(color: GlColor) {
-        backgroundColor = color.vec4
+        backgroundColor = GlColor.normalizedRGBA(r, g, b, a)
     }
 }
 
@@ -47,11 +42,12 @@ const val DRAW_CIRCLE_FRAGMENT_SHADER = """
 uniform highp vec2 resolution;
 uniform lowp vec4 color;
 uniform lowp vec4 bgColor;
+uniform lowp float scale;
 
 void main()
 {
    lowp float minor = min(resolution.x, resolution.y);
-   if (distance(vec2(resolution.x, resolution.y) / 2.0, gl_FragCoord.xy) <= minor / 2.0)
+   if (distance(vec2(resolution.x, resolution.y) / 2.0, gl_FragCoord.xy) <= minor * scale / 2.0)
    {
        gl_FragColor = color;
    } else {

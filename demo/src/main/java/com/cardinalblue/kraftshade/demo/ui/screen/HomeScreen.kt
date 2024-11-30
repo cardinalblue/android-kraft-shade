@@ -16,13 +16,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BlendingExampleScree
 import com.cardinalblue.kraftshade.demo.ui.screen.dsl.KraftBitmapTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.shaders.*
 import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.ColorfulCrosshatchTestScreen
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.CrosshatchTestScreen
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeAnimatedViewTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeEffectViewTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.CircularGaussianPerformanceTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.CircularBlurTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.ToonEffectTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.*
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
 
 @Composable
@@ -81,6 +75,7 @@ enum class Destination(
     CircularGaussianPerformance("circular_gaussian_performance", "Circular Gaussian Performance", screen = { CircularGaussianPerformanceTestWindow() }),
     CircularBlur("circular_blur", "Circular Blur", screen = { CircularBlurTestWindow() }),
     ToonEffect("toon_effect", "Toon Effect", screen = { ToonEffectTestWindow() }),
+    DilationShaderTest("dilation_shader_test", "Dilation Shader Test", screen = { DilationTestScreen() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {

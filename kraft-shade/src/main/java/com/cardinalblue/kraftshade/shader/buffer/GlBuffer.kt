@@ -11,7 +11,7 @@ interface GlBuffer : SuspendAutoCloseable, GlBufferProvider {
     suspend fun afterDraw()
     suspend fun delete()
 
-    suspend fun draw(draw: GlBuffer.() -> Unit) {
+    suspend fun draw(draw: suspend GlBuffer.() -> Unit) {
         beforeDraw()
         GLES20.glViewport(0, 0, size.width, size.height)
         draw()
