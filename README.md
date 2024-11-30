@@ -240,6 +240,7 @@ pipeline(windowSurface) {
   - For mapping specific colors to other colors
   - At most 8 color mappings. If you need to map more colors, you can use it multiple times.
 - [x] RGBKraftShader (GPUImageRGBFilter)
+- [x] ColorBalanceKraftShader (GPUImageColorBalanceFilter)
 
 ### Alpha & Transparency Effects
 - [x] HazeKraftShader (GPUImageHazeFilter)
@@ -298,7 +299,6 @@ pipeline(windowSurface) {
 - [ ] SubtractBlendKraftShader (GPUImageSubtractBlendFilter)
 
 #### Color Effects
-- [ ] ColorBalanceKraftShader (GPUImageColorBalanceFilter)
 - [ ] ExposureKraftShader (GPUImageExposureFilter)
 - [ ] FalseColorKraftShader (GPUImageFalseColorFilter)
 - [ ] LevelsKraftShader (GPUImageLevelsFilter)

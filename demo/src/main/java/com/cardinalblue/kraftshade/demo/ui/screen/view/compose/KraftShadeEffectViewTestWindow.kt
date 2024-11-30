@@ -3,6 +3,8 @@ package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +40,16 @@ fun KraftShadeEffectViewTestWindow() {
     var redMultiplier by remember { mutableFloatStateOf(1f) }
     var greenMultiplier by remember { mutableFloatStateOf(1f) }
     var blueMultiplier by remember { mutableFloatStateOf(1f) }
+    var shadowsR by remember { mutableFloatStateOf(0f) }
+    var shadowsG by remember { mutableFloatStateOf(0f) }
+    var shadowsB by remember { mutableFloatStateOf(0f) }
+    var midtonesR by remember { mutableFloatStateOf(0f) }
+    var midtonesG by remember { mutableFloatStateOf(0f) }
+    var midtonesB by remember { mutableFloatStateOf(0f) }
+    var highlightsR by remember { mutableFloatStateOf(0f) }
+    var highlightsG by remember { mutableFloatStateOf(0f) }
+    var highlightsB by remember { mutableFloatStateOf(0f) }
+    var preserveLuminosity by remember { mutableStateOf(true) }
 
     val context = LocalContext.current
 
@@ -234,7 +246,7 @@ fun KraftShadeEffectViewTestWindow() {
             Spacer(modifier = Modifier.height(8.dp))
 
             ParameterSlider(
-                label = "RGB Red",
+                label = "Red Multiplier",
                 value = redMultiplier,
                 onValueChange = {
                     redMultiplier = it
@@ -246,7 +258,7 @@ fun KraftShadeEffectViewTestWindow() {
             Spacer(modifier = Modifier.height(8.dp))
 
             ParameterSlider(
-                label = "RGB Green",
+                label = "Green Multiplier",
                 value = greenMultiplier,
                 onValueChange = {
                     greenMultiplier = it
@@ -258,7 +270,7 @@ fun KraftShadeEffectViewTestWindow() {
             Spacer(modifier = Modifier.height(8.dp))
 
             ParameterSlider(
-                label = "RGB Blue",
+                label = "Blue Multiplier",
                 value = blueMultiplier,
                 onValueChange = {
                     blueMultiplier = it
@@ -266,6 +278,133 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..2f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Shadows - Red",
+                value = shadowsR,
+                onValueChange = {
+                    shadowsR = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Shadows - Green",
+                value = shadowsG,
+                onValueChange = {
+                    shadowsG = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Shadows - Blue",
+                value = shadowsB,
+                onValueChange = {
+                    shadowsB = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Midtones - Red",
+                value = midtonesR,
+                onValueChange = {
+                    midtonesR = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Midtones - Green",
+                value = midtonesG,
+                onValueChange = {
+                    midtonesG = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Midtones - Blue",
+                value = midtonesB,
+                onValueChange = {
+                    midtonesB = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Highlights - Red",
+                value = highlightsR,
+                onValueChange = {
+                    highlightsR = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Highlights - Green",
+                value = highlightsG,
+                onValueChange = {
+                    highlightsG = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "Highlights - Blue",
+                value = highlightsB,
+                onValueChange = {
+                    highlightsB = it
+                    state.requestRender()
+                },
+                valueRange = -1f..1f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Preserve Luminosity")
+                Switch(
+                    checked = preserveLuminosity,
+                    onCheckedChange = { 
+                        preserveLuminosity = it
+                        state.requestRender()
+                    }
+                )
+            }
         }
     }
 
@@ -378,6 +517,19 @@ fun KraftShadeEffectViewTestWindow() {
                         this.red = redInput.cast()
                         this.green = greenInput.cast()
                         this.blue = blueInput.cast()
+                    }
+
+                    step(
+                        ColorBalanceKraftShader(),
+                        sampledInput { floatArrayOf(shadowsR, shadowsG, shadowsB) },
+                        sampledInput { floatArrayOf(midtonesR, midtonesG, midtonesB) },
+                        sampledInput { floatArrayOf(highlightsR, highlightsG, highlightsB) },
+                        sampledInput { preserveLuminosity }
+                    ) { (shadowsInput, midtonesInput, highlightsInput, preserveLuminosityInput) ->
+                        this.shadows = shadowsInput.cast()
+                        this.midtones = midtonesInput.cast()
+                        this.highlights = highlightsInput.cast()
+                        this.preserveLuminosity = preserveLuminosityInput.cast()
                     }
                 }
             }
