@@ -30,7 +30,7 @@ sealed class BasePipelineSetupScope(
     ): BufferReferenceCreator = BufferReferenceCreator(pipeline.bufferPool, *namesForDebug)
 
     @KraftShadeDsl
-    fun step(
+    open suspend fun step(
         purposeForDebug: String = "",
         block: suspend GlEnvDslScope.(runContext: Pipeline.PipelineRunContext) -> Unit
     ) {
@@ -167,6 +167,18 @@ class SerialTextureInputPipelineScope internal constructor(
     private val steps = mutableListOf<InternalStep>()
 
     /**
+     * We have to follow the order of the setup with the other internal steps, so we keep it an
+     * internal step first as well.
+     */
+    @KraftShadeDsl
+    override suspend fun step(
+        purposeForDebug: String,
+        block: suspend GlEnvDslScope.(runContext: Pipeline.PipelineRunContext) -> Unit
+    ) {
+        steps.add(InternalRunStep(purposeForDebug, block))
+    }
+
+    /**
      * Different from [PipelineSetupScope.step], you don't have to setup the input and provide
      * target buffer, so it's more convenient to use.
      *
@@ -243,20 +255,25 @@ class SerialTextureInputPipelineScope internal constructor(
             "serial steps should have at least one step"
         }
 
-        var isFirstStep = true
+        var isFirstShaderStep = true
 
         while (stepIterator.hasNext()) {
             val step = stepIterator.next()
+            val isShaderStep = step is InternalSingleShaderStep<*>
             val isLastStep = !stepIterator.hasNext()
             val targetBufferForStep: GlBufferProvider = if (isLastStep) this.targetBuffer else {
                 if (drawToBuffer1) buffer1 else buffer2
             }
 
-            val inputTextureForStep: TextureProvider = if (isFirstStep) inputTexture else {
+            val inputTextureForStep: TextureProvider = if (isFirstShaderStep) inputTexture else {
                 if (drawToBuffer1) buffer2 else buffer1
             }
 
             when (step) {
+                is InternalRunStep -> {
+                    super.step(purposeForDebug = step.purposeForDebug, block = step.block)
+                }
+
                 is InternalSingleShaderStep<*> -> {
                     addSingleShaderStepToPipeline(
                         step = step,
@@ -272,16 +289,9 @@ class SerialTextureInputPipelineScope internal constructor(
                 }
             }
 
-            isFirstStep = false
-            drawToBuffer1 = !drawToBuffer1
-        }
-
-        if (!pipeline.automaticRecycle) {
-            step("clean up ping pong buffers") {
-                this@SerialTextureInputPipelineScope
-                    .pipeline
-                    .bufferPool
-                    .recycle("serial_end", buffer1, buffer2)
+            if (isShaderStep) {
+                isFirstShaderStep = false
+                drawToBuffer1 = !drawToBuffer1
             }
         }
     }
@@ -342,6 +352,11 @@ class SerialTextureInputPipelineScope internal constructor(
     }
 
     private sealed class InternalStep
+
+    private class InternalRunStep(
+        val purposeForDebug: String,
+        val block: suspend GlEnvDslScope.(runContext: Pipeline.PipelineRunContext) -> Unit
+    ) : InternalStep()
 
     private abstract class InternalSingleShaderStep<S : TextureInputKraftShader>(
         val shader: S,

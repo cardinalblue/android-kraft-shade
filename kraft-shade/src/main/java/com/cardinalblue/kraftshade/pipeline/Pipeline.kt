@@ -68,6 +68,14 @@ class Pipeline internal constructor(
 
     fun addStep(step: PipelineStep) {
         steps.add(step)
+        logger.d {
+            val detail = when (step) {
+                is RunShaderStep<*> -> step.shader.debugName
+                is RunTaskStep -> step.purposeForDebug
+            }
+
+            "[${step.stepIndex}] add step [${step.type}] - $detail"
+        }
     }
 
     fun <T : KraftShader> addStep(
