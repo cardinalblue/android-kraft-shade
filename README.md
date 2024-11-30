@@ -260,6 +260,7 @@ pipeline(windowSurface) {
 - [x] Convolution3x3WithColorOffsetKraftShader
 - [x] EmbossKraftShader (GPUImageEmbossFilter)
 - [x] DilationKraftShader (GPUImageDilationFilter)
+- [x] ErosionKraftShader
 
 ### Blending Modes
 - [x] MultiplyBlendKraftShader (GPUImageMultiplyBlendFilter)

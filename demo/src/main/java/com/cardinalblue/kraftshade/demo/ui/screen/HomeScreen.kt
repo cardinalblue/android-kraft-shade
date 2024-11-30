@@ -75,7 +75,7 @@ enum class Destination(
     CircularGaussianPerformance("circular_gaussian_performance", "Circular Gaussian Performance", screen = { CircularGaussianPerformanceTestWindow() }),
     CircularBlur("circular_blur", "Circular Blur", screen = { CircularBlurTestWindow() }),
     ToonEffect("toon_effect", "Toon Effect", screen = { ToonEffectTestWindow() }),
-    DilationShaderTest("dilation_shader_test", "Dilation Shader Test", screen = { DilationTestScreen() }),
+    ErosionDilationShaderTest("erosion_dilation_shader_test", "Erosion/Dilation Shader Test", screen = { ErosionDilationTestScreen() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {

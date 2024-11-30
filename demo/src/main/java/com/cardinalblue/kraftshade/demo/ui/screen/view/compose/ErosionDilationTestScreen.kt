@@ -13,12 +13,14 @@ import com.cardinalblue.kraftshade.model.GlColor
 import com.cardinalblue.kraftshade.model.GlSizeF
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.builtin.DilationKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.ErosionKraftShader
 import com.cardinalblue.kraftshade.shader.stepWithTwoPassSamplingFilter
 
 @Composable
-fun DilationTestScreen() {
+fun ErosionDilationTestScreen() {
     val state = rememberKraftShadeEffectState()
-    var sampleRatio by remember { mutableFloatStateOf(1f) }
+    var dilationSampleRatio by remember { mutableFloatStateOf(1f) }
+    var erosionSampleRatio by remember { mutableFloatStateOf(1f) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -33,10 +35,21 @@ fun DilationTestScreen() {
 
         ParameterSlider(
             modifier = Modifier.padding(16.dp),
-            label = "Sample Ratio",
-            value = sampleRatio,
+            label = "Erosion Sample Ratio",
+            value = erosionSampleRatio,
             onValueChange = {
-                sampleRatio = it
+                erosionSampleRatio = it
+                state.requestRender()
+            },
+            valueRange = 1f..100f,
+        )
+
+        ParameterSlider(
+            modifier = Modifier.padding(16.dp),
+            label = "Dilation Sample Ratio",
+            value = dilationSampleRatio,
+            onValueChange = {
+                dilationSampleRatio = it
                 state.requestRender()
             },
             valueRange = 1f..100f,
@@ -55,14 +68,23 @@ fun DilationTestScreen() {
                         shader.drawTo(circle.provideBuffer())
                     }
 
-                    stepWithTwoPassSamplingFilter(
-                        DilationKraftShader(4),
-                        circle,
-                        windowSurface,
-                        sampledInput { sampleRatio },
-                    ) { (sampleRatio) ->
-                        texelSizeRatio = sampleRatio.cast<Float>().let {
-                            GlSizeF(it, it)
+                    serialSteps(circle, windowSurface) {
+                        stepWithTwoPassSamplingFilter(
+                            ErosionKraftShader(4),
+                            sampledInput { erosionSampleRatio },
+                        ) { (sampleRatio) ->
+                            texelSizeRatio = sampleRatio.cast<Float>().let {
+                                GlSizeF(it, it)
+                            }
+                        }
+
+                        stepWithTwoPassSamplingFilter(
+                            DilationKraftShader(4),
+                            sampledInput { dilationSampleRatio },
+                        ) { (sampleRatio) ->
+                            texelSizeRatio = sampleRatio.cast<Float>().let {
+                                GlSizeF(it, it)
+                            }
                         }
                     }
                 }

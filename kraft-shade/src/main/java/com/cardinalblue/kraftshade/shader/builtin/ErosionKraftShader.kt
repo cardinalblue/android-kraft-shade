@@ -4,23 +4,23 @@ import com.cardinalblue.kraftshade.shader.SingleDirectionForTwoPassSamplingKraft
 import org.intellij.lang.annotations.Language
 
 /**
- * For each pixel, this sets it to the maximum value of the red channel in a rectangular neighborhood
- * extending out dilationRadius pixels from the center. This extends out bright features, and is most
+ * For each pixel, this sets it to the minimum value of the red channel in a rectangular neighborhood
+ * extending out erosionRadius pixels from the center. This shrinks bright features, and is most
  * commonly used with black-and-white thresholded images.
  */
-class DilationKraftShader(
+class ErosionKraftShader(
     private val radius: Int = 1
 ) : SingleDirectionForTwoPassSamplingKraftShader() {
     init {
         require(radius in 1..4) { "Radius must be between 1 and 4" }
     }
 
-    override fun loadVertexShader(): String = getDilationVertexShader(radius)
-    override fun loadFragmentShader(): String = getDilationFragmentShader(radius)
+    override fun loadVertexShader(): String = getErosionVertexShader(radius)
+    override fun loadFragmentShader(): String = getErosionFragmentShader(radius)
 }
 
 @Language("GLSL")
-private fun getDilationVertexShader(radius: Int) = """
+private fun getErosionVertexShader(radius: Int) = """
 attribute vec4 position;
 attribute vec2 inputTextureCoordinate;
 
@@ -58,7 +58,7 @@ private fun stepVaryingVec2Declaration(radius: Int): String {
 }
 
 @Language("GLSL")
-private fun getDilationFragmentShader(radius: Int) = """
+private fun getErosionFragmentShader(radius: Int) = """
 precision mediump float;
 
 varying vec2 centerTextureCoordinate;
@@ -68,20 +68,20 @@ uniform sampler2D inputImageTexture;
 
 void main() {
     float centerIntensity = texture2D(inputImageTexture, centerTextureCoordinate).r;
-    float maxValue = 0.0;
-    ${maxValueCalculation(radius)}
+    float minValue = 1.0;
+    ${minValueCalculation(radius)}
 
-    gl_FragColor = vec4(vec3(maxValue), 1.0);
+    gl_FragColor = vec4(vec3(minValue), 1.0);
 }
 """
 
-private fun maxValueCalculation(radius: Int): String {
+private fun minValueCalculation(radius: Int): String {
     return StringBuilder().run {
         for (i in 1..radius) {
             appendLine("float step${i}PositiveIntensity = texture2D(inputImageTexture, step${i}PositiveTextureCoordinate).r;")
-            appendLine("maxValue = max(maxValue, step${i}PositiveIntensity);")
+            appendLine("minValue = min(minValue, step${i}PositiveIntensity);")
             appendLine("float step${i}NegativeIntensity = texture2D(inputImageTexture, step${i}NegativeTextureCoordinate).r;")
-            appendLine("maxValue = max(maxValue, step${i}NegativeIntensity);")
+            appendLine("minValue = min(minValue, step${i}NegativeIntensity);")
         }
         toString()
     }
