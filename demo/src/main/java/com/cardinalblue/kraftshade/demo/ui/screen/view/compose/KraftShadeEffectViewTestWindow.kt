@@ -35,6 +35,9 @@ fun KraftShadeEffectViewTestWindow() {
     var whiteBalanceTint by remember { mutableFloatStateOf(0f) }
     var shadows by remember { mutableFloatStateOf(0f) }
     var highlights by remember { mutableFloatStateOf(1f) }
+    var redMultiplier by remember { mutableFloatStateOf(1f) }
+    var greenMultiplier by remember { mutableFloatStateOf(1f) }
+    var blueMultiplier by remember { mutableFloatStateOf(1f) }
 
     val context = LocalContext.current
 
@@ -227,6 +230,42 @@ fun KraftShadeEffectViewTestWindow() {
                 },
                 valueRange = 0f..1f
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "RGB Red",
+                value = redMultiplier,
+                onValueChange = {
+                    redMultiplier = it
+                    state.requestRender()
+                },
+                valueRange = 0f..2f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "RGB Green",
+                value = greenMultiplier,
+                onValueChange = {
+                    greenMultiplier = it
+                    state.requestRender()
+                },
+                valueRange = 0f..2f
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ParameterSlider(
+                label = "RGB Blue",
+                value = blueMultiplier,
+                onValueChange = {
+                    blueMultiplier = it
+                    state.requestRender()
+                },
+                valueRange = 0f..2f
+            )
         }
     }
 
@@ -328,6 +367,17 @@ fun KraftShadeEffectViewTestWindow() {
                     ) { (shadowsInput, highlightsInput) ->
                         this.shadows = shadowsInput.cast()
                         this.highlights = highlightsInput.cast()
+                    }
+
+                    step(
+                        RGBKraftShader(),
+                        sampledInput { redMultiplier },
+                        sampledInput { greenMultiplier },
+                        sampledInput { blueMultiplier },
+                    ) { (redInput, greenInput, blueInput) ->
+                        this.red = redInput.cast()
+                        this.green = greenInput.cast()
+                        this.blue = blueInput.cast()
                     }
                 }
             }

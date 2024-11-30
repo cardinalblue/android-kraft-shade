@@ -239,6 +239,7 @@ pipeline(windowSurface) {
 - [x] ColorMappingKraftShader
   - For mapping specific colors to other colors
   - At most 8 color mappings. If you need to map more colors, you can use it multiple times.
+- [x] RGBKraftShader (GPUImageRGBFilter)
 
 ### Alpha & Transparency Effects
 - [x] HazeKraftShader (GPUImageHazeFilter)
@@ -304,7 +305,6 @@ pipeline(windowSurface) {
 - [ ] MonochromeKraftShader (GPUImageMonochromeFilter)
 - [ ] OpacityKraftShader (GPUImageOpacityFilter)
 - [ ] PosterizeKraftShader (GPUImagePosterizeFilter)
-- [ ] RGBKraftShader (GPUImageRGBFilter)
 - [ ] SepiaToneKraftShader (GPUImageSepiaToneFilter)
 - [ ] SolarizeKraftShader (GPUImageSolarizeFilter)
 - [ ] ToneCurveKraftShader (GPUImageToneCurveFilter)
