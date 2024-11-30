@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
 import com.cardinalblue.kraftshade.model.GlMat3
+import com.cardinalblue.kraftshade.shader.Sample3x3KraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import org.intellij.lang.annotations.Language
 

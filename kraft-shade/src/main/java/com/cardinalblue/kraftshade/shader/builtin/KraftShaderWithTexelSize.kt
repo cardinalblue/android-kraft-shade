@@ -14,5 +14,5 @@ import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
  */
 interface KraftShaderWithTexelSize {
     var texelSize: GlSizeF
-    val texelSizeRatio: GlSizeF get() = GlSizeF(1.0f, 1.0f)
+    var texelSizeRatio: GlSizeF
 }

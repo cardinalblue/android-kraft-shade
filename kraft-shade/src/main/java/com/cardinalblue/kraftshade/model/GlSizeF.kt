@@ -8,4 +8,8 @@ data class GlSizeF(
     val area: Float get() = width * height
 
     val vec2: FloatArray by lazy { floatArrayOf(width, height) }
+
+    companion object {
+        val Unit = GlSizeF(1f, 1f)
+    }
 }

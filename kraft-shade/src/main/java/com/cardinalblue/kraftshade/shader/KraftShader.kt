@@ -60,6 +60,15 @@ abstract class KraftShader : SuspendAutoCloseable {
         afterActualDraw()
     }
 
+    open fun updateTexelSize() {
+        if (this is KraftShaderWithTexelSize) {
+            texelSize = GlSizeF(
+                texelSizeRatio.width / resolution.width,
+                texelSizeRatio.height / resolution.height
+            )
+        }
+    }
+
     /**
      * Setup the texture in this method
      */
@@ -71,12 +80,7 @@ abstract class KraftShader : SuspendAutoCloseable {
         }
 
         // resolution is now ready for read, so we can calculate the texel size in here
-        if (this is KraftShaderWithTexelSize) {
-            texelSize = GlSizeF(
-                texelSizeRatio.width / resolution.width,
-                texelSizeRatio.height / resolution.height
-            )
-        }
+        updateTexelSize()
 
         GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)
         GLES20.glVertexAttribPointer(

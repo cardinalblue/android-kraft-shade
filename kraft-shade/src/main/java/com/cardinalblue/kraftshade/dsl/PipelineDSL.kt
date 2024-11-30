@@ -176,7 +176,7 @@ class SerialTextureInputPipelineScope internal constructor(
      * are added.
      */
     @KraftShadeDsl
-    fun <S : TextureInputKraftShader> step(
+    suspend fun <S : TextureInputKraftShader> step(
         shader: S,
         vararg inputs: Input<*>,
         setupAction: suspend S.(List<Input<*>>) -> Unit = {},

@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
+import com.cardinalblue.kraftshade.shader.Sample3x3KraftShader
 import org.intellij.lang.annotations.Language
 
 class DirectionalSobelEdgeDetectionKraftShader : Sample3x3KraftShader() {
