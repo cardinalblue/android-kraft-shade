@@ -72,7 +72,7 @@ enum class Destination(
     CrosshatchShader("crosshatch_shader", "Crosshatch Shader", screen = { CrosshatchTestScreen() }),
     ColorfulCrosshatchShader("colorful_crosshatch_shader", "Colorful Crosshatch Shader", screen = { ColorfulCrosshatchTestScreen() }),
     KraftBitmap("kraft_bitmap", "Kraft Bitmap", screen = { KraftBitmapTestScreen() }),
-    CircularGaussianPerformance("circular_gaussian_performance", "Circular Gaussian Performance", screen = { CircularGaussianPerformanceTestWindow() }),
+    CircularBlurPerformance("circular_blur_performance", "Circular Blur Performance", screen = { CircularBlurPerformanceTestWindow() }),
     CircularBlur("circular_blur", "Circular Blur", screen = { CircularBlurTestWindow() }),
     ToonEffect("toon_effect", "Toon Effect", screen = { ToonEffectTestWindow() }),
     ErosionDilationShaderTest("erosion_dilation_shader_test", "Erosion/Dilation Shader Test", screen = { ErosionDilationTestScreen() }),

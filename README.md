@@ -217,6 +217,7 @@ pipeline(windowSurface) {
 - [x] ThreeTextureInputKraftShader
 - [x] TwoTextureInputKraftShader (GPUImageTwoInputFilter)
 - [x] MixBlendKraftShader (GPUImageMixBlendFilter)
+- [x] SingleDirectionForTwoPassSamplingKraftShader (GPUImageTwoPassTextureSamplingFilter)
 
 ### Functional Shaders
 - [x] BypassableTextureInputKraftShader
@@ -269,6 +270,9 @@ pipeline(windowSurface) {
 - [x] SourceOverBlendKraftShader (GPUImageSourceOverBlendFilter)
 - [x] AlphaBlendKraftShader (GPUImageAlphaBlendFilter)
 - [x] SimpleMixtureBlendKraftShader
+
+### Blur & Distortion
+- [x] CircularBlurKraftShader
 
 ### Coming Soon
 

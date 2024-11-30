@@ -14,14 +14,14 @@ import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.pipeline.asEffectExecution
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
-import com.cardinalblue.kraftshade.shader.builtin.CircularGaussianBlurKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.CircularBlurKraftShader
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlin.time.Duration
 import kotlin.time.measureTime
 
 @Composable
-fun CircularGaussianPerformanceTestWindow() {
+fun CircularBlurPerformanceTestWindow() {
     val logger = remember {
         KraftLogger("CGPerformance")
     }
@@ -75,7 +75,7 @@ fun CircularGaussianPerformanceTestWindow() {
         state.setEffect(
             afterSet = { runPerformanceTest() }
         ) { windowSurface ->
-            CircularGaussianBlurKraftShader()
+            CircularBlurKraftShader()
                 .apply {
                     setInputTexture(bitmap.asTexture())
                 }

@@ -5,12 +5,19 @@ import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
 /**
- * A Gaussian blur shader that creates a blur effect by sampling multiple points in a circular pattern.
- * The blur intensity and number of samples can be adjusted through the blurAmount and repeat parameters.
+ * A blur shader that creates a blur effect by sampling multiple points in a circular pattern. The
+ * blur intensity and number of samples can be adjusted through the blurAmount and repeat parameters.
+ *
+ * The shader uses randomness in its sampling pattern for two important reasons:
+ * 1. To reduce banding artifacts that would appear if samples were taken at fixed intervals
+ * 2. To create a more natural-looking blur by introducing controlled variation in the sampling pattern
+ *
+ * Each iteration takes two samples with different random offsets to further smooth out the result
+ * and hide any noise patterns that might emerge from the random number generation.
  *
  * shader taken from [link](https://www.shadertoy.com/view/4lXXWn)
  */
-class CircularGaussianBlurKraftShader : TextureInputKraftShader() {
+class CircularBlurKraftShader : TextureInputKraftShader() {
     private var internalAmount: Float by GlUniformDelegate("uBlurAmount")
 
     /**
@@ -28,11 +35,11 @@ class CircularGaussianBlurKraftShader : TextureInputKraftShader() {
         repeat = 30.0f
     }
 
-    override fun loadFragmentShader(): String = CIRCULAR_GAUSSIAN_BLUR_FRAGMENT_SHADER
+    override fun loadFragmentShader(): String = CIRCULAR_BLUR_FRAGMENT_SHADER
 }
 
 @Language("GLSL")
-private const val CIRCULAR_GAUSSIAN_BLUR_FRAGMENT_SHADER = """
+private const val CIRCULAR_BLUR_FRAGMENT_SHADER = """
     precision highp float;
 
     varying vec2 textureCoordinate;
