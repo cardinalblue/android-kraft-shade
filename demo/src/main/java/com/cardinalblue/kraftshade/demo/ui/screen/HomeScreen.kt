@@ -76,6 +76,7 @@ enum class Destination(
     CircularBlur("circular_blur", "Circular Blur", screen = { CircularBlurTestWindow() }),
     ToonEffect("toon_effect", "Toon Effect", screen = { ToonEffectTestWindow() }),
     ErosionDilationShaderTest("erosion_dilation_shader_test", "Erosion/Dilation Shader Test", screen = { ErosionDilationTestScreen() }),
+    LevelsShader("levels_shader", "Levels Shader", screen = { LevelsShaderScreen() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {
