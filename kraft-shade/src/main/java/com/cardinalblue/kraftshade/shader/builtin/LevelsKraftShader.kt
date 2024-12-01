@@ -1,39 +1,33 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
+import com.cardinalblue.kraftshade.model.GlFloatArray
+import com.cardinalblue.kraftshade.model.GlFloatArrayDelegate
+import com.cardinalblue.kraftshade.model.glFloatArrayOf
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import org.intellij.lang.annotations.Language
 
 class LevelsKraftShader : TextureInputKraftShader() {
-    var levelMinimum: FloatArray by GlUniformDelegate("levelMinimum")
-    var levelMiddle: FloatArray by GlUniformDelegate("levelMiddle")
-    var levelMaximum: FloatArray by GlUniformDelegate("levelMaximum")
-    var minOutput: FloatArray by GlUniformDelegate("minOutput")
-    var maxOutput: FloatArray by GlUniformDelegate("maxOutput")
+    var levelMinimum: GlFloatArray by GlFloatArrayDelegate("levelMinimum")
+    var levelMiddle: GlFloatArray by GlFloatArrayDelegate("levelMiddle")
+    var levelMaximum: GlFloatArray by GlFloatArrayDelegate("levelMaximum")
+    var minOutput: GlFloatArray by GlFloatArrayDelegate("minOutput")
+    var maxOutput: GlFloatArray by GlFloatArrayDelegate("maxOutput")
 
     init {
-        levelMinimum = floatArrayOf(0.0f, 0.0f, 0.0f)
-        levelMiddle = floatArrayOf(1.0f, 1.0f, 1.0f)
-        levelMaximum = floatArrayOf(1.0f, 1.0f, 1.0f)
-        minOutput = floatArrayOf(0.0f, 0.0f, 0.0f)
-        maxOutput = floatArrayOf(1.0f, 1.0f, 1.0f)
+        levelMinimum = glFloatArrayOf(0.0f, 0.0f, 0.0f)
+        levelMiddle = glFloatArrayOf(1.0f, 1.0f, 1.0f)
+        levelMaximum = glFloatArrayOf(1.0f, 1.0f, 1.0f)
+        minOutput = glFloatArrayOf(0.0f, 0.0f, 0.0f)
+        maxOutput = glFloatArrayOf(1.0f, 1.0f, 1.0f)
     }
 
     override fun loadFragmentShader(): String = LEVELS_FRAGMENT_SHADER
-
-    private fun uploadValues() {
-        levelMinimum = levelMinimum
-        levelMiddle = levelMiddle
-        levelMaximum = levelMaximum
-        minOutput = minOutput
-        maxOutput = maxOutput
-    }
 
     fun adjustAll(min: Float, mid: Float, max: Float, minOut: Float = 0.0f, maxOut: Float = 1.0f) {
         adjustRed(min, mid, max, minOut, maxOut)
         adjustGreen(min, mid, max, minOut, maxOut)
         adjustBlue(min, mid, max, minOut, maxOut)
-        uploadValues()
     }
 
     fun adjustRed(min: Float, mid: Float, max: Float, minOut: Float = 0.0f, maxOut: Float = 1.0f) {
@@ -42,7 +36,6 @@ class LevelsKraftShader : TextureInputKraftShader() {
         levelMaximum[0] = max
         minOutput[0] = minOut
         maxOutput[0] = maxOut
-        uploadValues()
     }
 
     fun adjustGreen(min: Float, mid: Float, max: Float, minOut: Float = 0.0f, maxOut: Float = 1.0f) {
@@ -51,7 +44,6 @@ class LevelsKraftShader : TextureInputKraftShader() {
         levelMaximum[1] = max
         minOutput[1] = minOut
         maxOutput[1] = maxOut
-        uploadValues()
     }
 
     fun adjustBlue(min: Float, mid: Float, max: Float, minOut: Float = 0.0f, maxOut: Float = 1.0f) {
@@ -60,7 +52,6 @@ class LevelsKraftShader : TextureInputKraftShader() {
         levelMaximum[2] = max
         minOutput[2] = minOut
         maxOutput[2] = maxOut
-        uploadValues()
     }
 
     companion object {

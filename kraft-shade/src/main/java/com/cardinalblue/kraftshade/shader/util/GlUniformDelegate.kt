@@ -48,14 +48,8 @@ open class GlUniformDelegate<T : Any>(
             when (value) {
                 is Int -> GLES20.glUniform1i(location, value)
                 is Float -> GLES20.glUniform1f(location, value)
-                is FloatArray -> {
-                    when (value.size) {
-                        2 -> GLES20.glUniform2fv(location, 1, value, 0)
-                        3 -> GLES20.glUniform3fv(location, 1, value, 0)
-                        4 -> GLES20.glUniform4fv(location, 1, value, 0)
-                        else -> GLES20.glUniform1fv(location, value.size, value, 0)
-                    }
-                }
+                is FloatArray -> setFloatArrayValues(value)
+                is GlFloatArray -> setFloatArrayValues(value.backingArray)
 
                 is GlSize -> {
                     GLES20.glUniform2fv(location, 1, value.vec2, 0)
@@ -83,6 +77,15 @@ open class GlUniformDelegate<T : Any>(
 
                 else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
             }
+        }
+    }
+
+    private fun setFloatArrayValues(array: FloatArray) {
+        when (array.size) {
+            2 -> GLES20.glUniform2fv(location, 1, array, 0)
+            3 -> GLES20.glUniform3fv(location, 1, array, 0)
+            4 -> GLES20.glUniform4fv(location, 1, array, 0)
+            else -> GLES20.glUniform1fv(location, array.size, array, 0)
         }
     }
 }
