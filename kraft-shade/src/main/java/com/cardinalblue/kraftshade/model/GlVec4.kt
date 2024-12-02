@@ -48,16 +48,14 @@ open class GlVec4(
             vec4[3] = value
         }
 
+    constructor(value: Float) : this(value, value, value, value)
+
     fun copy(
         x: Float = this.x,
         y: Float = this.y,
         z: Float = this.z,
         w: Float = this.w,
-    ): GlVec4 {
-        return GlVec4(x, y, z, w)
-    }
-
-    constructor(value: Float) : this(value, value, value, value)
+    ): GlVec4 = GlVec4(x, y, z, w)
 
     companion object {
         val Zero = GlVec4(0f)

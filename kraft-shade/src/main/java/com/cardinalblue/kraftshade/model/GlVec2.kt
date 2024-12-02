@@ -18,6 +18,11 @@ open class GlVec2(
 
     constructor(value: Float) : this(value, value)
 
+    fun copy(
+        x: Float = this.x,
+        y: Float = this.y,
+    ): GlVec2 = GlVec2(x, y)
+
     companion object {
         val Zero = GlVec2(0f)
         val One = GlVec2(1f)
