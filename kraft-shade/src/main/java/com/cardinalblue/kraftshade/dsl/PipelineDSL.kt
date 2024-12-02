@@ -235,7 +235,7 @@ class SerialTextureInputPipelineScope internal constructor(
      */
     @KraftShadeDsl
     suspend fun graphStep(
-        block: suspend GraphPipelineSetupScope.(inputTextureProvider: TextureProvider) -> Unit
+        block: suspend GraphPipelineSetupScope.(inputTexture: TextureProvider) -> Unit
     ) {
         steps.add(InternalGraphStep(block))
     }
@@ -256,12 +256,11 @@ class SerialTextureInputPipelineScope internal constructor(
         }
 
         var isFirstShaderStep = true
+        val lastShaderStep = steps.indexOfLast { it is InternalSingleShaderStep<*> }
 
-        while (stepIterator.hasNext()) {
-            val step = stepIterator.next()
-            val isShaderStep = step is InternalSingleShaderStep<*>
-            val isLastStep = !stepIterator.hasNext()
-            val targetBufferForStep: GlBufferProvider = if (isLastStep) this.targetBuffer else {
+        steps.forEachIndexed { index, step ->
+            val isShaderStep = step is InternalShaderStep
+            val targetBufferForStep: GlBufferProvider = if (index == lastShaderStep) this.targetBuffer else {
                 if (drawToBuffer1) buffer1 else buffer2
             }
 
@@ -287,6 +286,8 @@ class SerialTextureInputPipelineScope internal constructor(
                         step.block(this, inputTextureForStep)
                     }
                 }
+
+                is InternalShaderStep -> error("not possible")
             }
 
             if (isShaderStep) {
@@ -316,6 +317,7 @@ class SerialTextureInputPipelineScope internal constructor(
                 },
             )
         }
+
         when (step) {
             is InternalSingleShaderSimpleStep -> {
                 addStepForEffect(targetBufferForStep)
@@ -358,11 +360,13 @@ class SerialTextureInputPipelineScope internal constructor(
         val block: suspend GlEnvDslScope.(runContext: Pipeline.PipelineRunContext) -> Unit
     ) : InternalStep()
 
+    private abstract class InternalShaderStep : InternalStep()
+
     private abstract class InternalSingleShaderStep<S : TextureInputKraftShader>(
         val shader: S,
         val inputs: List<Input<*>> = emptyList(),
         val setupAction: suspend (S, List<Input<*>>) -> Unit = { _, _ ->},
-    ) : InternalStep() {
+    ) : InternalShaderStep() {
         suspend fun setup() {
             setupAction.invoke(shader, inputs)
         }
@@ -383,5 +387,5 @@ class SerialTextureInputPipelineScope internal constructor(
 
     private class InternalGraphStep(
         val block: suspend GraphPipelineSetupScope.(inputTextureProvider: TextureProvider) -> Unit
-    ) : InternalStep()
+    ) : InternalShaderStep()
 }
