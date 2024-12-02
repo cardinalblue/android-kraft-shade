@@ -45,6 +45,12 @@ open class GlVec3(
         z: Float = this.z,
     ): GlVec3 = GlVec3(x, y, z)
 
+    operator fun get(index: Int): Float = vec3[index]
+
+    operator fun set(index: Int, value: Float) {
+        vec3[index] = value
+    }
+
     companion object {
         val Zero = GlVec3(0f)
         val One = GlVec3(1f)

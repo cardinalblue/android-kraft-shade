@@ -17,7 +17,10 @@ import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
  *
  * shader taken from [link](https://www.shadertoy.com/view/4lXXWn)
  */
-class CircularBlurKraftShader : TextureInputKraftShader() {
+class CircularBlurKraftShader(
+    amount: Float = 0.3f,
+    repeat: Float = 30f,
+) : TextureInputKraftShader() {
     private var internalAmount: Float by GlUniformDelegate("uBlurAmount")
 
     /**
@@ -31,8 +34,8 @@ class CircularBlurKraftShader : TextureInputKraftShader() {
     var repeat: Float by GlUniformDelegate("uRepeat")
 
     init {
-        amount = 0.3f
-        repeat = 30.0f
+        this.amount = amount
+        this.repeat = repeat
     }
 
     override fun loadFragmentShader(): String = CIRCULAR_BLUR_FRAGMENT_SHADER

@@ -50,6 +50,12 @@ open class GlVec4(
 
     constructor(value: Float) : this(value, value, value, value)
 
+    operator fun get(index: Int): Float = vec4[index]
+
+    operator fun set(index: Int, value: Float) {
+        vec4[index] = value
+    }
+
     fun copy(
         x: Float = this.x,
         y: Float = this.y,

@@ -1,5 +1,7 @@
 package com.cardinalblue.kraftshade.model
 
+import android.graphics.Bitmap
+
 data class GlSize(
     val width: Int,
     val height: Int,
@@ -17,3 +19,5 @@ data class GlSize(
         val ZERO = GlSize(0, 0)
     }
 }
+
+val Bitmap.glSize: GlSize get() = GlSize(width, height)

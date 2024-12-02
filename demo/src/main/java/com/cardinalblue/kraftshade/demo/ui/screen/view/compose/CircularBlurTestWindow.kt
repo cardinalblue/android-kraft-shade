@@ -84,7 +84,7 @@ fun CircularBlurTestWindow() {
                     targetBuffer = windowSurface,
                 ) {
                     step(
-                        CircularBlurKraftShader(),
+                        CircularBlurKraftShader(repeat = 30f),
                         sampledInput { blurAmount },
                         sampledInput { blurRepeat },
                     ) { (amountInput, repeatInput) ->
