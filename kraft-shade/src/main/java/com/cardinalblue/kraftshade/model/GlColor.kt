@@ -1,44 +1,52 @@
 package com.cardinalblue.kraftshade.model
 
+import android.graphics.Color
 import androidx.annotation.ColorInt
 
-@JvmInline
-value class GlColor private constructor(@ColorInt val intValue: Int) {
-    val int: Int get() = intValue
-    val r: Int get() = intValue shr 16 and 0xFF
-    val g: Int get() = intValue shr 8 and 0xFF
-    val b: Int get() = intValue and 0xFF
-    val a: Int get() = intValue shr 24 and 0xFF
+class GlColor(
+    r: Float,
+    g: Float,
+    b: Float,
+    a: Float = 1f,
+) : GlVec4(r, g, b, a) {
+    val vec3: FloatArray get() = floatArrayOf(r, g, b)
 
-    val rFloat: Float get() = r / 255f
-    val gFloat: Float get() = g / 255f
-    val bFloat: Float get() = b / 255f
-    val aFloat: Float get() = a / 255f
+    val int: Int get() = Color.argb(
+        (a * 255).toInt(),
+        (r * 255).toInt(),
+        (g * 255).toInt(),
+        (b * 255).toInt()
+    )
 
-    val vec3: FloatArray get() = floatArrayOf(rFloat, gFloat, bFloat)
-    val vec4: FloatArray get() = floatArrayOf(rFloat, gFloat, bFloat, aFloat)
+    constructor(@ColorInt intValue: Int) : this(
+        r = Color.red(intValue) / 255f,
+        g = Color.green(intValue) / 255f,
+        b = Color.blue(intValue) / 255f,
+        a = Color.alpha(intValue) / 255f,
+    )
 
-    fun alterAlpha(a: Float) = normalizedRGBA(rFloat, gFloat, bFloat, a)
+    /**
+     * Implementation is the same, but we change the name here, so it won't be confusing.
+     */
+    fun copyColor(
+        r: Float = this.r,
+        g: Float = this.g,
+        b: Float = this.b,
+        a: Float = this.a,
+    ): GlColor = GlColor(r, g, b, a)
 
     companion object {
-        fun normalizedRGBA(r: Float, g: Float, b: Float, a: Float = 1f) = GlColor(
-            ((a * 255).toInt() shl 24) or
-            ((r * 255).toInt() shl 16) or
-            ((g * 255).toInt() shl 8) or
-            (b * 255).toInt()
-        )
-
-        fun int(@ColorInt intValue: Int) = GlColor(intValue)
-
         // common colors
-        val Black get() = normalizedRGBA(0f, 0f, 0f)
-        val White get() = normalizedRGBA(1f, 1f, 1f)
-        val Red get() = normalizedRGBA(1f, 0f, 0f)
-        val Green get() = normalizedRGBA(0f, 1f, 0f)
-        val Blue get() = normalizedRGBA(0f, 0f, 1f)
-        val Yellow get() = normalizedRGBA(1f, 1f, 0f)
-        val Cyan get() = normalizedRGBA(0f, 1f, 1f)
-        val Magenta get() = normalizedRGBA(1f, 0f, 1f)
-        val Transparent get() = normalizedRGBA(0f, 0f, 0f, 0f)
+        val Black get() = GlColor(0f, 0f, 0f)
+        val White get() = GlColor(1f, 1f, 1f)
+        val Red get() = GlColor(1f, 0f, 0f)
+        val Green get() = GlColor(0f, 1f, 0f)
+        val Blue get() = GlColor(0f, 0f, 1f)
+        val Yellow get() = GlColor(1f, 1f, 0f)
+        val Cyan get() = GlColor(0f, 1f, 1f)
+        val Magenta get() = GlColor(1f, 0f, 1f)
+        val Transparent get() = GlColor(0f, 0f, 0f, 0f)
     }
 }
+
+fun GlVec4.asGlColor(): GlColor = GlColor(r, g, b, a)

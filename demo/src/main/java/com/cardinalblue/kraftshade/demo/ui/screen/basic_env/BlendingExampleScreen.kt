@@ -11,7 +11,7 @@ fun BlendingExampleScreen() {
     BasicGlEnvScreen {
         DrawCircleKraftShader(
             color = GlColor.Red,
-            backgroundColor = GlColor.White.alterAlpha(0.5f),
+            backgroundColor = GlColor.White.copyColor(a = 0.5f),
         ).use { shader ->
             TextureBuffer(500, 500).use { buffer ->
                 shader.drawTo(buffer)

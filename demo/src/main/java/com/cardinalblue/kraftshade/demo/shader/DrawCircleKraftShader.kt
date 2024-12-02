@@ -1,9 +1,9 @@
 package com.cardinalblue.kraftshade.demo.shader
 
-import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.model.GlColor
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
+import org.intellij.lang.annotations.Language
 
 class DrawCircleKraftShader(
     color: GlColor = GlColor.Red,
@@ -29,11 +29,11 @@ class DrawCircleKraftShader(
     }
 
     fun setColor(r: Float, g: Float, b: Float, a: Float = 1f) {
-        color = GlColor.normalizedRGBA(r, g, b, a)
+        color = GlColor(r, g, b, a)
     }
 
     fun setBackgroundColor(r: Float, g: Float, b: Float, a: Float = 1f) {
-        backgroundColor = GlColor.normalizedRGBA(r, g, b, a)
+        backgroundColor = GlColor(r, g, b, a)
     }
 }
 

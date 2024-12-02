@@ -51,29 +51,16 @@ open class GlUniformDelegate<T : Any>(
                 is FloatArray -> setFloatArrayValues(value)
                 is GlFloatArray -> setFloatArrayValues(value.backingArray)
 
-                is GlSize -> {
-                    GLES20.glUniform2fv(location, 1, value.vec2, 0)
-                }
+                is GlSize -> GLES20.glUniform2fv(location, 1, value.vec2, 0)
+                is GlSizeF -> GLES20.glUniform2fv(location, 1, value.vec2, 0)
 
-                is GlSizeF -> {
-                    GLES20.glUniform2fv(location, 1, value.vec2, 0)
-                }
+                is GlMat2 -> GLES20.glUniformMatrix2fv(location, 1, false, value.arr, 0)
+                is GlMat3 -> GLES20.glUniformMatrix3fv(location, 1, false, value.arr, 0)
+                is GlMat4 -> GLES20.glUniformMatrix4fv(location, 1, false, value.arr, 0)
 
-                is GlMat2 -> {
-                    GLES20.glUniformMatrix2fv(location, 1, false, value.arr, 0)
-                }
-
-                is GlMat3 -> {
-                    GLES20.glUniformMatrix3fv(location, 1, false, value.arr, 0)
-                }
-
-                is GlMat4 -> {
-                    GLES20.glUniformMatrix4fv(location, 1, false, value.arr, 0)
-                }
-
-                is GlColor -> {
-                    GLES20.glUniform4fv(location, 1, value.vec4, 0)
-                }
+                is GlVec2 -> GLES20.glUniform2fv(location, 1, value.vec2, 0)
+                is GlVec3 -> GLES20.glUniform3fv(location, 1, value.vec3, 0)
+                is GlVec4 -> GLES20.glUniform4fv(location, 1, value.vec4, 0)
 
                 else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
             }
