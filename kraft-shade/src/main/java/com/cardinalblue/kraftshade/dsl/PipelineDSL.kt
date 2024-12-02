@@ -12,6 +12,7 @@ import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.builtin.AlphaBlendKraftShader
+import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
 
 @KraftShadeDsl
@@ -221,6 +222,13 @@ class SerialTextureInputPipelineScope internal constructor(
         steps.add(InternalSingleShaderMixtureStep(shader, mixturePercentInput, inputs.toList(), setupAction))
     }
 
+    /**
+     * In [SerialTextureInputPipelineScope], you should use [graphStep] instead. It create a new
+     * [GraphPipelineSetupScope] and set the target buffer to one of the ping-pong buffer from
+     * this [SerialTextureInputPipelineScope]. Therefore, in the new scope, you can just draw to the
+     * graphTargetBuffer you can access in the scope.
+     */
+    @DangerousKraftShadeApi
     @KraftShadeDsl
     override suspend fun graphSteps(
         targetBuffer: GlBufferProvider,
@@ -231,7 +239,8 @@ class SerialTextureInputPipelineScope internal constructor(
 
     /**
      * Using this method, you can get the input texture from serial scope, and you have to render to
-     * [GraphPipelineSetupScope.graphTargetBuffer].
+     * [GraphPipelineSetupScope.graphTargetBuffer] since it's a new [GraphPipelineSetupScope] instance
+     * created specifically for this graph step.
      */
     @KraftShadeDsl
     suspend fun graphStep(
