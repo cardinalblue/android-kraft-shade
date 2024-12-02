@@ -94,6 +94,7 @@ class Pipeline internal constructor(
             inputs = inputs.toList(),
             targetBuffer = targetBuffer,
             setupAction = setupAction,
+            runContext = runContext,
         ).let(this::addStep)
     }
 
@@ -157,12 +158,23 @@ class Pipeline internal constructor(
     class PipelineRunContext {
         internal var forceAbort: Boolean = false
 
+        /**
+         * Can be used to check the result for the previous step
+         */
+        var previousBuffer: GlBufferProvider? = null
+            private set
+
         fun abort() {
             forceAbort = true
         }
 
         fun reset() {
             forceAbort = false
+            previousBuffer = null
+        }
+
+        fun markPreviousBuffer(buffer: GlBufferProvider) {
+            this.previousBuffer = buffer
         }
     }
 }

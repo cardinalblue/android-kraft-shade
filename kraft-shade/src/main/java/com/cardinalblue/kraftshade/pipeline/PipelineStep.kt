@@ -1,12 +1,12 @@
 package com.cardinalblue.kraftshade.pipeline
 
-import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 
 sealed class PipelineStep(
     val stepIndex: Int,
+    val runContext: Pipeline.PipelineRunContext,
 ) {
     abstract suspend fun run()
 
@@ -27,15 +27,19 @@ sealed class PipelineStep(
  */
 class RunShaderStep<T : KraftShader> internal constructor(
     stepIndex: Int,
+    runContext: Pipeline.PipelineRunContext,
     val shader: T,
     val inputs: List<Input<*>> = emptyList(),
     val targetBuffer: GlBufferProvider,
     val setupAction: suspend T.(List<Input<*>>) -> Unit = {},
-) : PipelineStep(stepIndex) {
+) : PipelineStep(stepIndex, runContext) {
     override suspend fun run() {
         shader.setupAction(inputs)
         try {
-            shader.drawTo(targetBuffer.provideBuffer())
+            targetBuffer.provideBuffer().let { buffer ->
+                shader.drawTo(buffer)
+                runContext.markPreviousBuffer(buffer)
+            }
         } catch (e: Exception) {
             throw RuntimeException("failed to draw shader at step $stepIndex: $shader", e)
         }
@@ -45,9 +49,9 @@ class RunShaderStep<T : KraftShader> internal constructor(
 class RunTaskStep(
     stepIndex: Int,
     val purposeForDebug: String = "",
-    private val runContext: Pipeline.PipelineRunContext,
+    runContext: Pipeline.PipelineRunContext,
     private val task: suspend (runContext: Pipeline.PipelineRunContext) -> Unit,
-) : PipelineStep(stepIndex) {
+) : PipelineStep(stepIndex, runContext) {
     override suspend fun run() {
         task(runContext)
     }
