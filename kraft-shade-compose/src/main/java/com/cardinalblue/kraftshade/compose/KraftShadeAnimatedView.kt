@@ -39,12 +39,11 @@ open class KraftShadeAnimatedState(scope: CoroutineScope) : KraftShadeBaseState<
         return view?.playing ?: false
     }
 
-    fun setEffect(
-        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = {},
-        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> EffectExecution
+    fun setEffectAndPause(
+        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution
     ) {
         launchWithLock { view ->
-            view.setEffect(afterSet, effectExecutionProvider)
+            view.setEffectAndPause(effectExecutionProvider)
         }
     }
 

@@ -58,18 +58,37 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
 
     private val timeInput: TimeInput = TimeInput()
 
-    fun setEffectAndPlay(
-        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution,
+    fun setEffectWithTimeInput(
+        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> Unit = { _, _ -> },
+        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution
     ) {
         setEffect(
             effectExecutionProvider = {
                 effectExecutionProvider(this, it, timeInput)
             },
-            afterSet = {
-                withContext(Dispatchers.Main) {
-                    play()
-                }
+            afterSet = { afterSet(this, it, timeInput) },
+        )
+    }
+
+    fun setEffectAndPlay(
+        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution,
+    ) {
+        setEffectWithTimeInput(
+            afterSet = { _, timeInput ->
+                timeInput.start()
             },
+            effectExecutionProvider = effectExecutionProvider
+        )
+    }
+
+    fun setEffectAndPause(
+        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution,
+    ) {
+        setEffectWithTimeInput(
+            afterSet = { _, timeInput ->
+                timeInput.pause()
+            },
+            effectExecutionProvider = effectExecutionProvider
         )
     }
 

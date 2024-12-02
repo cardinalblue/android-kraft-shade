@@ -5,9 +5,12 @@ import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
+import com.cardinalblue.kraftshade.pipeline.input.TimeInput
+import com.cardinalblue.kraftshade.pipeline.input.constInput
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 
 /**
  * This is a common interface that represents an effect that can be drawn to a [GlBuffer].
@@ -49,8 +52,10 @@ fun <S : KraftShader> S.asEffectExecution(
 }
 
 typealias EffectExecutionProvider = suspend GlEnvDslScope.(glBuffer: GlBuffer) -> EffectExecution
+typealias AnimatedEffectExecutionProvider = suspend GlEnvDslScope.(glBuffer: GlBuffer, timeInput: Input<Float>) -> EffectExecution
 
 typealias PipelineModifier = suspend GraphPipelineSetupScope.() -> Unit
+typealias PipelineModifierWithTimeInput = suspend GraphPipelineSetupScope.(timeInput: Input<Float>) -> Unit
 
 fun PipelineModifier.asEffectExecutionProvider(): EffectExecutionProvider = { targetBuffer ->
     pipeline(targetBuffer.provideBuffer()) {
@@ -60,8 +65,26 @@ fun PipelineModifier.asEffectExecutionProvider(): EffectExecutionProvider = { ta
     }
 }
 
+fun PipelineModifierWithTimeInput.asEffectExecutionProvider(): AnimatedEffectExecutionProvider = { targetBuffer, timeInput ->
+    pipeline(targetBuffer.provideBuffer()) {
+        graphSteps(targetBuffer) {
+            this@asEffectExecutionProvider(timeInput)
+        }
+    }
+}
+
 fun createEffectExecutionProviderWithPipeline(
     pipelineModifier: PipelineModifier
 ): EffectExecutionProvider {
     return pipelineModifier.asEffectExecutionProvider()
+}
+
+fun createAnimatedEffectExecutionProviderWithPipeline(
+    pipelineModifier: PipelineModifierWithTimeInput
+): AnimatedEffectExecutionProvider {
+    return pipelineModifier.asEffectExecutionProvider()
+}
+
+fun AnimatedEffectExecutionProvider.withTime(time: Float): EffectExecutionProvider = { targetBuffer ->
+    this@withTime(targetBuffer, constInput(time))
 }
