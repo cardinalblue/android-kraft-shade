@@ -56,7 +56,7 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
     private val choreographer: Choreographer = Choreographer.getInstance()
     private val logger = KraftLogger("AnimatedKraftTextureView")
 
-    private val timeInput: TimeInput = TimeInput()
+    val timeInput: TimeInput = TimeInput()
 
     fun setEffectWithTimeInput(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> Unit = { _, _ -> },

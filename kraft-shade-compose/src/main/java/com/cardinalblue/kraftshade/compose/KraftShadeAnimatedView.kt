@@ -12,6 +12,7 @@ import com.cardinalblue.kraftshade.pipeline.input.TimeInput
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.widget.AnimatedKraftTextureView
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.sync.withLock
 
 @Composable
 fun KraftShadeAnimatedView(
@@ -37,6 +38,10 @@ fun KraftShadeAnimatedView(
 open class KraftShadeAnimatedState(scope: CoroutineScope) : KraftShadeBaseState<AnimatedKraftTextureView>(scope) {
     val playing: Boolean get() {
         return view?.playing ?: false
+    }
+
+    suspend fun getTimeInput(): TimeInput {
+        return withLock { it.timeInput }
     }
 
     fun setEffectAndPause(

@@ -29,11 +29,15 @@ open class KraftShadeBaseState<V : KraftTextureView> internal constructor(
         }
     }
 
+    suspend fun <T> withLock(block: suspend (view: V) -> T): T {
+        return mutex.withLock {
+            block(view!!)
+        }
+    }
+
     fun launchWithLock(block: suspend (view: V) -> Unit): Job {
         return scope.launch(Dispatchers.Default) {
-            mutex.withLock {
-                block(view!!)
-            }
+            withLock { block(it) }
         }
     }
 
