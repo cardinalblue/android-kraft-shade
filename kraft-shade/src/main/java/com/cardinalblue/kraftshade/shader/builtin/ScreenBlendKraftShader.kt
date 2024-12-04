@@ -1,8 +1,8 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
-import android.opengl.GLES20
-import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
+import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
+import org.intellij.lang.annotations.Language
 
 /**
  * A screen blend filter that implements Photoshop-like screen blending.
@@ -14,6 +14,8 @@ import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
  * This blend mode results in a lighter image, as it inverts, multiplies, and inverts again.
  */
 class ScreenBlendKraftShader : TwoTextureInputKraftShader() {
+    var intensity: Float by GlUniformDelegate("intensity")
+
     override fun loadFragmentShader(): String = SCREEN_BLEND_FRAGMENT_SHADER
 }
 
@@ -26,11 +28,14 @@ private const val SCREEN_BLEND_FRAGMENT_SHADER = """
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
 
+    uniform float intensity;
+
     void main() {
         vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
         vec4 textureColor2 = texture2D(inputImageTexture2, texture2Coordinate);
+        textureColor2.a *= intensity;
+        textureColor2.rgb = textureColor2.rgb * textureColor2.a;
         vec4 whiteColor = vec4(1.0);
-        
         gl_FragColor = whiteColor - ((whiteColor - textureColor2) * (whiteColor - textureColor));
     }
 """
