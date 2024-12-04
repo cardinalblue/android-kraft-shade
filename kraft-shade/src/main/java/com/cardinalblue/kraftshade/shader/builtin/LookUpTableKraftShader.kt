@@ -4,11 +4,13 @@ import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
-class LookUpTableKraftShader : TwoTextureInputKraftShader() {
+class LookUpTableKraftShader(
+    intensity: Float = 1.0f
+) : TwoTextureInputKraftShader() {
     var intensity: Float by GlUniformDelegate("intensity")
 
     init {
-        intensity = 1.0f
+        this.intensity = intensity
     }
 
     override fun loadFragmentShader(): String = LOOK_UP_TABLE_FRAGMENT_SHADER
