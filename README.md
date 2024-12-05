@@ -255,6 +255,7 @@ pipeline(windowSurface) {
 - [x] ToonKraftShader (GPUImageToonFilter)
 
 ### Edge Detection
+- [x] SobelEdgeDetectionKraftShader (GPUImageSobelEdgeDetectionFilter)
 - [x] DirectionalSobelEdgeDetectionKraftShader (GPUImageDirectionalSobelEdgeDetectionFilter)
 - [x] LaplacianKraftShader (GPUImageLaplacianFilter)
 - [x] LaplacianMagnitudeKraftShader
@@ -332,7 +333,6 @@ pipeline(windowSurface) {
 
 #### Edge Detection & Processing
 - [ ] NonMaximumSuppressionKraftShader (GPUImageNonMaximumSuppressionFilter)
-- [ ] SobelEdgeDetectionKraftShader (GPUImageSobelEdgeDetectionFilter)
 - [ ] SobelThresholdKraftShader (GPUImageSobelThresholdFilter)
 - [ ] ThresholdEdgeDetectionKraftShader (GPUImageThresholdEdgeDetectionFilter)
 - [ ] WeakPixelInclusionKraftShader (GPUImageWeakPixelInclusionFilter)
