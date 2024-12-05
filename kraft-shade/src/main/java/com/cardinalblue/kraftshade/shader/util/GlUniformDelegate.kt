@@ -19,14 +19,14 @@ open class GlUniformDelegate<T : Any>(
         }
     }
     private lateinit var shader: KraftShader
-    private lateinit var value: T
+    private var value: T? = null
 
     private var thisUpdated: Boolean = false
 
     override fun getValue(thisRef: KraftShader, property: KProperty<*>): T {
         updateThis(thisRef)
         shader = thisRef
-        return value
+        return requireNotNull(value) { "value not set"}
     }
 
     override fun setValue(thisRef: KraftShader, property: KProperty<*>, value: T) {
@@ -41,6 +41,12 @@ open class GlUniformDelegate<T : Any>(
     }
 
     private fun setValue(value: T) {
+        // Each glUniform* call sends data to the GPU and may incur a synchronization cost. Redundant
+        // updates mean you're paying this cost even when nothing changes.
+        if (this.value == value) {
+            return
+        }
+
         this.value = value
         shader.runOnDraw(name) {
             val location = location
