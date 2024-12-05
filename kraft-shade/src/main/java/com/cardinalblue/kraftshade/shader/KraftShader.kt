@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.shader
 
 import android.opengl.GLES20
+import android.util.Log
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
@@ -40,10 +41,47 @@ abstract class KraftShader : SuspendAutoCloseable {
 
     abstract fun loadFragmentShader(): String
 
+    private fun loadShader(strSource: String, iType: Int): Int {
+        val compiled = IntArray(1)
+        val iShader = GLES20.glCreateShader(iType)
+        GLES20.glShaderSource(iShader, strSource)
+        GLES20.glCompileShader(iShader)
+        GLES20.glGetShaderiv(iShader, GLES20.GL_COMPILE_STATUS, compiled, 0)
+        if (compiled[0] == 0) {
+            val fragmentType: String = if (iType == GLES20.GL_FRAGMENT_SHADER) "fragment" else "vertex"
+            throw RuntimeException("""
+                Compilation failed - $debugName - $fragmentType
+                ${GLES20.glGetShaderInfoLog(iShader)}
+            """.trimIndent())
+        }
+        return iShader
+    }
+
+    private fun loadProgram(strVSource: String, strFSource: String): Int {
+        val link = IntArray(1)
+        val iVShader = loadShader(strVSource, GLES20.GL_VERTEX_SHADER)
+        val iFShader = loadShader(strFSource, GLES20.GL_FRAGMENT_SHADER)
+        val iProgId = GLES20.glCreateProgram()
+
+        GLES20.glAttachShader(iProgId, iVShader)
+        GLES20.glAttachShader(iProgId, iFShader)
+
+        GLES20.glLinkProgram(iProgId)
+
+        GLES20.glGetProgramiv(iProgId, GLES20.GL_LINK_STATUS, link, 0)
+        if (link[0] <= 0) {
+            logger.e("[$debugName] Linking Failed")
+            throw RuntimeException("Failed to link program:\n${GLES20.glGetProgramInfoLog(iProgId)}")
+        }
+        GLES20.glDeleteShader(iVShader)
+        GLES20.glDeleteShader(iFShader)
+        return iProgId
+    }
+
     open fun init() {
         if (initialized) return
         logger.i("Initializing shader program for ${this::class.simpleName}")
-        glProgId = OpenGlUtils.loadProgram(loadVertexShader(), loadFragmentShader(), this::class.simpleName)
+        glProgId = loadProgram(loadVertexShader(), loadFragmentShader())
         glAttribPosition = GLES20.glGetAttribLocation(glProgId, "position")
         glAttribTextureCoordinate = GLES20.glGetAttribLocation(glProgId, "inputTextureCoordinate")
         initialized = true

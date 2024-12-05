@@ -145,52 +145,6 @@ object OpenGlUtils {
         return textures[0]
     }
 
-    fun loadShader(strSource: String, iType: Int): Int {
-        val compiled = IntArray(1)
-        val iShader = GLES20.glCreateShader(iType)
-        GLES20.glShaderSource(iShader, strSource)
-        GLES20.glCompileShader(iShader)
-        GLES20.glGetShaderiv(iShader, GLES20.GL_COMPILE_STATUS, compiled, 0)
-        if (compiled[0] == 0) {
-            Log.d("Load Shader Failed", """
-                 Compilation
-                 ${GLES20.glGetShaderInfoLog(iShader)}
-             """.trimIndent())
-            return 0
-        }
-        return iShader
-    }
-
-    fun loadProgram(strVSource: String, strFSource: String, shaderNameForDebug: String?): Int {
-        val link = IntArray(1)
-        val iVShader = loadShader(strVSource, GLES20.GL_VERTEX_SHADER)
-        if (iVShader == 0) {
-            Log.d("Load Program", "[$shaderNameForDebug] Vertex Shader Failed")
-            return 0
-        }
-        val iFShader = loadShader(strFSource, GLES20.GL_FRAGMENT_SHADER)
-        if (iFShader == 0) {
-            Log.d("Load Program", "[$shaderNameForDebug] Fragment Shader Failed")
-            return 0
-        }
-
-        val iProgId = GLES20.glCreateProgram()
-
-        GLES20.glAttachShader(iProgId, iVShader)
-        GLES20.glAttachShader(iProgId, iFShader)
-
-        GLES20.glLinkProgram(iProgId)
-
-        GLES20.glGetProgramiv(iProgId, GLES20.GL_LINK_STATUS, link, 0)
-        if (link[0] <= 0) {
-            Log.d("Load Program", "[$shaderNameForDebug] Linking Failed")
-            return 0
-        }
-        GLES20.glDeleteShader(iVShader)
-        GLES20.glDeleteShader(iFShader)
-        return iProgId
-    }
-
     /**
      * Checks to see if a GLES error has been raised.
      */
