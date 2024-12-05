@@ -9,7 +9,9 @@ class GrayscaleKraftShader : TextureInputKraftShader() {
 
 @Language("GLSL")
 private const val GRAYSCALE_FRAGMENT_SHADER = """
-varying highp vec2 textureCoordinate;
+precision highp float;
+
+varying vec2 textureCoordinate;
 
 uniform sampler2D inputImageTexture;
 

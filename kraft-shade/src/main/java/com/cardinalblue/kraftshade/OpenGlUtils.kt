@@ -161,16 +161,16 @@ object OpenGlUtils {
         return iShader
     }
 
-    fun loadProgram(strVSource: String, strFSource: String): Int {
+    fun loadProgram(strVSource: String, strFSource: String, shaderNameForDebug: String?): Int {
         val link = IntArray(1)
         val iVShader = loadShader(strVSource, GLES20.GL_VERTEX_SHADER)
         if (iVShader == 0) {
-            Log.d("Load Program", "Vertex Shader Failed")
+            Log.d("Load Program", "[$shaderNameForDebug] Vertex Shader Failed")
             return 0
         }
         val iFShader = loadShader(strFSource, GLES20.GL_FRAGMENT_SHADER)
         if (iFShader == 0) {
-            Log.d("Load Program", "Fragment Shader Failed")
+            Log.d("Load Program", "[$shaderNameForDebug] Fragment Shader Failed")
             return 0
         }
 
@@ -183,7 +183,7 @@ object OpenGlUtils {
 
         GLES20.glGetProgramiv(iProgId, GLES20.GL_LINK_STATUS, link, 0)
         if (link[0] <= 0) {
-            Log.d("Load Program", "Linking Failed")
+            Log.d("Load Program", "[$shaderNameForDebug] Linking Failed")
             return 0
         }
         GLES20.glDeleteShader(iVShader)

@@ -16,7 +16,7 @@ class MultiplyBlendKraftShader : TwoTextureInputKraftShader() {
 private const val MULTIPLY_BLEND_FRAGMENT_SHADER = """
     precision mediump float;
     varying vec2 textureCoordinate;
-    varying vec2 texture2Coordinate;
+    varying vec2 textureCoordinate2;
 
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
@@ -29,7 +29,7 @@ private const val MULTIPLY_BLEND_FRAGMENT_SHADER = """
 
     void main() {
         vec4 base = sampleInside(inputImageTexture, textureCoordinate);
-        vec4 overlayer = sampleInside(inputImageTexture2, texture2Coordinate);
+        vec4 overlayer = sampleInside(inputImageTexture2, textureCoordinate2);
 
         gl_FragColor = overlayer * base + overlayer * (1.0 - base.a) + base * (1.0 - overlayer.a);
     }

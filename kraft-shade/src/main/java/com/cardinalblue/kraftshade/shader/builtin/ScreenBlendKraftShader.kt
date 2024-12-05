@@ -23,7 +23,7 @@ class ScreenBlendKraftShader : TwoTextureInputKraftShader() {
 private const val SCREEN_BLEND_FRAGMENT_SHADER = """
     precision mediump float;
     varying vec2 textureCoordinate;
-    varying vec2 texture2Coordinate;
+    varying vec2 textureCoordinate2;
 
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
@@ -32,7 +32,7 @@ private const val SCREEN_BLEND_FRAGMENT_SHADER = """
 
     void main() {
         vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-        vec4 textureColor2 = texture2D(inputImageTexture2, texture2Coordinate);
+        vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
         textureColor2.a *= intensity;
         textureColor2.rgb = textureColor2.rgb * textureColor2.a;
         vec4 whiteColor = vec4(1.0);

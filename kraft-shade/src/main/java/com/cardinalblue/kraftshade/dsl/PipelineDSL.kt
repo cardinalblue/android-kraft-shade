@@ -342,7 +342,7 @@ class SerialTextureInputPipelineScope internal constructor(
                     pipeline.addStep(
                         shader = step.shader,
                         // this is needed to trigger the automatic recycle mechanism
-                        inputs = step.inputs.toTypedArray(),
+                        inputs = step.inputs.toTypedArray() + inputTextureForStep.asTextureInput(),
                         targetBuffer = targetBufferForStep,
                         setupAction = { step.setup(inputTextureForStep) },
                     )
@@ -460,6 +460,7 @@ class SerialTextureInputPipelineScope internal constructor(
 
     private class InternalStepIgnoringInputTexture<S : KraftShader>(
         val shader: S,
+        // note that this inputs doesn't include the input texture
         val inputs: List<Input<*>> = emptyList(),
         val setupAction: suspend S.(TextureProvider, List<Input<*>>) -> Unit = { _, _ -> },
     ) : InternalShaderStep() {

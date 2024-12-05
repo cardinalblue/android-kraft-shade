@@ -43,7 +43,7 @@ abstract class KraftShader : SuspendAutoCloseable {
     open fun init() {
         if (initialized) return
         logger.i("Initializing shader program for ${this::class.simpleName}")
-        glProgId = OpenGlUtils.loadProgram(loadVertexShader(), loadFragmentShader())
+        glProgId = OpenGlUtils.loadProgram(loadVertexShader(), loadFragmentShader(), this::class.simpleName)
         glAttribPosition = GLES20.glGetAttribLocation(glProgId, "position")
         glAttribTextureCoordinate = GLES20.glGetAttribLocation(glProgId, "inputTextureCoordinate")
         initialized = true

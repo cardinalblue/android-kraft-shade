@@ -21,14 +21,14 @@ class NormalBlendKraftShader : TwoTextureInputKraftShader() {
 private const val NORMAL_BLEND_FRAGMENT_SHADER = """
     precision mediump float;
     varying vec2 textureCoordinate;
-    varying vec2 texture2Coordinate;
+    varying vec2 textureCoordinate2;
 
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
 
     void main() {
         vec4 base = texture2D(inputImageTexture, textureCoordinate);
-        vec4 overlayer = texture2D(inputImageTexture2, texture2Coordinate);
+        vec4 overlayer = texture2D(inputImageTexture2, textureCoordinate2);
 
         vec4 outputColor;
         outputColor.r = overlayer.r + base.r * base.a * (1.0 - overlayer.a);

@@ -42,7 +42,7 @@ private const val APPLY_ALPHA_MASK_FRAGMENT_SHADER = """
     precision highp float;
 
     varying vec2 textureCoordinate;
-    varying vec2 texture2Coordinate;
+    varying vec2 textureCoordinate2;
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
 
@@ -51,7 +51,7 @@ private const val APPLY_ALPHA_MASK_FRAGMENT_SHADER = """
 
     void main() {
         vec4 inputColor = texture2D(inputImageTexture, textureCoordinate);
-        vec4 maskColor = texture2D(inputImageTexture2, texture2Coordinate);
+        vec4 maskColor = texture2D(inputImageTexture2, textureCoordinate2);
         float maskValue = maskColor.r * step(maskChannel, 0.0) + 
                          maskColor.g * step(maskChannel, 1.0) * step(1.0, maskChannel) + 
                          maskColor.b * step(maskChannel, 2.0) * step(2.0, maskChannel) + 

@@ -60,7 +60,7 @@ abstract class TwoTextureInputKraftShader : TextureInputKraftShader() {
 attribute vec4 position;
 attribute vec4 inputTextureCoordinate;
 varying vec2 textureCoordinate;
-varying vec2 texture2Coordinate;
+varying vec2 textureCoordinate2;
 
 uniform mat4 texture2TransformMatrix;
 
@@ -70,7 +70,7 @@ void main()
 {
     gl_Position = position;
     textureCoordinate = inputTextureCoordinate.xy;
-    texture2Coordinate = (texture2TransformMatrix * vec4(inputTextureCoordinate.xy, 0.0, 1.0)).xy;
+    textureCoordinate2 = (texture2TransformMatrix * vec4(inputTextureCoordinate.xy, 0.0, 1.0)).xy;
 }
 """
     }
