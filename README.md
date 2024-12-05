@@ -272,6 +272,7 @@ pipeline(windowSurface) {
 - [x] NormalBlendKraftShader (GPUImageNormalBlendFilter)
 - [x] SourceOverBlendKraftShader (GPUImageSourceOverBlendFilter)
 - [x] AlphaBlendKraftShader (GPUImageAlphaBlendFilter)
+- [x] HardLightBlendKraftShader (GPUImageHardLightBlendFilter)
 - [x] SimpleMixtureBlendKraftShader
 
 ### Blur & Distortion
@@ -289,7 +290,6 @@ pipeline(windowSurface) {
 - [ ] DissolveBlendKraftShader (GPUImageDissolveBlendFilter)
 - [ ] DivideBlendKraftShader (GPUImageDivideBlendFilter)
 - [ ] ExclusionBlendKraftShader (GPUImageExclusionBlendFilter)
-- [ ] HardLightBlendKraftShader (GPUImageHardLightBlendFilter)
 - [ ] HueBlendKraftShader (GPUImageHueBlendFilter)
 - [ ] LightenBlendKraftShader (GPUImageLightenBlendFilter)
 - [ ] LinearBurnBlendKraftShader (GPUImageLinearBurnBlendFilter)
