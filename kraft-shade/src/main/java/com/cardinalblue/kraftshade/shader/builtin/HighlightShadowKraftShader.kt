@@ -13,7 +13,7 @@ class HighlightShadowKraftShader(
     shadows: Float = 0.0f,
     highlights: Float = 1.0f
 ) : TextureInputKraftShader() {
-    
+
     var shadows: Float by GlUniformDelegate("shadows")
     var highlights: Float by GlUniformDelegate("highlights")
 
@@ -29,7 +29,7 @@ class HighlightShadowKraftShader(
 private const val HIGHLIGHT_SHADOW_FRAGMENT_SHADER = """
 uniform sampler2D inputImageTexture;
 varying highp vec2 textureCoordinate;
- 
+
 uniform lowp float shadows;
 uniform lowp float highlights;
 

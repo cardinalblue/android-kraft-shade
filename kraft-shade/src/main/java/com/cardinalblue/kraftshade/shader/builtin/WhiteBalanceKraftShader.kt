@@ -67,7 +67,7 @@ const mediump mat3 YIQtoRGB = mat3(
 
 void main() {
     lowp vec4 source = texture2D(inputImageTexture, textureCoordinate);
-    
+
     mediump vec3 yiq = RGBtoYIQ * source.rgb; //adjusting tint
     yiq.b = clamp(yiq.b + tint*0.5226*0.1, -0.5226, 0.5226);
     lowp vec3 rgb = YIQtoRGB * yiq;

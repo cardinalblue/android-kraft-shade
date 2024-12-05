@@ -21,7 +21,7 @@ import com.cardinalblue.kraftshade.shader.builtin.LevelsKraftShader
 fun LevelsShaderScreen() {
     val state = rememberKraftShadeEffectState()
     var aspectRatio by remember { mutableFloatStateOf(1f) }
-    
+
     // Control parameters
     var redMin by remember { mutableFloatStateOf(0f) }
     var redMid by remember { mutableFloatStateOf(0.5f) }

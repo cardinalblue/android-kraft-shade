@@ -39,7 +39,7 @@ uniform highp float blue;
 
 void main() {
     highp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-    
+
     gl_FragColor = vec4(textureColor.r * red, textureColor.g * green, textureColor.b * blue, 1.0);
 }
 """

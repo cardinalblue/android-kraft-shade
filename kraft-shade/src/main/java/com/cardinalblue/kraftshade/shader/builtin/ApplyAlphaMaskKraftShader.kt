@@ -40,7 +40,7 @@ class ApplyAlphaMaskKraftShader(
 @Language("GLSL")
 private const val APPLY_ALPHA_MASK_FRAGMENT_SHADER = """
     precision highp float;
-                                
+
     varying vec2 textureCoordinate;
     varying vec2 texture2Coordinate;
     uniform sampler2D inputImageTexture;
@@ -48,7 +48,7 @@ private const val APPLY_ALPHA_MASK_FRAGMENT_SHADER = """
 
     uniform lowp float reverseAlpha;
     uniform lowp float maskChannel;
-    
+
     void main() {
         vec4 inputColor = texture2D(inputImageTexture, textureCoordinate);
         vec4 maskColor = texture2D(inputImageTexture2, texture2Coordinate);
