@@ -6,9 +6,14 @@ import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
-abstract class ThreeTextureInputKraftShader : TwoTextureInputKraftShader() {
+abstract class ThreeTextureInputKraftShader(
+    secondTextureSampleName: String = "inputImageTexture2",
+    thirdTextureSampleName: String = "inputImageTexture3",
+) : TwoTextureInputKraftShader(
+    secondTextureSampleName = secondTextureSampleName
+) {
     private val thirdTextureInput = KraftShaderTextureInput(
-        2, "inputImageTexture3")
+        2, thirdTextureSampleName)
 
     private var thirdInputTextureId: Int by thirdTextureInput.textureIdDelegate
 
