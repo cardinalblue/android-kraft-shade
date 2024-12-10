@@ -42,7 +42,7 @@ void main()
    }
 
    mediump float a = overlay.a + base.a - overlay.a * base.a;
-   
+
    gl_FragColor = vec4(r, g, b, a);
 }
 """
