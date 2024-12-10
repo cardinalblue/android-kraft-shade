@@ -11,6 +11,8 @@ data class GlSizeF(
 
     val vec2: FloatArray by lazy { floatArrayOf(width, height) }
 
+    operator fun times(scale: Float): GlSizeF = GlSizeF(width * scale, height * scale)
+
     companion object {
         val Unit = GlSizeF(1f, 1f)
     }

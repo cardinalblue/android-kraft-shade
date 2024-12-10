@@ -7,12 +7,14 @@ import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.builtin.bypass.BypassableTwoTextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
-abstract class TwoTextureInputKraftShader : TextureInputKraftShader() {
+abstract class TwoTextureInputKraftShader(
+    secondTextureSampleName: String = "inputImageTexture2"
+) : TextureInputKraftShader() {
     /**
      * TODO change required back to true after removing [BypassableTwoTextureInputKraftShader].
      */
     private val secondTextureInput = KraftShaderTextureInput(
-        1, "inputImageTexture2", required = false)
+        1, secondTextureSampleName, required = false)
 
     private var secondInputTextureId: Int by secondTextureInput.textureIdDelegate
 
