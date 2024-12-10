@@ -275,6 +275,7 @@ pipeline(windowSurface) {
 - [x] AlphaBlendKraftShader (GPUImageAlphaBlendFilter)
 - [x] HardLightBlendKraftShader (GPUImageHardLightBlendFilter)
 - [x] SimpleMixtureBlendKraftShader
+- [x] AddBlendKraftShader (GPUImageAddBlendFilter)
 
 ### Blur & Distortion
 - [x] CircularBlurKraftShader
@@ -282,7 +283,6 @@ pipeline(windowSurface) {
 ### Coming Soon
 
 #### Blend Modes
-- [ ] AddBlendKraftShader (GPUImageAddBlendFilter)
 - [ ] ColorBlendKraftShader (GPUImageColorBlendFilter)
 - [ ] ColorBurnBlendKraftShader (GPUImageColorBurnBlendFilter)
 - [ ] ColorDodgeBlendKraftShader (GPUImageColorDodgeBlendFilter)
