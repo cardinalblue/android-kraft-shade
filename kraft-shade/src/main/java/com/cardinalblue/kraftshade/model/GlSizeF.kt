@@ -1,5 +1,8 @@
 package com.cardinalblue.kraftshade.model
 
+import kotlin.math.max
+import kotlin.math.min
+
 data class GlSizeF(
     val width: Float,
     val height: Float,
@@ -10,6 +13,9 @@ data class GlSizeF(
     val area: Float get() = width * height
 
     val vec2: FloatArray by lazy { floatArrayOf(width, height) }
+
+    val major: Float = max(width, height)
+    val minor: Float = min(width, height)
 
     operator fun times(scale: Float): GlSizeF = GlSizeF(width * scale, height * scale)
 

@@ -7,6 +7,7 @@ import com.cardinalblue.kraftshade.pipeline.input.SampledInput
 import com.cardinalblue.kraftshade.pipeline.input.TextureReferenceInput
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
 
 /**
@@ -31,8 +32,20 @@ class Pipeline internal constructor(
 
     private val postponedTasks: MutableList<suspend GlEnv.() -> Unit> = mutableListOf()
 
+    /**
+     * Destroy all the child pipelines when the parent pipeline is destroyed
+     */
+    private val childPipelines: MutableList<Pipeline> = mutableListOf()
+    private val childTextureBuffers: MutableList<TextureBuffer> = mutableListOf()
+
     init {
         logger.d("initialized with buffer pool buffer size ${bufferPool.bufferSize}")
+    }
+
+    fun createIntermediateTextureBuffer(glSize: GlSize): TextureBuffer {
+        return TextureBuffer(glSize).also { buffer ->
+            childTextureBuffers.add(buffer)
+        }
     }
 
     protected fun runDeferred(block: suspend GlEnv.() -> Unit) {
@@ -144,6 +157,9 @@ class Pipeline internal constructor(
     override suspend fun destroy() {
         logger.d("destroy")
         postponedTasks.clear()
+        bufferPool.delete()
+        childPipelines.forEach { it.destroy() }
+        childTextureBuffers.forEach { it.delete() }
     }
 
     override suspend fun onBufferSizeChanged(size: GlSize) {
