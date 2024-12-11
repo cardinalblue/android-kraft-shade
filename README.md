@@ -227,6 +227,7 @@ pipeline(windowSurface) {
 - [x] SaturationKraftShader (GPUImageSaturationFilter)
 - [x] ContrastKraftShader (GPUImageContrastFilter)
 - [x] BrightnessKraftShader (GPUImageBrightnessFilter)
+- [x] ExposureKraftShader (GPUImageExposureFilter)
 - [x] HueKraftShader (GPUImageHueFilter)
 - [x] WhiteBalanceKraftShader (GPUImageWhiteBalanceFilter)
 - [x] GammaKraftShader (GPUImageGammaFilter)
@@ -301,7 +302,6 @@ pipeline(windowSurface) {
 - [ ] SubtractBlendKraftShader (GPUImageSubtractBlendFilter)
 
 #### Color Effects
-- [ ] ExposureKraftShader (GPUImageExposureFilter)
 - [ ] FalseColorKraftShader (GPUImageFalseColorFilter)
 - [ ] MonochromeKraftShader (GPUImageMonochromeFilter)
 - [ ] OpacityKraftShader (GPUImageOpacityFilter)
