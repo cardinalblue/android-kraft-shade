@@ -57,7 +57,7 @@ class Pipeline internal constructor(
     }
 
     fun getTextureFromBufferPool(bufferReference: BufferReference): Texture {
-        if (!runContext.isRenderPhase) {
+        if (!runContext.isRenderPhase && automaticRecycle) {
             bufferReferenceUsage[bufferReference] = runContext.currentStepIndex
              logger.d("[BufferedReference] ${bufferReference.nameForDebug} is used at step ${runContext.currentStepIndex}")
         }
