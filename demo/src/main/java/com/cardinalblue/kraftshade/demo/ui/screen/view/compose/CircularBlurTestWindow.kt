@@ -12,7 +12,6 @@ import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.CircularBlurKraftShader
 
@@ -83,13 +82,9 @@ fun CircularBlurTestWindow() {
                     inputTexture = bitmap.asTexture(),
                     targetBuffer = windowSurface,
                 ) {
-                    step(
-                        CircularBlurKraftShader(repeat = 30f),
-                        sampledInput { blurAmount },
-                        sampledInput { blurRepeat },
-                    ) { (amountInput, repeatInput) ->
-                        amount = amountInput.cast()
-                        repeat = repeatInput.cast()
+                    step(CircularBlurKraftShader(repeat = 30f)) { shader ->
+                        shader.amount = blurAmount
+                        shader.repeat = blurRepeat
                     }
                 }
             }

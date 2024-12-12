@@ -13,7 +13,6 @@ import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.LevelsKraftShader
 
@@ -220,44 +219,27 @@ fun LevelsShaderScreen() {
                     inputTexture = bitmap.asTexture(),
                     targetBuffer = windowSurface,
                 ) {
-                    step(
-                        LevelsKraftShader(),
-                        sampledInput { redMin },
-                        sampledInput { redMid },
-                        sampledInput { redMax },
-                        sampledInput { redMinOut },
-                        sampledInput { redMaxOut },
-                        sampledInput { greenMin },
-                        sampledInput { greenMid },
-                        sampledInput { greenMax },
-                        sampledInput { greenMinOut },
-                        sampledInput { greenMaxOut },
-                        sampledInput { blueMin },
-                        sampledInput { blueMid },
-                        sampledInput { blueMax },
-                        sampledInput { blueMinOut },
-                        sampledInput { blueMaxOut },
-                    ) { inputArray ->
-                        adjustRed(
-                            inputArray[0].cast(),
-                            inputArray[1].cast(),
-                            inputArray[2].cast(),
-                            inputArray[3].cast(),
-                            inputArray[4].cast()
+                    step(LevelsKraftShader()) { shader ->
+                        shader.adjustRed(
+                            redMin,
+                            redMid,
+                            redMax,
+                            redMinOut,
+                            redMaxOut
                         )
-                        adjustGreen(
-                            inputArray[5].cast(),
-                            inputArray[6].cast(),
-                            inputArray[7].cast(),
-                            inputArray[8].cast(),
-                            inputArray[9].cast()
+                        shader.adjustGreen(
+                            greenMin,
+                            greenMid,
+                            greenMax,
+                            greenMinOut,
+                            greenMaxOut
                         )
-                        adjustBlue(
-                            inputArray[10].cast(),
-                            inputArray[11].cast(),
-                            inputArray[12].cast(),
-                            inputArray[13].cast(),
-                            inputArray[14].cast()
+                        shader.adjustBlue(
+                            blueMin,
+                            blueMid,
+                            blueMax,
+                            blueMinOut,
+                            blueMaxOut
                         )
                     }
                 }

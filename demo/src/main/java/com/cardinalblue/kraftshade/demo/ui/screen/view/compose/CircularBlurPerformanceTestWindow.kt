@@ -1,6 +1,9 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -11,8 +14,6 @@ import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.pipeline.asEffectExecution
-import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.CircularBlurKraftShader
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
@@ -75,18 +76,17 @@ fun CircularBlurPerformanceTestWindow() {
         state.setEffect(
             afterSet = { runPerformanceTest() }
         ) { windowSurface ->
-            CircularBlurKraftShader()
-                .apply {
-                    setInputTexture(bitmap.asTexture())
-                }
-                .asEffectExecution(
-                    sampledInput { currentRepeat },
-                    sampledInput { currentAmount },
+            pipeline(windowSurface) {
+                serialSteps(
+                    inputTexture = bitmap.asTexture(),
                     targetBuffer = windowSurface,
-                ) { (repeatInput, amountInput) ->
-                    repeat = repeatInput.cast()
-                    amount = amountInput.cast()
+                ) {
+                    step(CircularBlurKraftShader()) { shader ->
+                        shader.repeat = currentRepeat
+                        shader.amount = currentAmount
+                    }
                 }
+            }
         }
     }
 

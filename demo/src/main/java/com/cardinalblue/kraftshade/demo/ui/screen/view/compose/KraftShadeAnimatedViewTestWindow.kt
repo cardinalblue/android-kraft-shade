@@ -11,7 +11,6 @@ import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeAnimatedView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeAnimatedState
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.pipeline.asEffectExecution
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
@@ -58,14 +57,13 @@ fun KraftShadeAnimatedViewTestWindow() {
             val saturationInput = timeInput
                 .bounceBetween(0f, 1f)
 
-            SaturationKraftShader()
-                .apply { setInputTexture(bitmap.asTexture()) }
-                .asEffectExecution(
-                    saturationInput,
-                    targetBuffer = windowSurface
-                ) { (saturationInput) ->
-                    this.saturation = saturationInput.cast()
+            pipeline(windowSurface) {
+                serialSteps(bitmap.asTexture(), windowSurface) {
+                    step(SaturationKraftShader()) { shader ->
+                        shader.saturation = saturationInput.get()
+                    }
                 }
+            }
         }
     }
 }

@@ -12,7 +12,6 @@ import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.ToonKraftShader
 
@@ -83,13 +82,9 @@ fun ToonEffectTestWindow() {
                     inputTexture = bitmap.asTexture(),
                     targetBuffer = windowSurface,
                 ) {
-                    step(
-                        ToonKraftShader(),
-                        sampledInput { threshold },
-                        sampledInput { quantizationLevels },
-                    ) { (thresholdInput, quantizationLevelsInput) ->
-                        this.threshold = thresholdInput.cast()
-                        this.quantizationLevels = quantizationLevelsInput.cast()
+                    step(ToonKraftShader()) { shader ->
+                        shader.threshold = threshold
+                        shader.quantizationLevels = quantizationLevels
                     }
                 }
             }

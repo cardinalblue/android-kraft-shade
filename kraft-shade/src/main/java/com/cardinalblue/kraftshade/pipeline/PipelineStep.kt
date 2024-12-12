@@ -1,6 +1,5 @@
 package com.cardinalblue.kraftshade.pipeline
 
-import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 

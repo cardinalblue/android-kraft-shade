@@ -12,10 +12,9 @@ import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
-import com.cardinalblue.kraftshade.shader.builtin.CrosshatchKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ColorInvertKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.CrosshatchKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.MultiplyBlendKraftShader
 
 @Composable
@@ -69,13 +68,9 @@ fun ColorfulCrosshatchTestScreen() {
 
                         val inputTexture = bitmap.asTexture()
                         serialSteps(inputTexture, invertedCrosshatch) {
-                            step(
-                                CrosshatchKraftShader(),
-                                sampledInput { crossHatchSpacing },
-                                sampledInput { lineWidth },
-                            ) { (crossHatchSpacing, lineWidth) ->
-                                this.crossHatchSpacing = crossHatchSpacing.cast()
-                                this.lineWidth = lineWidth.cast()
+                            step(CrosshatchKraftShader()) { shader ->
+                                shader.crossHatchSpacing = crossHatchSpacing
+                                shader.lineWidth = lineWidth
                             }
 
                             step(ColorInvertKraftShader())

@@ -11,7 +11,6 @@ import com.cardinalblue.kraftshade.demo.shader.DrawCircleKraftShader
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.model.GlColor
 import com.cardinalblue.kraftshade.model.GlSizeF
-import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.builtin.DilationKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ErosionKraftShader
 import com.cardinalblue.kraftshade.shader.stepWithTwoPassSamplingFilter
@@ -71,20 +70,14 @@ fun ErosionDilationTestScreen() {
                     serialSteps(circle, windowSurface) {
                         stepWithTwoPassSamplingFilter(
                             ErosionKraftShader(4),
-                            sampledInput { erosionSampleRatio },
-                        ) { (sampleRatio) ->
-                            texelSizeRatio = sampleRatio.cast<Float>().let {
-                                GlSizeF(it, it)
-                            }
+                        ) { shader ->
+                            shader.texelSizeRatio = GlSizeF(erosionSampleRatio)
                         }
 
                         stepWithTwoPassSamplingFilter(
                             DilationKraftShader(4),
-                            sampledInput { dilationSampleRatio },
-                        ) { (sampleRatio) ->
-                            texelSizeRatio = sampleRatio.cast<Float>().let {
-                                GlSizeF(it, it)
-                            }
+                        ) { shader ->
+                            shader.texelSizeRatio = GlSizeF(dilationSampleRatio)
                         }
                     }
                 }

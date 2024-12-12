@@ -331,46 +331,28 @@ fun KraftShadeEffectViewTestWindow() {
                     inputTexture = bitmap.asTexture(),
                     targetBuffer = windowSurface,
                 ) {
-                    step(
-                        SaturationKraftShader(),
-                        sampledInput { saturation }
-                    ) { (saturationInput) ->
-                        this.saturation = saturationInput.cast()
+                    step(SaturationKraftShader()) { shader ->
+                        shader.saturation = saturation
                     }
 
-                    step(
-                        HueKraftShader(),
-                        sampledInput { hue }
-                    ) { (hueInput) ->
-                        setHueInDegree(hueInput.cast())
+                    step(HueKraftShader()) { shader ->
+                        shader.setHueInDegree(hue)
                     }
 
-                    step(
-                        BrightnessKraftShader(),
-                        sampledInput { brightness }
-                    ) { (brightnessInput) ->
-                        this.brightness = brightnessInput.cast()
+                    step(BrightnessKraftShader()) { shader ->
+                        shader.brightness = brightness
                     }
 
-                    step(
-                        ContrastKraftShader(),
-                        sampledInput { contrast }
-                    ) { (contrastInput) ->
-                        this.contrast = contrastInput.cast()
+                    step(ContrastKraftShader()) { shader ->
+                        shader.contrast = contrast
                     }
 
-                    step(
-                        PixelationKraftShader(),
-                        sampledInput { pixelSize }
-                    ) { (pixelSizeInput) ->
-                        pixel = pixelSizeInput.cast()
+                    step(PixelationKraftShader()) { shader ->
+                        shader.pixel = pixelSize
                     }
 
-                    step(
-                        GammaKraftShader(),
-                        sampledInput { gamma }
-                    ) { (gammaInput) ->
-                        this.gamma = gammaInput.cast()
+                    step(GammaKraftShader()) { shader ->
+                        shader.gamma = gamma
                     }
 
                     step(
@@ -382,10 +364,9 @@ fun KraftShadeEffectViewTestWindow() {
                                 1f, 1f, 1f, 1f
                             ),
                             colorOffset = floatArrayOf(1f, 1f, 1f, 0f),
-                        ),
-                        sampledInput { colorMatrixIntensity }
-                    ) { (intensityInput) ->
-                        intensity = intensityInput.cast()
+                        )
+                    ) { shader ->
+                        shader.intensity = colorMatrixIntensity
                     }
 
                     stepWithMixture(
@@ -403,46 +384,27 @@ fun KraftShadeEffectViewTestWindow() {
                         sampledInput { laplacianMagnitudeMixture }
                     )
 
-                    step(
-                        WhiteBalanceKraftShader(),
-                        sampledInput { whiteBalanceTemperature },
-                        sampledInput { whiteBalanceTint },
-                    ) { (temperatureInput, tintInput) ->
-                        temperature = temperatureInput.cast()
-                        tint = tintInput.cast()
+                    step(WhiteBalanceKraftShader()) { shader ->
+                        shader.temperature = whiteBalanceTemperature
+                        shader.tint = whiteBalanceTint
                     }
 
-                    step(
-                        HighlightShadowKraftShader(),
-                        sampledInput { shadows },
-                        sampledInput { highlights },
-                    ) { (shadowsInput, highlightsInput) ->
-                        this.shadows = shadowsInput.cast()
-                        this.highlights = highlightsInput.cast()
+                    step(HighlightShadowKraftShader()) { shader ->
+                        shader.shadows = shadows
+                        shader.highlights = highlights
                     }
 
-                    step(
-                        RGBKraftShader(),
-                        sampledInput { redMultiplier },
-                        sampledInput { greenMultiplier },
-                        sampledInput { blueMultiplier },
-                    ) { (redInput, greenInput, blueInput) ->
-                        this.red = redInput.cast()
-                        this.green = greenInput.cast()
-                        this.blue = blueInput.cast()
+                    step(RGBKraftShader()) { shader ->
+                        shader.red = redMultiplier
+                        shader.green = greenMultiplier
+                        shader.blue = blueMultiplier
                     }
 
-                    step(
-                        ColorBalanceKraftShader(),
-                        sampledInput { floatArrayOf(shadowsR, shadowsG, shadowsB) },
-                        sampledInput { floatArrayOf(midtonesR, midtonesG, midtonesB) },
-                        sampledInput { floatArrayOf(highlightsR, highlightsG, highlightsB) },
-                        sampledInput { preserveLuminosity }
-                    ) { (shadowsInput, midtonesInput, highlightsInput, preserveLuminosityInput) ->
-                        this.shadows = shadowsInput.cast()
-                        this.midtones = midtonesInput.cast()
-                        this.highlights = highlightsInput.cast()
-                        this.preserveLuminosity = preserveLuminosityInput.cast()
+                    step(ColorBalanceKraftShader()) { shader ->
+                        shader.shadows = floatArrayOf(shadowsR, shadowsG, shadowsB)
+                        shader.midtones = floatArrayOf(midtonesR, midtonesG, midtonesB)
+                        shader.highlights = floatArrayOf(highlightsR, highlightsG, highlightsB)
+                        shader.preserveLuminosity = preserveLuminosity
                     }
                 }
             }
