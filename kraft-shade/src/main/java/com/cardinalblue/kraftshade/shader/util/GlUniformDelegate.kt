@@ -20,6 +20,7 @@ open class GlUniformDelegate<T : Any>(
     }
     private lateinit var shader: KraftShader
     private var value: T? = null
+    private var valueHashCode: Int = Int.MAX_VALUE
 
     private var thisUpdated: Boolean = false
 
@@ -43,11 +44,14 @@ open class GlUniformDelegate<T : Any>(
     private fun setValue(value: T) {
         // Each glUniform* call sends data to the GPU and may incur a synchronization cost. Redundant
         // updates mean you're paying this cost even when nothing changes.
-        if (this.value == value) {
+        val hashCode = hash(value)
+        if (hashCode == valueHashCode) {
             return
         }
 
         this.value = value
+        this.valueHashCode = hashCode
+
         shader.runOnDraw(name) {
             val location = location
             if (location == -1)  return@runOnDraw
@@ -80,5 +84,25 @@ open class GlUniformDelegate<T : Any>(
             4 -> GLES20.glUniform4fv(location, 1, array, 0)
             else -> GLES20.glUniform1fv(location, array.size, array, 0)
         }
+    }
+
+    private fun hash(value: Any): Int {
+        when (value) {
+            is Int,
+            is Float -> return value.hashCode()
+        }
+        val array: FloatArray = when (value) {
+            is FloatArray -> value
+            is GlFloatArray -> value.backingArray
+            is GlSize -> value.vec2
+            is GlSizeF -> value.vec2
+            is GlMat -> value.arr
+            is GlVec2 -> value.vec2
+            is GlVec3 -> value.vec3
+            is GlVec4 -> value.vec4
+            else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
+        }
+
+        return array.contentHashCode()
     }
 }
