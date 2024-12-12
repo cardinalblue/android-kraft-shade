@@ -8,7 +8,7 @@ sealed class PipelineStep(
     val stepIndex: Int,
     val runContext: Pipeline.PipelineRunContext,
 ) {
-    abstract suspend fun run()
+    abstract suspend fun run(scope: PipelineRunningScope)
 
     val type: String get() = this::class.simpleName ?: "impossible"
 }
@@ -29,12 +29,19 @@ class RunShaderStep<T : KraftShader> internal constructor(
     stepIndex: Int,
     runContext: Pipeline.PipelineRunContext,
     val shader: T,
-    val inputs: List<Input<*>> = emptyList(),
     val targetBuffer: GlBufferProvider,
-    val setupAction: suspend T.(List<Input<*>>) -> Unit = {},
+    val setupAction: suspend PipelineRunningScope.(T) -> Unit = {},
 ) : PipelineStep(stepIndex, runContext) {
-    override suspend fun run() {
-        shader.setupAction(inputs)
+    override suspend fun run(scope: PipelineRunningScope) {
+        // this has to be set first so we can track the last step BufferReference is used. The mechanism
+        // is working inside setupAction.
+        runContext.currentStepIndex = stepIndex
+        with(scope) {
+            setupAction(shader)
+        }
+
+        if (!runContext.isRenderPhase) return
+
         try {
             targetBuffer.provideBuffer().let { buffer ->
                 shader.drawTo(buffer)
@@ -51,9 +58,11 @@ class RunTaskStep(
     stepIndex: Int,
     val purposeForDebug: String = "",
     runContext: Pipeline.PipelineRunContext,
-    private val task: suspend (runContext: Pipeline.PipelineRunContext) -> Unit,
+    private val task: suspend PipelineRunningScope.() -> Unit,
 ) : PipelineStep(stepIndex, runContext) {
-    override suspend fun run() {
-        task(runContext)
+    override suspend fun run(scope: PipelineRunningScope) {
+        with(scope) {
+            task()
+        }
     }
 }

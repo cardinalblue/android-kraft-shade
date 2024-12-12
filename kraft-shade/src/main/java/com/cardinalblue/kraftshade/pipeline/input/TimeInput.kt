@@ -1,5 +1,7 @@
 package com.cardinalblue.kraftshade.pipeline.input
 
+import com.cardinalblue.kraftshade.pipeline.Pipeline
+
 /**
  * @param getTime a function to get the current time in milliseconds. this is useful for testing.
  */
@@ -17,7 +19,10 @@ class TimeInput(
      */
     private var pausedTime = 0L
 
-    override fun provideSample(): Float {
+    /**
+     * internal for testing purpose
+     */
+    internal fun internalProvideSample(): Float {
         // update lastSample or not
         if (started) {
             lastSampleTime = getTime()
@@ -25,6 +30,10 @@ class TimeInput(
 
         val diff = lastSampleTime - startTime
         return (pausedTime + diff).seconds()
+    }
+
+    override fun Pipeline.provideSample(): Float {
+        return internalProvideSample()
     }
 
     fun reset() {
@@ -41,8 +50,7 @@ class TimeInput(
         startTime = getTime()
         lastSampleTime = startTime
         // to update the last sample
-        markDirty()
-        get()
+        internalProvideSample()
     }
 
     /**
@@ -55,8 +63,7 @@ class TimeInput(
         lastSampleTime = getTime()
         pausedTime += (lastSampleTime - startTime)
         startTime = lastSampleTime
-        markDirty()
-        get()
+        internalProvideSample()
     }
 
     private fun Long.seconds(): Float {

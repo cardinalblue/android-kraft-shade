@@ -4,6 +4,7 @@ import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.model.GlMat4
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
+import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
 abstract class ThreeTextureInputKraftShader(
@@ -31,6 +32,10 @@ abstract class ThreeTextureInputKraftShader(
 
     fun setThirdInputTexture(texture: Texture) {
         setThirdInputTexture(texture.textureId)
+    }
+
+    fun setThirdInputTexture(texture: TextureProvider) {
+        setThirdInputTexture(texture.provideTexture().textureId)
     }
 
     override fun loadVertexShader(): String = THREE_TEXTURE_INPUT_VERTEX_SHADER

@@ -4,9 +4,9 @@ import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
-import com.cardinalblue.kraftshade.pipeline.input.TextureReferenceInput
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
 
@@ -40,6 +40,8 @@ class Pipeline internal constructor(
     private val childPipelines: MutableList<Pipeline> = mutableListOf()
     private val childTextureBuffers: MutableList<TextureBuffer> = mutableListOf()
 
+    private val pipelineRunningScope = PipelineRunningScope(this)
+
     init {
         logger.d("initialized with buffer pool buffer size ${bufferPool.bufferSize}")
     }
@@ -54,20 +56,12 @@ class Pipeline internal constructor(
         postponedTasks.add(block)
     }
 
-    private fun trackInputUsage(input: Input<*>, stepIndex: Int) {
-        when (input) {
-            is TextureReferenceInput -> {
-                val bufferReference = input.bufferReference
-                bufferReferenceUsage[bufferReference] = stepIndex
-                logger.d("[BufferedReference] ${bufferReference.nameForDebug} is used at step $stepIndex")
-            }
-
-            // for sampling all the sampled input at the beginning of the frame, so stepIndex is
-            // not important here
-            is SampledInput<*> -> {
-                sampledInputs.add(input)
-            }
+    fun getTextureFromBufferPool(bufferReference: BufferReference): Texture {
+        if (!runContext.isRenderPhase) {
+            bufferReferenceUsage[bufferReference] = runContext.currentStepIndex
+             logger.d("[BufferedReference] ${bufferReference.nameForDebug} is used at step ${runContext.currentStepIndex}")
         }
+        return bufferPool[bufferReference]
     }
 
     private fun recycleUnusedBuffers(currentStep: Int) {
@@ -79,6 +73,12 @@ class Pipeline internal constructor(
         if (buffersToRecycle.isNotEmpty()) {
             bufferPool.recycle(currentStep.toString(), *buffersToRecycle)
         }
+    }
+
+    fun trackInput(input: Input<*>) {
+        if (runContext.isRenderPhase) return
+        if (input !is SampledInput<*>) return
+        sampledInputs.add(input)
     }
 
     fun addStep(step: PipelineStep) {
@@ -95,18 +95,12 @@ class Pipeline internal constructor(
 
     fun <T : KraftShader> addStep(
         shader: T,
-        vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
-        setupAction: suspend T.(List<Input<*>>) -> Unit = {},
+        setupAction: suspend PipelineRunningScope.(T) -> Unit = {},
     ) {
-        // Track input usage for this step, the step index is [steps.size] since this step is not
-        // added yet otherwise it would be [steps.size - 1]
-        inputs.forEach { input -> trackInputUsage(input, steps.size) }
-
         RunShaderStep(
             stepIndex = steps.size,
             shader = shader,
-            inputs = inputs.toList(),
             targetBuffer = targetBuffer,
             setupAction = setupAction,
             runContext = runContext,
@@ -114,19 +108,29 @@ class Pipeline internal constructor(
     }
 
     override suspend fun run() {
+        if (!runContext.isRenderPhase) {
+            logger.d("configuration phase starts")
+            steps.forEach {
+                runContext.currentStepIndex = it.stepIndex
+                it.run(pipelineRunningScope)
+            }
+            runContext.isRenderPhase = true
+        }
+
         logger.measureAndLog("render with the whole pipeline") {
             with(glEnv) { runPostponedTasks() }
 
             // Mark all sampled inputs as dirty at the start of the frame
             sampledInputs.forEach { it.markDirty() }
-            sampledInputs.forEach { it.get() }
+            sampledInputs.forEach { with(it) { internalGet() } }
 
             runContext.reset()
 
             logger.d("start to run $stepCount steps")
             run runSteps@{
                 steps.forEach { step ->
-                    step.run()
+                    runContext.currentStepIndex = step.stepIndex
+                    step.run(pipelineRunningScope)
                     onDebugAfterShaderStep?.invoke(runContext)
 
                     if (runContext.forceAbort) {
@@ -176,6 +180,20 @@ class Pipeline internal constructor(
     }
 
     class PipelineRunContext {
+        /**
+         * We utilize this flag to do two things after the pipeline is just created
+         * 1. Know the step of each [BufferReference] is last used "as texture"
+         * 2. Know all the sampled inputs that should be sampled at the beginning of the frame
+         *
+         * We run [RunShaderStep.setupAction] once for each step, we recorder all the sampled inputs
+         * gets called on their [Input.internalGet]. These will be all the inputs that should be sampled at the
+         * beginning of the frame.
+         * Similarly when [BufferReference] is used in the [RunShaderStep.setupAction], we record the
+         * step index to [bufferReferenceUsage] using the same logic, so we can do the automatic recycle.
+         */
+        var isRenderPhase = false
+            internal set
+
         internal var forceAbort: Boolean = false
 
         /**
@@ -186,6 +204,9 @@ class Pipeline internal constructor(
 
         var previousShaderName: String? = null
             private set
+
+        var currentStepIndex: Int = 0
+            internal set
 
         fun abort() {
             forceAbort = true
@@ -203,5 +224,15 @@ class Pipeline internal constructor(
         fun markPreviousShaderName(shaderName: String?) {
             previousShaderName = shaderName
         }
+    }
+}
+
+class PipelineRunningScope(
+    private val pipeline: Pipeline
+) {
+    val context: Pipeline.PipelineRunContext get() = pipeline.runContext
+
+    fun <T : Any> Input<T>.get(): T {
+        return pipeline.internalGet()
     }
 }

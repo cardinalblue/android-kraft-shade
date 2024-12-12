@@ -4,8 +4,6 @@ import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.*
 import com.cardinalblue.kraftshade.pipeline.input.Input
-import com.cardinalblue.kraftshade.pipeline.input.TextureInput
-import com.cardinalblue.kraftshade.pipeline.input.asTextureInput
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
@@ -29,7 +27,7 @@ sealed class BasePipelineSetupScope(
 
     fun createBufferReferences(
         vararg namesForDebug: String
-    ): BufferReferenceCreator = BufferReferenceCreator(pipeline.bufferPool, *namesForDebug)
+    ): BufferReferenceCreator = BufferReferenceCreator(pipeline, *namesForDebug)
 
     @KraftShadeDsl
     open suspend fun step(
@@ -40,8 +38,8 @@ sealed class BasePipelineSetupScope(
             stepIndex = pipeline.stepCount,
             purposeForDebug = purposeForDebug,
             runContext = pipeline.runContext,
-            task = { runContext: Pipeline.PipelineRunContext ->
-                block(GlEnvDslScope(pipeline.glEnv), runContext)
+            task = {
+                block(GlEnvDslScope(pipeline.glEnv), context)
             },
         ).let(pipeline::addStep)
     }
@@ -93,12 +91,10 @@ class GraphPipelineSetupScope(
     suspend fun <S : KraftShader> step(
         shader: S,
         targetBuffer: GlBufferProvider,
-        vararg inputs: Input<*>,
-        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+        setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) {
         pipeline.addStep(
             shader = shader,
-            inputs = inputs,
             targetBuffer = targetBuffer,
             setupAction = setupAction,
         )
@@ -120,14 +116,12 @@ class GraphPipelineSetupScope(
         shader: S,
         constantTexture: Texture,
         targetBuffer: GlBufferProvider,
-        vararg inputs: Input<*>,
-        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+        setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) {
         shader.setInputTexture(constantTexture)
 
         step(
             shader = shader,
-            inputs = inputs,
             targetBuffer = targetBuffer,
             setupAction = setupAction
         )
@@ -139,19 +133,15 @@ class GraphPipelineSetupScope(
     suspend fun <S : TextureInputKraftShader> stepWithInputTexture(
         shader: S,
         inputBufferReference: BufferReference,
-        vararg inputs: Input<*>,
         targetBuffer: GlBufferProvider,
-        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+        setupAction: suspend (S) -> Unit = {},
     ) {
-        val inputsPlusTextureInput = inputs.toList() + inputBufferReference.asTextureInput()
         step(
             shader,
-            inputs = inputsPlusTextureInput.toTypedArray(),
             targetBuffer = targetBuffer,
-            setupAction = { _inputs ->
-                val textureInput = _inputs.last() as TextureInput
-                setInputTexture(textureInput.get())
-                setupAction.invoke(this, _inputs.subList(0, _inputs.size - 1))
+            setupAction = { _shader ->
+                _shader.setInputTexture(inputBufferReference)
+                setupAction.invoke(_shader)
             },
         )
     }
@@ -196,10 +186,9 @@ class SerialTextureInputPipelineScope internal constructor(
     @KraftShadeDsl
     suspend fun <S : TextureInputKraftShader> step(
         shader: S,
-        vararg inputs: Input<*>,
-        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+        setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) {
-        steps.add(InternalSingleShaderSimpleStep(shader, inputs.toList(), setupAction))
+        steps.add(InternalSingleShaderSimpleStep(shader, setupAction))
     }
 
     /**
@@ -214,10 +203,9 @@ class SerialTextureInputPipelineScope internal constructor(
     @KraftShadeDsl
     suspend fun <S : KraftShader> stepIgnoringInputTexture(
         shader: S,
-        vararg inputs: Input<*>,
-        setupAction: suspend S.(TextureProvider, List<Input<*>>) -> Unit = { _, _ -> },
+        setupAction: suspend PipelineRunningScope.(S, TextureProvider) -> Unit = { _, _ -> },
     ) {
-        steps.add(InternalStepIgnoringInputTexture(shader, inputs.toList(), setupAction))
+        steps.add(InternalStepIgnoringInputTexture(shader, setupAction))
     }
 
     /**
@@ -242,10 +230,9 @@ class SerialTextureInputPipelineScope internal constructor(
     fun <S : TextureInputKraftShader> stepWithMixture(
         shader: S,
         mixturePercentInput: Input<Float>,
-        vararg inputs: Input<*>,
-        setupAction: suspend S.(List<Input<*>>) -> Unit = {},
+        setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) {
-        steps.add(InternalSingleShaderMixtureStep(shader, mixturePercentInput, inputs.toList(), setupAction))
+        steps.add(InternalSingleShaderMixtureStep(shader, mixturePercentInput, setupAction))
     }
 
     /**
@@ -303,7 +290,7 @@ class SerialTextureInputPipelineScope internal constructor(
         // this is ping pong buffer mechanism
         var drawToBuffer1 = true
         val (buffer1, buffer2) = BufferReferenceCreator(
-            pipeline.bufferPool,
+            pipeline,
             "$bufferReferencePrefix-ping",
             "$bufferReferencePrefix-pong",
         )
@@ -341,10 +328,8 @@ class SerialTextureInputPipelineScope internal constructor(
                 is InternalStepIgnoringInputTexture<*> -> {
                     pipeline.addStep(
                         shader = step.shader,
-                        // this is needed to trigger the automatic recycle mechanism
-                        inputs = step.inputs.toTypedArray() + inputTextureForStep.asTextureInput(),
                         targetBuffer = targetBufferForStep,
-                        setupAction = { step.setup(inputTextureForStep) },
+                        setupAction = { step.setup(this, inputTextureForStep) },
                     )
                 }
 
@@ -380,13 +365,10 @@ class SerialTextureInputPipelineScope internal constructor(
         ) {
             pipeline.addStep(
                 shader = step.shader,
-                // this is needed to trigger the automatic recycle mechanism
-                inputs = (step.inputs + textureForStep.asTextureInput()).toTypedArray(),
                 targetBuffer = target,
-                setupAction = { inputs ->
-                    val input = inputs.last() as TextureInput
-                    step.shader.setInputTexture(input.get())
-                    step.setup()
+                setupAction = { shader ->
+                    step.shader.setInputTexture(textureForStep.provideTexture())
+                    step.setup(this)
                 },
             )
         }
@@ -404,7 +386,7 @@ class SerialTextureInputPipelineScope internal constructor(
                 }
 
                 val (effectResult) = BufferReferenceCreator(
-                    pipeline.bufferPool,
+                    pipeline,
                     "$bufferReferencePrefix-$debugStepName",
                 )
 
@@ -412,14 +394,11 @@ class SerialTextureInputPipelineScope internal constructor(
 
                 pipeline.addStep(
                     shader = AlphaBlendKraftShader(),
-                    textureForStep.asTextureInput(),
-                    effectResult.asTextureInput(),
-                    step.mixturePercentInput,
                     targetBuffer = targetBufferForStep,
-                    setupAction = { (originalTextureInput, fullyAppliedInput, mixturePercentInput) ->
-                        setInputTexture(originalTextureInput.cast<Texture>())
-                        setSecondInputTexture(fullyAppliedInput.cast<Texture>())
-                        mixturePercent = mixturePercentInput.cast()
+                    setupAction = { shader ->
+                        shader.setInputTexture(textureForStep.provideTexture())
+                        shader.setSecondInputTexture(effectResult.provideTexture())
+                        shader.mixturePercent = step.mixturePercentInput.get()
                     },
                 )
             }
@@ -437,35 +416,30 @@ class SerialTextureInputPipelineScope internal constructor(
 
     private abstract class InternalSingleShaderStep<S : TextureInputKraftShader>(
         val shader: S,
-        val inputs: List<Input<*>> = emptyList(),
-        val setupAction: suspend (S, List<Input<*>>) -> Unit = { _, _ -> },
+        val setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) : InternalShaderStep() {
-        suspend fun setup() {
-            setupAction.invoke(shader, inputs)
+        suspend fun setup(scope: PipelineRunningScope) {
+            setupAction.invoke(scope, shader)
         }
     }
 
     private class InternalSingleShaderSimpleStep<S : TextureInputKraftShader>(
         shader: S,
-        inputs: List<Input<*>> = emptyList(),
-        setupAction: suspend (S, List<Input<*>>) -> Unit = { _, _ ->},
-    )  : InternalSingleShaderStep<S>(shader, inputs, setupAction)
+        setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
+    )  : InternalSingleShaderStep<S>(shader, setupAction)
 
     private class InternalSingleShaderMixtureStep<S : TextureInputKraftShader>(
         shader: S,
         val mixturePercentInput: Input<Float>,
-        inputs: List<Input<*>> = emptyList(),
-        setupAction: suspend (S, List<Input<*>>) -> Unit = { _, _ -> },
-    ) : InternalSingleShaderStep<S>(shader, inputs, setupAction)
+        setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
+    ) : InternalSingleShaderStep<S>(shader, setupAction)
 
     private class InternalStepIgnoringInputTexture<S : KraftShader>(
         val shader: S,
-        // note that this inputs doesn't include the input texture
-        val inputs: List<Input<*>> = emptyList(),
-        val setupAction: suspend S.(TextureProvider, List<Input<*>>) -> Unit = { _, _ -> },
+        val setupAction: suspend PipelineRunningScope.(S, TextureProvider) -> Unit = { _, _ -> },
     ) : InternalShaderStep() {
-        suspend fun setup(inputTexture: TextureProvider) {
-            setupAction.invoke(shader, inputTexture, inputs)
+        suspend fun setup(scope: PipelineRunningScope, inputTexture: TextureProvider) {
+            setupAction.invoke(scope, shader, inputTexture)
         }
     }
 

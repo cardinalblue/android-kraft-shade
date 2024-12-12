@@ -11,15 +11,15 @@ import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
  * and manage texture buffer lifecycle.
  */
 class BufferReference internal constructor(
-    private val pool: TextureBufferPool,
+    private val pipeline: Pipeline,
     val nameForDebug: String? = null,
 ) : GlBufferProvider, TextureProvider {
     override fun provideBuffer(): GlBuffer {
-        return pool[this]
+        return pipeline.bufferPool[this]
     }
 
     override fun provideTexture(): Texture {
-        return pool[this]
+        return pipeline.getTextureFromBufferPool(this)
     }
 }
 
@@ -28,48 +28,48 @@ class BufferReference internal constructor(
  * If you have more than 10 references to create do it in batches of 10.
  */
 class BufferReferenceCreator internal constructor(
-    private val textureBufferPool: TextureBufferPool,
+    private val pipeline: Pipeline,
     private vararg val namesForDebug: String
 ) {
     operator fun component1(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(0)
     )
 
     operator fun component2(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(1)
     )
     operator fun component3(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(2)
     )
     operator fun component4(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(3)
     )
     operator fun component5(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(4)
     )
     operator fun component6(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(5)
     )
     operator fun component7(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(6)
     )
     operator fun component8(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(7)
     )
     operator fun component9(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(8)
     )
     operator fun component10(): BufferReference = BufferReference(
-        textureBufferPool,
+        pipeline,
         namesForDebug.getOrNull(9)
     )
 }

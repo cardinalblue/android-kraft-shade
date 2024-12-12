@@ -1,15 +1,11 @@
 package com.cardinalblue.kraftshade.pipeline.input
 
-import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KProperty
+import com.cardinalblue.kraftshade.pipeline.Pipeline
 
-interface Input<T : Any> : ReadOnlyProperty<Any?, T> {
-    fun get(): T
-
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return get()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun <P> cast(): P = get() as P
+abstract class Input<T : Any> {
+    /**
+     * We make it internal only because we want to know all the sampled inputs in the configuration
+     * phase, so all the sampled inputs can be marked as dirty at the start of the frame.
+     */
+    internal abstract fun Pipeline.internalGet(): T
 }

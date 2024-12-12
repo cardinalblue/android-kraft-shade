@@ -4,6 +4,7 @@ import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.model.GlMat4
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
+import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.builtin.bypass.BypassableTwoTextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
@@ -32,6 +33,10 @@ abstract class TwoTextureInputKraftShader(
 
     fun setSecondInputTexture(texture: Texture) {
         setSecondInputTexture(texture.textureId)
+    }
+
+    fun setSecondInputTexture(texture: TextureProvider) {
+        setSecondInputTexture(texture.provideTexture().textureId)
     }
 
     override fun loadVertexShader(): String = TWO_TEXTURE_INPUT_VERTEX_SHADER

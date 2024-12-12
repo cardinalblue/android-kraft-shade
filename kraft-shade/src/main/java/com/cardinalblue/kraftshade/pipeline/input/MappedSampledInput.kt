@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.pipeline.input
 
+import com.cardinalblue.kraftshade.pipeline.Pipeline
 import kotlin.math.max
 import kotlin.math.min
 
@@ -7,8 +8,9 @@ class MappedSampledInput<I : Any, O : Any>(
     private val source: SampledInput<I>,
     private val mapping: (I) -> O,
 ) : SampledInput<O>() {
-    override fun provideSample(): O {
-        return mapping(source.get())
+    override fun Pipeline.provideSample(): O {
+        val sourceValue = with(source) { internalGet() }
+        return mapping(sourceValue)
     }
 
     override fun markDirty() {
