@@ -38,6 +38,7 @@ class RunShaderStep<T : KraftShader> internal constructor(
         try {
             targetBuffer.provideBuffer().let { buffer ->
                 shader.drawTo(buffer)
+                runContext.markPreviousShaderName(shader::class.simpleName)
                 runContext.markPreviousBuffer(buffer)
             }
         } catch (e: Exception) {

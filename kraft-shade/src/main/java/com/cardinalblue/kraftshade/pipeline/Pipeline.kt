@@ -25,6 +25,8 @@ class Pipeline internal constructor(
 
     internal val runContext = PipelineRunContext()
 
+    var onDebugAfterShaderStep: ((PipelineRunContext) -> Unit)? = null
+
     /**
      * Used for tracking the index of the last step using a [BufferReference]
      */
@@ -125,6 +127,8 @@ class Pipeline internal constructor(
             run runSteps@{
                 steps.forEach { step ->
                     step.run()
+                    onDebugAfterShaderStep?.invoke(runContext)
+
                     if (runContext.forceAbort) {
                         logger.w("force abort the pipeline run")
                         return@runSteps
@@ -180,6 +184,9 @@ class Pipeline internal constructor(
         var previousBuffer: GlBufferProvider? = null
             private set
 
+        var previousShaderName: String? = null
+            private set
+
         fun abort() {
             forceAbort = true
         }
@@ -191,6 +198,10 @@ class Pipeline internal constructor(
 
         fun markPreviousBuffer(buffer: GlBufferProvider) {
             this.previousBuffer = buffer
+        }
+
+        fun markPreviousShaderName(shaderName: String?) {
+            previousShaderName = shaderName
         }
     }
 }
