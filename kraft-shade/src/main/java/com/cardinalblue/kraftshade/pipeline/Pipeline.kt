@@ -40,7 +40,7 @@ class Pipeline internal constructor(
     private val childPipelines: MutableList<Pipeline> = mutableListOf()
     private val childTextureBuffers: MutableList<TextureBuffer> = mutableListOf()
 
-    private val pipelineRunningScope = PipelineRunningScope(this)
+    internal val pipelineRunningScope = PipelineRunningScope(this)
 
     init {
         logger.d("initialized with buffer pool buffer size ${bufferPool.bufferSize}")

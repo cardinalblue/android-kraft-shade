@@ -2,6 +2,7 @@ package com.cardinalblue.kraftshade.pipeline.input
 
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.pipeline.Pipeline
+import com.cardinalblue.kraftshade.pipeline.PipelineRunningScope
 
 abstract class SampledInput<T : Any> : Input<T>() {
     private var lastSample: T? = null
@@ -36,11 +37,13 @@ abstract class SampledInput<T : Any> : Input<T>() {
 }
 
 class WrappedSampledInput<T : Any>(
-    private val action: () -> T
+    private val action: PipelineRunningScope.() -> T
 ) : SampledInput<T>() {
-    override fun Pipeline.provideSample(): T = action()
+    override fun Pipeline.provideSample(): T {
+        return action(pipelineRunningScope)
+    }
 }
 
-fun <T : Any> sampledInput(action: () -> T) : SampledInput<T> {
+fun <T : Any> sampledInput(action: PipelineRunningScope.() -> T) : SampledInput<T> {
     return WrappedSampledInput(action)
 }
