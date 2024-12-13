@@ -74,8 +74,8 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
         effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution,
     ) {
         setEffectWithTimeInput(
-            afterSet = { _, timeInput ->
-                timeInput.start()
+            afterSet = { _, _ ->
+                play()
             },
             effectExecutionProvider = effectExecutionProvider
         )
@@ -85,8 +85,8 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
         effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution,
     ) {
         setEffectWithTimeInput(
-            afterSet = { _, timeInput ->
-                timeInput.pause()
+            afterSet = { _, _ ->
+                stop()
             },
             effectExecutionProvider = effectExecutionProvider
         )
