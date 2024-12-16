@@ -56,21 +56,22 @@ open class GlUniformDelegate<T : Any>(
             val location = location
             if (location == -1)  return@runOnDraw
             when (value) {
+                is Boolean -> GLES20.glUniform1i(location, if (value) 1 else 0)
                 is Int -> GLES20.glUniform1i(location, value)
                 is Float -> GLES20.glUniform1f(location, value)
                 is FloatArray -> setFloatArrayValues(value)
                 is GlFloatArray -> setFloatArrayValues(value.backingArray)
 
-                is GlSize -> GLES20.glUniform2fv(location, 1, value.vec2, 0)
-                is GlSizeF -> GLES20.glUniform2fv(location, 1, value.vec2, 0)
+                is GlSize -> setFloatArrayValues(value.vec2)
+                is GlSizeF -> setFloatArrayValues(value.vec2)
 
                 is GlMat2 -> GLES20.glUniformMatrix2fv(location, 1, false, value.arr, 0)
                 is GlMat3 -> GLES20.glUniformMatrix3fv(location, 1, false, value.arr, 0)
                 is GlMat4 -> GLES20.glUniformMatrix4fv(location, 1, false, value.arr, 0)
 
-                is GlVec2 -> GLES20.glUniform2fv(location, 1, value.vec2, 0)
-                is GlVec3 -> GLES20.glUniform3fv(location, 1, value.vec3, 0)
-                is GlVec4 -> GLES20.glUniform4fv(location, 1, value.vec4, 0)
+                is GlVec2 -> setFloatArrayValues(value.vec2)
+                is GlVec3 -> setFloatArrayValues(value.vec3)
+                is GlVec4 -> setFloatArrayValues(value.vec4)
 
                 else -> throw IllegalArgumentException("Invalid value type: ${value::class.java}")
             }
@@ -89,7 +90,8 @@ open class GlUniformDelegate<T : Any>(
     private fun hash(value: Any): Int {
         when (value) {
             is Int,
-            is Float -> return value.hashCode()
+            is Float,
+            is Boolean -> return value.hashCode()
         }
         val array: FloatArray = when (value) {
             is FloatArray -> value

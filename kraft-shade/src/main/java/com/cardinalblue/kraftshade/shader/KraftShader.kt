@@ -28,8 +28,7 @@ abstract class KraftShader : SuspendAutoCloseable {
     private var glAttribPosition = 0
     protected var glAttribTextureCoordinate = 0
 
-    protected var resolution: GlSize by GlUniformDelegate("resolution", required = false)
-        private set
+    protected open var resolution: GlSize by GlUniformDelegate("resolution", required = false)
 
     open val debugName: String = this::class.simpleName ?: "Unknown"
 
