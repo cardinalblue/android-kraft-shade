@@ -7,9 +7,17 @@ import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
-abstract class TextureInputKraftShader : KraftShader() {
+abstract class TextureInputKraftShader(
+    samplerUniformName: String = "inputImageTexture",
+    sizeUniformName: String = "textureSize",
+) : KraftShader() {
     private val input = KraftShaderTextureInput(
-        0, "inputImageTexture", required = false)
+        textureIndex = 0,
+        samplerUniformName = samplerUniformName,
+        sizeUniformName = sizeUniformName,
+        required = false
+    )
+
     private var _inputTexture: Texture by input.textureDelegate
 
     open fun setInputTexture(texture: Texture) {

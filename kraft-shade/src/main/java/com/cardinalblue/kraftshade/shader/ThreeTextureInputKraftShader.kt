@@ -8,13 +8,23 @@ import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
 abstract class ThreeTextureInputKraftShader(
+    samplerUniformName: String = "inputImageTexture",
+    sizeUniformName: String = "textureSize",
     secondTextureSampleName: String = "inputImageTexture2",
+    secondTextureSizeUniformName: String = "textureSize2",
     thirdTextureSampleName: String = "inputImageTexture3",
+    thirdTextureSizeUniformName: String = "textureSize3",
 ) : TwoTextureInputKraftShader(
-    secondTextureSampleName = secondTextureSampleName
+    samplerUniformName = samplerUniformName,
+    sizeUniformName = sizeUniformName,
+    secondTextureSampleName = secondTextureSampleName,
+    secondTextureSizeUniformName = secondTextureSizeUniformName,
 ) {
     private val thirdInput = KraftShaderTextureInput(
-        2, thirdTextureSampleName)
+        textureIndex = 2,
+        samplerUniformName = thirdTextureSampleName,
+        sizeUniformName = thirdTextureSizeUniformName,
+    )
 
     private var _thirdInputTexture: Texture by thirdInput.textureDelegate
 
