@@ -7,6 +7,7 @@ import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
 import androidx.annotation.MainThread
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
+import com.cardinalblue.kraftshade.pipeline.AnimatedEffectExecutionProvider
 import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.pipeline.input.TimeInput
@@ -14,9 +15,7 @@ import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.withContext
 
 /**
  * A specialized [KraftTextureView] that provides animation capabilities using Android's Choreographer
@@ -60,19 +59,19 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
 
     fun setEffectWithTimeInput(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> Unit = { _, _ -> },
-        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution
+        effectExecutionProvider: AnimatedEffectExecutionProvider
     ) {
         setEffect(
-            effectExecutionProvider = {
-                effectExecutionProvider(this, it, timeInput)
+            effectExecutionProvider = { windowSurface ->
+                with(effectExecutionProvider) {
+                    provide(windowSurface, timeInput)
+                }
             },
             afterSet = { afterSet(this, it, timeInput) },
         )
     }
 
-    fun setEffectAndPlay(
-        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution,
-    ) {
+    fun setEffectAndPlay(effectExecutionProvider: AnimatedEffectExecutionProvider) {
         setEffectWithTimeInput(
             afterSet = { _, _ ->
                 play()
@@ -81,9 +80,7 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
         )
     }
 
-    fun setEffectAndPause(
-        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer, timeInput: TimeInput) -> EffectExecution,
-    ) {
+    fun setEffectAndPause(effectExecutionProvider: AnimatedEffectExecutionProvider) {
         setEffectWithTimeInput(
             afterSet = { _, _ ->
                 stop()

@@ -16,6 +16,16 @@ abstract class PipelineModifierWithInputTexture {
             addStep(inputTexture, graphTargetBuffer)
         }
     }
+
+    fun asEffectExecutionProvider(
+        inputTexture: TextureProvider,
+    ): EffectExecutionProvider = EffectExecutionProvider { targetBuffer ->
+        pipeline(targetBuffer.provideBuffer()) {
+            graphSteps(targetBuffer) {
+                addStep(inputTexture, graphTargetBuffer)
+            }
+        }
+    }
 }
 
 abstract class PipelineModifierWithoutInputTexture {
@@ -25,6 +35,15 @@ abstract class PipelineModifierWithoutInputTexture {
     suspend fun SerialTextureInputPipelineScope.addStep() {
         graphStep {
             addStep(graphTargetBuffer)
+        }
+    }
+
+    fun asEffectExecutionProvider(
+    ): EffectExecutionProvider = EffectExecutionProvider { targetBuffer ->
+        pipeline(targetBuffer.provideBuffer()) {
+            graphSteps(targetBuffer) {
+                addStep(graphTargetBuffer)
+            }
         }
     }
 }

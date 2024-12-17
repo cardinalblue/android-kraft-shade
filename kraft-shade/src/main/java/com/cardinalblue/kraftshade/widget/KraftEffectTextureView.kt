@@ -7,11 +7,14 @@ import android.util.AttributeSet
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.EffectExecution
+import com.cardinalblue.kraftshade.pipeline.EffectExecutionProvider
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.sample
 import kotlin.time.Duration.Companion.seconds
 
 open class KraftEffectTextureView : KraftTextureView {
@@ -58,10 +61,12 @@ open class KraftEffectTextureView : KraftTextureView {
 
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = {},
-        effectExecutionProvider: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> EffectExecution
+        effectExecutionProvider: EffectExecutionProvider
     ) {
         runGlTask { windowSurface ->
-            val effect = effectExecutionProvider.invoke(this, windowSurface)
+            val effect = with(effectExecutionProvider) {
+                provide(windowSurface)
+            }
             this@KraftEffectTextureView.effectExecution = effect
             afterSet(this, windowSurface)
         }

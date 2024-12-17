@@ -26,40 +26,26 @@ interface EffectExecution {
     suspend fun onBufferSizeChanged(size: GlSize)
 }
 
-typealias EffectExecutionProvider = suspend GlEnvDslScope.(glBuffer: GlBuffer) -> EffectExecution
-typealias AnimatedEffectExecutionProvider = suspend GlEnvDslScope.(glBuffer: GlBuffer, timeInput: Input<Float>) -> EffectExecution
-
-typealias PipelineModifier = suspend GraphPipelineSetupScope.() -> Unit
-typealias PipelineModifierWithTimeInput = suspend GraphPipelineSetupScope.(timeInput: Input<Float>) -> Unit
-
-fun PipelineModifier.asEffectExecutionProvider(): EffectExecutionProvider = { targetBuffer ->
-    pipeline(targetBuffer.provideBuffer()) {
-        graphSteps(targetBuffer) {
-            this@asEffectExecutionProvider()
-        }
-    }
+fun interface EffectExecutionProvider {
+    suspend fun GlEnvDslScope.provide(glBuffer: GlBuffer): EffectExecution
 }
 
-fun PipelineModifierWithTimeInput.asEffectExecutionProvider(): AnimatedEffectExecutionProvider = { targetBuffer, timeInput ->
-    pipeline(targetBuffer.provideBuffer()) {
-        graphSteps(targetBuffer) {
-            this@asEffectExecutionProvider(timeInput)
-        }
+fun interface AnimatedEffectExecutionProvider {
+    suspend fun GlEnvDslScope.provide(glBuffer: GlBuffer, timeInput: Input<Float>): EffectExecution
+
+    fun withTime(time: Float): EffectExecutionProvider = EffectExecutionProvider { glBuffer ->
+        provide(glBuffer, constInput(time))
     }
 }
 
 fun createEffectExecutionProviderWithPipeline(
-    pipelineModifier: PipelineModifier
-): EffectExecutionProvider {
-    return pipelineModifier.asEffectExecutionProvider()
+    block: suspend GraphPipelineSetupScope.() -> Unit = {}
+) = EffectExecutionProvider { targetBuffer ->
+    pipeline(targetBuffer) { block() }
 }
 
 fun createAnimatedEffectExecutionProviderWithPipeline(
-    pipelineModifier: PipelineModifierWithTimeInput
-): AnimatedEffectExecutionProvider {
-    return pipelineModifier.asEffectExecutionProvider()
-}
-
-fun AnimatedEffectExecutionProvider.withTime(time: Float): EffectExecutionProvider = { targetBuffer ->
-    this@withTime(targetBuffer, constInput(time))
+    block: suspend GraphPipelineSetupScope.(timeInput: Input<Float>) -> Unit = {},
+) = AnimatedEffectExecutionProvider { targetBuffer, timeInput ->
+    pipeline(targetBuffer) { block(timeInput) }
 }

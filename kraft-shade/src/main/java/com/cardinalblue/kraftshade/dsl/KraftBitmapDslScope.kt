@@ -68,7 +68,9 @@ suspend fun kraftBitmapFrom(
 ): Bitmap {
     return GlEnv(context).use {
         val targetBuffer = TextureBuffer(inputSize)
-        effectExecutionProvider(this, targetBuffer).run()
+        with(effectExecutionProvider) {
+            provide(targetBuffer)
+        }.run()
         targetBuffer.getBitmap()
     }
 }
