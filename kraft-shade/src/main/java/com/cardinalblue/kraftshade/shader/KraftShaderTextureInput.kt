@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.shader
 
 import android.opengl.GLES20
+import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import kotlin.properties.ReadWriteProperty
@@ -12,6 +13,7 @@ import kotlin.properties.ReadWriteProperty
 class KraftShaderTextureInput(
     val textureIndex: Int,
     samplerUniformName: String = "inputImageTexture${textureIndex + 1}",
+    sizeUniformName: String = "textureSize${textureIndex + 1}",
     required: Boolean = true,
 ) {
     fun activate(shader: KraftShader) {
@@ -21,11 +23,13 @@ class KraftShaderTextureInput(
         val texture = textureDelegate.getValue(shader, this::textureDelegate)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.textureId)
         textureSamplerDelegate.setValue(shader, this::textureSamplerDelegate, textureIndex)
+        textureSizeDelegate.setValue(shader, this::textureSizeDelegate, texture.size)
     }
 
     val textureDelegate: ReadWriteProperty<KraftShader, Texture> = TextureDelegate()
 
     private val textureSamplerDelegate = GlUniformDelegate<Int>(name = samplerUniformName, required = required)
+    private val textureSizeDelegate = GlUniformDelegate<GlSize>(name = sizeUniformName, required = false)
 
     private fun mappedTextureIndex(): Int {
         return when(textureIndex) {
