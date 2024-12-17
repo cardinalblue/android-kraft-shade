@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
-import com.cardinalblue.kraftshade.dsl.kraftBitmapFrom
+import com.cardinalblue.kraftshade.dsl.kraftBitmap
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ContrastKraftShader
 
@@ -30,7 +30,7 @@ fun KraftBitmapTestScreen() {
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         val inputBitmap = context.loadBitmapFromAsset("sample/cat.jpg")
-        bitmap = kraftBitmapFrom(context, inputBitmap) { // compare to GPUImage
+        bitmap = kraftBitmap(context, inputBitmap) { // compare to GPUImage
             // compare to GPUImageFilterGroup
             serialPipeline {
                 addShader { ContrastKraftShader(4f) }
