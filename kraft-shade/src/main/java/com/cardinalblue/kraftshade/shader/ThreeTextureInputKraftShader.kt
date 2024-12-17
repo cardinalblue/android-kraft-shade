@@ -16,7 +16,7 @@ abstract class ThreeTextureInputKraftShader(
     private val thirdInput = KraftShaderTextureInput(
         2, thirdTextureSampleName)
 
-    private var thirdInputTextureId: Int by thirdInput.textureIdDelegate
+    private var _thirdInputTexture: Texture by thirdInput.textureDelegate
 
     var texture3TransformMatrix: GlMat4 by GlUniformDelegate("texture3TransformMatrix", required = false)
 
@@ -27,7 +27,7 @@ abstract class ThreeTextureInputKraftShader(
     }
 
     open fun setThirdInputTexture(texture: Texture) {
-        this.thirdInputTextureId = texture.textureId
+        this._thirdInputTexture = texture
     }
 
     fun setThirdInputTexture(texture: TextureProvider) {

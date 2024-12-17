@@ -10,10 +10,10 @@ import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 abstract class TextureInputKraftShader : KraftShader() {
     private val input = KraftShaderTextureInput(
         0, "inputImageTexture", required = false)
-    private var _inputTextureId: Int by input.textureIdDelegate
+    private var _inputTexture: Texture by input.textureDelegate
 
     open fun setInputTexture(texture: Texture) {
-        _inputTextureId = texture.textureId
+        _inputTexture = texture
     }
 
     fun setInputTexture(texture: TextureProvider) {
@@ -31,9 +31,6 @@ abstract class TextureInputKraftShader : KraftShader() {
 
     @CallSuper
     override fun beforeActualDraw() {
-        check(_inputTextureId != OpenGlUtils.NO_TEXTURE_ID) {
-            "input texture is not set for ${this::class.simpleName}"
-        }
         super.beforeActualDraw()
         input.activate()
     }

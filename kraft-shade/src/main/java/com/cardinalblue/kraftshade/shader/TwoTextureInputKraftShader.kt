@@ -17,7 +17,7 @@ abstract class TwoTextureInputKraftShader(
     private val secondInput = KraftShaderTextureInput(
         1, secondTextureSampleName, required = false)
 
-    private var secondInputTextureId: Int by secondInput.textureIdDelegate
+    private var _secondInputTexture: Texture by secondInput.textureDelegate
 
     var texture2TransformMatrix: GlMat4 by GlUniformDelegate("texture2TransformMatrix", required = false)
 
@@ -28,7 +28,7 @@ abstract class TwoTextureInputKraftShader(
     }
 
     open fun setSecondInputTexture(texture: Texture) {
-        this.secondInputTextureId = texture.textureId
+        this._secondInputTexture = texture
     }
 
     fun setSecondInputTexture(texture: TextureProvider) {

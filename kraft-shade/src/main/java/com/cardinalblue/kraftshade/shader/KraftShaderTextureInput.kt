@@ -1,7 +1,7 @@
 package com.cardinalblue.kraftshade.shader
 
 import android.opengl.GLES20
-import com.cardinalblue.kraftshade.OpenGlUtils
+import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import kotlin.properties.ReadWriteProperty
 
@@ -11,20 +11,21 @@ import kotlin.properties.ReadWriteProperty
  */
 class KraftShaderTextureInput(
     val textureIndex: Int,
-    samplerName: String,
+    samplerUniformName: String = "inputImageTexture${textureIndex + 1}",
     required: Boolean = true,
 ) {
     fun activate(shader: KraftShader) {
         GLES20.glActiveTexture(mappedTextureIndex())
         // we won't be able to get the real property, so just pass fake ones here.
         // They shouldn't be needed anyway.
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIdDelegate.getValue(shader, this::textureIdDelegate))
+        val texture = textureDelegate.getValue(shader, this::textureDelegate)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.textureId)
         textureSamplerDelegate.setValue(shader, this::textureSamplerDelegate, textureIndex)
     }
 
-    val textureIdDelegate: ReadWriteProperty<KraftShader, Int> = TextureIdDelegate()
+    val textureDelegate: ReadWriteProperty<KraftShader, Texture> = TextureDelegate()
 
-    private val textureSamplerDelegate = GlUniformDelegate<Int>(name = samplerName, required = required)
+    private val textureSamplerDelegate = GlUniformDelegate<Int>(name = samplerUniformName, required = required)
 
     private fun mappedTextureIndex(): Int {
         return when(textureIndex) {
@@ -65,17 +66,19 @@ class KraftShaderTextureInput(
     }
 }
 
-private class TextureIdDelegate : ReadWriteProperty<KraftShader, Int> {
-    private var textureId: Int = OpenGlUtils.NO_TEXTURE_ID
+private class TextureDelegate(
+    private val required: Boolean = true,
+) : ReadWriteProperty<KraftShader, Texture> {
+    private var texture: Texture = Texture.Invalid
 
-    override fun getValue(thisRef: KraftShader, property: kotlin.reflect.KProperty<*>): Int {
-        return textureId
+    override fun getValue(thisRef: KraftShader, property: kotlin.reflect.KProperty<*>): Texture {
+        return texture
     }
 
-    override fun setValue(thisRef: KraftShader, property: kotlin.reflect.KProperty<*>, value: Int) {
-        require(value != OpenGlUtils.NO_TEXTURE_ID) {
-            "Invalid input texture is not loaded"
+    override fun setValue(thisRef: KraftShader, property: kotlin.reflect.KProperty<*>, value: Texture) {
+        require(!required || value.isValid()) {
+            "invalid input texture"
         }
-        textureId = value
+        texture = value
     }
 }
