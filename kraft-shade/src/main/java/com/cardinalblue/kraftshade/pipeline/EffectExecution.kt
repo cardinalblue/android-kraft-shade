@@ -7,8 +7,10 @@ import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
 import com.cardinalblue.kraftshade.pipeline.input.constInput
 import com.cardinalblue.kraftshade.shader.KraftShader
+import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
+import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
 /**
  * This is a common interface that represents an effect that can be drawn to a [GlBuffer].
@@ -48,4 +50,15 @@ fun createAnimatedEffectExecutionProviderWithPipeline(
     block: suspend GraphPipelineSetupScope.(timeInput: Input<Float>) -> Unit = {},
 ) = AnimatedEffectExecutionProvider { targetBuffer, timeInput ->
     pipeline(targetBuffer) { block(timeInput) }
+}
+
+fun TextureInputKraftShader.asEffectExecutionProvider(
+    inputTextureProvider: TextureProvider
+) = createEffectExecutionProviderWithPipeline {
+    step(
+        this@asEffectExecutionProvider,
+        targetBuffer = graphTargetBuffer
+    ) {
+        setInputTexture(inputTextureProvider)
+    }
 }

@@ -12,6 +12,17 @@ import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 
+suspend fun TextureInputKraftShader.apply(
+    context: Context,
+    inputBitmap: Bitmap,
+): Bitmap {
+    return kraftBitmap(context, inputBitmap) {
+        serialPipeline {
+            addShader { this@apply }
+        }
+    }
+}
+
 suspend fun kraftBitmap(
     context: Context,
     inputBitmap: Bitmap,
