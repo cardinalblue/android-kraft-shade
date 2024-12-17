@@ -2,6 +2,7 @@ package com.cardinalblue.kraftshade.shader.builtin.bypass
 
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
+import com.cardinalblue.kraftshade.shader.buffer.Texture
 import org.intellij.lang.annotations.Language
 
 /**
@@ -17,9 +18,9 @@ class BypassableTextureInputKraftShader<T : TextureInputKraftShader>(
 
     override val debugName: String get() = "${super.debugName}(${wrappedShader.debugName})"
 
-    override fun setInputTexture(textureId: Int) {
-        super.setInputTexture(textureId)
-        wrappedShader.setInputTexture(textureId)
+    override fun setInputTexture(texture: Texture) {
+        super.setInputTexture(texture)
+        wrappedShader.setInputTexture(texture)
     }
 
     override fun draw(bufferSize: GlSize, isScreenCoordinate: Boolean) {

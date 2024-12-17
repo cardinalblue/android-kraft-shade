@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.shader.builtin.bypass
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
+import com.cardinalblue.kraftshade.shader.buffer.Texture
 
 /**
  * TODO: temporary solution
@@ -15,27 +16,27 @@ class BypassableTwoTextureInputKraftShader<T : TwoTextureInputKraftShader>(
     var passTexture1: Boolean = true,
 ) : TwoTextureInputKraftShader() {
 
-    private var inputTexture1Id = OpenGlUtils.NO_TEXTURE_ID
-    private var inputTexture2Id = OpenGlUtils.NO_TEXTURE_ID
+    private var inputTexture1: Texture? = null
+    private var inputTexture2: Texture? = null
 
     override val debugName: String get() = "${super.debugName}(${wrappedShader.debugName})"
 
-    override fun setInputTexture(textureId: Int) {
-        wrappedShader.setInputTexture(textureId)
-        inputTexture1Id = textureId
+    override fun setInputTexture(texture: Texture) {
+        wrappedShader.setInputTexture(texture)
+        inputTexture1 = texture
     }
 
-    override fun setSecondInputTexture(textureId: Int) {
-        wrappedShader.setSecondInputTexture(textureId)
-        inputTexture2Id = textureId
+    override fun setSecondInputTexture(texture: Texture) {
+        wrappedShader.setSecondInputTexture(texture)
+        inputTexture2 = texture
     }
 
     override fun draw(bufferSize: GlSize, isScreenCoordinate: Boolean) {
         if (!bypass) {
             wrappedShader.draw(bufferSize, isScreenCoordinate)
         } else {
-            val inputTextureId = if (passTexture1) inputTexture1Id else inputTexture2Id
-            super.setInputTexture(inputTextureId)
+            val inputTexture = if (passTexture1) inputTexture1 else inputTexture2
+            super.setInputTexture(inputTexture ?: Texture.Invalid)
             super.draw(bufferSize, isScreenCoordinate)
         }
     }

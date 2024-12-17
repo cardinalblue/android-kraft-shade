@@ -13,10 +13,10 @@ abstract class ThreeTextureInputKraftShader(
 ) : TwoTextureInputKraftShader(
     secondTextureSampleName = secondTextureSampleName
 ) {
-    private val thirdTextureInput = KraftShaderTextureInput(
+    private val thirdInput = KraftShaderTextureInput(
         2, thirdTextureSampleName)
 
-    private var thirdInputTextureId: Int by thirdTextureInput.textureIdDelegate
+    private var thirdInputTextureId: Int by thirdInput.textureIdDelegate
 
     var texture3TransformMatrix: GlMat4 by GlUniformDelegate("texture3TransformMatrix", required = false)
 
@@ -26,16 +26,12 @@ abstract class ThreeTextureInputKraftShader(
         }
     }
 
-    open fun setThirdInputTexture(textureId: Int) {
-        this.thirdInputTextureId = textureId
-    }
-
-    fun setThirdInputTexture(texture: Texture) {
-        setThirdInputTexture(texture.textureId)
+    open fun setThirdInputTexture(texture: Texture) {
+        this.thirdInputTextureId = texture.textureId
     }
 
     fun setThirdInputTexture(texture: TextureProvider) {
-        setThirdInputTexture(texture.provideTexture().textureId)
+        setThirdInputTexture(texture.provideTexture())
     }
 
     override fun loadVertexShader(): String = THREE_TEXTURE_INPUT_VERTEX_SHADER
@@ -51,7 +47,7 @@ abstract class ThreeTextureInputKraftShader(
 
     override fun beforeActualDraw() {
         super.beforeActualDraw()
-        thirdTextureInput.activate()
+        thirdInput.activate()
     }
 
     fun updateTexture3TransformMatrix(block: GlMat4.() -> Unit) {

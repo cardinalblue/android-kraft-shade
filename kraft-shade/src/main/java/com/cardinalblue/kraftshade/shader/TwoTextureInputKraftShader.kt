@@ -14,10 +14,10 @@ abstract class TwoTextureInputKraftShader(
     /**
      * TODO change required back to true after removing [BypassableTwoTextureInputKraftShader].
      */
-    private val secondTextureInput = KraftShaderTextureInput(
+    private val secondInput = KraftShaderTextureInput(
         1, secondTextureSampleName, required = false)
 
-    private var secondInputTextureId: Int by secondTextureInput.textureIdDelegate
+    private var secondInputTextureId: Int by secondInput.textureIdDelegate
 
     var texture2TransformMatrix: GlMat4 by GlUniformDelegate("texture2TransformMatrix", required = false)
 
@@ -27,16 +27,12 @@ abstract class TwoTextureInputKraftShader(
         }
     }
 
-    open fun setSecondInputTexture(textureId: Int) {
-        this.secondInputTextureId = textureId
-    }
-
-    fun setSecondInputTexture(texture: Texture) {
-        setSecondInputTexture(texture.textureId)
+    open fun setSecondInputTexture(texture: Texture) {
+        this.secondInputTextureId = texture.textureId
     }
 
     fun setSecondInputTexture(texture: TextureProvider) {
-        setSecondInputTexture(texture.provideTexture().textureId)
+        setSecondInputTexture(texture.provideTexture())
     }
 
     override fun loadVertexShader(): String = TWO_TEXTURE_INPUT_VERTEX_SHADER
@@ -52,7 +48,7 @@ abstract class TwoTextureInputKraftShader(
 
     override fun beforeActualDraw() {
         super.beforeActualDraw()
-        secondTextureInput.activate()
+        secondInput.activate()
     }
 
     fun updateTexture2SamplingTransformMatrix(block: GlMat4.() -> Unit) {

@@ -10,34 +10,40 @@ import com.cardinalblue.kraftshade.withFrameBufferRestored
 import com.cardinalblue.kraftshade.withViewPortRestored
 import java.nio.IntBuffer
 
-abstract class Texture : SuspendAutoCloseable, TextureProvider {
+abstract class Texture private constructor(create: Boolean = true) : SuspendAutoCloseable, TextureProvider {
     var textureId: Int
         private set
 
     abstract val size: GlSize
 
     init {
-        val textures = intArrayOf(0)
-        GLES20.glGenTextures(1, textures, 0)
-        textureId = textures[0]
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId)
-        GLES20.glTexParameterf(
-            GLES20.GL_TEXTURE_2D,
-            GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR.toFloat()
-        )
-        GLES20.glTexParameterf(
-            GLES20.GL_TEXTURE_2D,
-            GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR.toFloat()
-        )
-        GLES20.glTexParameterf(
-            GLES20.GL_TEXTURE_2D,
-            GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE.toFloat()
-        )
-        GLES20.glTexParameterf(
-            GLES20.GL_TEXTURE_2D,
-            GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE.toFloat()
-        )
+        if (create) {
+            val textures = intArrayOf(0)
+            GLES20.glGenTextures(1, textures, 0)
+            textureId = textures[0]
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId)
+            GLES20.glTexParameterf(
+                GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR.toFloat()
+            )
+            GLES20.glTexParameterf(
+                GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR.toFloat()
+            )
+            GLES20.glTexParameterf(
+                GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE.toFloat()
+            )
+            GLES20.glTexParameterf(
+                GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE.toFloat()
+            )
+        } else {
+            textureId = OpenGlUtils.NO_TEXTURE_ID
+        }
     }
+
+    constructor() : this(true)
 
     fun isValid() = textureId != OpenGlUtils.NO_TEXTURE_ID
 
@@ -102,6 +108,21 @@ abstract class Texture : SuspendAutoCloseable, TextureProvider {
                 GLES20.glDeleteFramebuffers(1, frameBuffer, 0)
             }
         }
+    }
+
+    companion object {
+        val Invalid = object : Texture(false) {
+            override val size: GlSize get() = GlSize(0, 0)
+
+            override suspend fun delete() {
+                // Do nothing
+            }
+
+            override fun getBitmap(): Bitmap {
+                throw IllegalStateException("Invalid texture")
+            }
+        }
+
     }
 }
 
