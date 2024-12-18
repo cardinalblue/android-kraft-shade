@@ -302,7 +302,7 @@ pipeline(windowSurface) {
 - [ ] SubtractBlendKraftShader (GPUImageSubtractBlendFilter)
 
 #### Color Effects
-- [ ] FalseColorKraftShader (GPUImageFalseColorFilter)
+- [x] FalseColorKraftShader (GPUImageFalseColorFilter)
 - [ ] MonochromeKraftShader (GPUImageMonochromeFilter)
 - [ ] OpacityKraftShader (GPUImageOpacityFilter)
 - [ ] PosterizeKraftShader (GPUImagePosterizeFilter)
