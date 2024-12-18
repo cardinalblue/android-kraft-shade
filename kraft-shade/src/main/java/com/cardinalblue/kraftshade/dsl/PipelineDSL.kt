@@ -132,7 +132,7 @@ class GraphPipelineSetupScope(
      */
     suspend fun <S : TextureInputKraftShader> stepWithInputTexture(
         shader: S,
-        inputBufferReference: BufferReference,
+        inputTexture: TextureProvider,
         targetBuffer: GlBufferProvider,
         setupAction: suspend (S) -> Unit = {},
     ) {
@@ -140,7 +140,7 @@ class GraphPipelineSetupScope(
             shader,
             targetBuffer = targetBuffer,
             setupAction = { _shader ->
-                _shader.setInputTexture(inputBufferReference)
+                _shader.setInputTexture(inputTexture)
                 setupAction.invoke(_shader)
             },
         )
