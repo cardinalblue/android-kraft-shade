@@ -52,6 +52,11 @@ fun KraftShadeEffectViewTestWindow() {
     var highlightsB by remember { mutableFloatStateOf(0f) }
     var preserveLuminosity by remember { mutableStateOf(true) }
 
+    var colorAdjustmentExpanded by remember { mutableStateOf(true) }
+    var rgbControlsExpanded by remember { mutableStateOf(true) }
+    var colorBalanceExpanded by remember { mutableStateOf(true) }
+    var effectsExpanded by remember { mutableStateOf(true) }
+
     val context = LocalContext.current
 
     Column(
@@ -78,11 +83,6 @@ fun KraftShadeEffectViewTestWindow() {
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            var colorAdjustmentExpanded by remember { mutableStateOf(true) }
-            var rgbControlsExpanded by remember { mutableStateOf(true) }
-            var colorBalanceExpanded by remember { mutableStateOf(true) }
-            var effectsExpanded by remember { mutableStateOf(true) }
-
             CollapsibleSection(
                 title = "Color Adjustment",
                 expanded = colorAdjustmentExpanded,
@@ -316,8 +316,6 @@ fun KraftShadeEffectViewTestWindow() {
                     valueRange = 0f..1f
                 )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 

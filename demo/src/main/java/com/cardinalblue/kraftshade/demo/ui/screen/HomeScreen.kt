@@ -14,7 +14,10 @@ import androidx.navigation.NavHostController
 import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BasicShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BlendingExampleScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.dsl.KraftBitmapTestScreen
-import com.cardinalblue.kraftshade.demo.ui.screen.shaders.*
+import com.cardinalblue.kraftshade.demo.ui.screen.shaders.EmbossShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.shaders.LevelsShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.shaders.LookUpTableShaderTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.shaders.SaturationShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.*
 import com.cardinalblue.kraftshade.demo.util.LocalNavController

@@ -243,6 +243,7 @@ pipeline(windowSurface) {
 - [x] RGBKraftShader (GPUImageRGBFilter)
 - [x] ColorBalanceKraftShader (GPUImageColorBalanceFilter)
 - [x] LevelsKraftShader (GPUImageLevelsFilter)
+- [x] SolarizeKraftShader (GPUImageSolarizeFilter)
 
 ### Alpha & Transparency Effects
 - [x] HazeKraftShader (GPUImageHazeFilter)
@@ -307,7 +308,6 @@ pipeline(windowSurface) {
 - [ ] OpacityKraftShader (GPUImageOpacityFilter)
 - [ ] PosterizeKraftShader (GPUImagePosterizeFilter)
 - [ ] SepiaToneKraftShader (GPUImageSepiaToneFilter)
-- [ ] SolarizeKraftShader (GPUImageSolarizeFilter)
 - [ ] ToneCurveKraftShader (GPUImageToneCurveFilter)
 - [ ] VibranceKraftShader (GPUImageVibranceFilter)
 - [ ] VignetteKraftShader (GPUImageVignetteFilter)
