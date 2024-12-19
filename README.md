@@ -304,9 +304,9 @@ pipeline(windowSurface) {
 
 #### Color Effects
 - [x] FalseColorKraftShader (GPUImageFalseColorFilter)
-- [ ] MonochromeKraftShader (GPUImageMonochromeFilter)
-- [ ] OpacityKraftShader (GPUImageOpacityFilter)
-- [ ] PosterizeKraftShader (GPUImagePosterizeFilter)
+- [x] MonochromeKraftShader (GPUImageMonochromeFilter)
+- [x] OpacityKraftShader (GPUImageOpacityFilter)
+- [x] PosterizeKraftShader (GPUImagePosterizeFilter)
 - [ ] SepiaToneKraftShader (GPUImageSepiaToneFilter)
 - [ ] ToneCurveKraftShader (GPUImageToneCurveFilter)
 - [ ] VibranceKraftShader (GPUImageVibranceFilter)
