@@ -30,6 +30,7 @@ fun KraftShadeEffectViewTestWindow() {
     var pixelSize by remember { mutableFloatStateOf(1f) }
     var hue by remember { mutableFloatStateOf(0f) }
     var gamma by remember { mutableFloatStateOf(1.2f) }
+    var monochrome by remember { mutableFloatStateOf(0f) }
     var colorMatrixIntensity by remember { mutableFloatStateOf(0f) }
     var directionalSobelMixture by remember { mutableFloatStateOf(0f) }
     var laplacianMixture by remember { mutableFloatStateOf(0f) }
@@ -123,6 +124,15 @@ fun KraftShadeEffectViewTestWindow() {
                         state.requestRender()
                     },
                     valueRange = 0.5f..2f
+                )
+                ParameterSlider(
+                    label = "Monochrome",
+                    value = monochrome,
+                    onValueChange = {
+                        monochrome = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
                 )
             }
 
@@ -353,6 +363,10 @@ fun KraftShadeEffectViewTestWindow() {
 
                     step(GammaKraftShader()) { shader ->
                         shader.gamma = gamma
+                    }
+
+                    step(MonochromeKraftShader()) { shader ->
+                        shader.intensity = monochrome
                     }
 
                     step(
