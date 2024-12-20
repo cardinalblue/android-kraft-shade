@@ -5,7 +5,7 @@ import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import com.cardinalblue.kraftshade.model.GlMat4
 
-class ColorMatrixKraftShader(
+open class ColorMatrixKraftShader(
     intensity: Float = 1.0f,
     colorMatrix: GlMat4 = GlMat4(
         1.0f, 0.0f, 0.0f, 0.0f,
