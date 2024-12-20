@@ -43,3 +43,5 @@ fastlane/.env
 
 # bundle
 .bundle/config
+.aider*
+.env
