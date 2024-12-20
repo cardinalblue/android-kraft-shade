@@ -137,18 +137,12 @@ pipeline(windowSurface) {
         inputTexture = bitmap.asTexture(),
         targetBuffer = windowSurface,
     ) {
-        step(
-            SaturationKraftShader(),
-            sampledInput { saturation }
-        ) { (saturationInput) ->
-            this.saturation = saturationInput.cast()
+        step(SaturationKraftShader()) {
+            saturation = sampledInput { saturation }
         }
 
-        step(
-            HueKraftShader(),
-            sampledInput { hue }
-        ) { (hueInput) ->
-            setHueInDegree(hueInput.cast())
+        step(HueKraftShader()) {
+            setHueInDegree(sampledInput { hue })
         }
     }
 }
@@ -166,30 +160,26 @@ pipeline(windowSurface) {
     )
     step(
         Shader1(),
-        targetBuffer = step1Result,
-        input1
-    ) { (input1) ->
-        setParameter(input1.cast())
+        targetBuffer = step1Result
+    ) { shader ->
+        shader.setParameter(input1.get())
     }
 
     step(
         Shader2(),
-        targetBuffer = step2Result,
-        input2
-    ) { (input2) ->
-        setParameter(input2.cast())
+        targetBuffer = step2Result
+    ) { shader ->
+        shader.setParameter(input2.get())
     }
 
     step(
         BlendingShader().apply {
             mixRatio = 0.5f
         },
-        targetBuffer = blendResult,
-        step1Result.asTextureInput(),
-        step2Result.asTextureInput()
-    ) { (texture1, texture2) ->
-        setTexture1(texture1)
-        setTexture2(texture2)
+        targetBuffer = blendResult
+    ) { shader ->
+        shader.setTexture1(texture1)
+        shader.setTexture2(texture2)
     }
 }
 ```
@@ -201,7 +191,7 @@ pipeline(windowSurface) {
     serialSteps(
       ...
     ) {
-        graphStep() { inputTextureProvider ->
+        graphStep() { inputTexture ->
             // create buffer references for intermediate results
             // graph steps...
             // write to graphTargetBuffer which is just one of the ping-pong buffers from serialSteps scope that's provided through the child scope
@@ -370,10 +360,40 @@ Here's a simple example of using KraftShade with Jetpack Compose to create an im
 @Composable
 fun ImageEffectDemo() {
     val state = rememberKraftShadeEffectState()
+    
+    var aspectRatio by remember { mutableFloatStateOf(1f) }
+    var image by remember { mutableStateOf<Bitmap?>(null) }
+
     var saturation by remember { mutableFloatStateOf(1f) }
     var brightness by remember { mutableFloatStateOf(0f) }
-    var aspectRatio by remember { mutableFloatStateOf(1f) }
+
     val context = LocalContext.current
+
+    // Load image and set aspect ratio
+    LaunchedEffect(Unit) {
+        val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.sample_image)
+        image = bitmap
+        aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+    }
+
+    // Set effect
+    LaunchedEffect(Unit) {
+        state.setEffect { targetBuffer ->
+            pipeline(targetBuffer) {
+                serialSteps(
+                    inputTexture = sampledBitmapTextureProvider { image.value },
+                    targetBuffer = targetBuffer,
+                ) {
+                    step(SaturationKraftShader()) {
+                        saturation = sampledInput { saturation }
+                    }
+                    step(BrightnessKraftShader()) {
+                        brightness = sampledInput { brightness }
+                    }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -399,8 +419,17 @@ fun ImageEffectDemo() {
                 .padding(16.dp)
         ) {
             Slider(
+                value = brightness,
+                onValueChange = {
+                    brightness = it
+                    state.requestRender()
+                },
+                valueRange = 0f..1f
+            )
+
+            Slider(
                 value = saturation,
-                onValueChange = { 
+                onValueChange = {
                     saturation = it
                     state.requestRender()
                 },
