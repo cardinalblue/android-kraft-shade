@@ -290,6 +290,9 @@ pipeline(windowSurface) {
 ### Blur & Distortion
 - [x] CircularBlurKraftShader
 
+### Artistic Effects
+- [x] SharpenKraftShader (GPUImageSharpenFilter)
+
 ### Coming Soon
 
 #### Blend Modes
@@ -325,7 +328,6 @@ pipeline(windowSurface) {
 - [ ] HalftoneKraftShader (GPUImageHalftoneFilter)
 - [ ] KuwaharaKraftShader (GPUImageKuwaharaFilter)
 - [ ] RGBDilationKraftShader (GPUImageRGBDilationFilter)
-- [ ] SharpenKraftShader (GPUImageSharpenFilter)
 - [ ] SketchKraftShader (GPUImageSketchFilter)
 - [ ] SmoothToonKraftShader (GPUImageSmoothToonFilter)
 
