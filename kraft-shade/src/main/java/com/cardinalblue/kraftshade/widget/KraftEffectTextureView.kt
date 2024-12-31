@@ -12,9 +12,7 @@ import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.sample
+import kotlinx.coroutines.flow.*
 import kotlin.time.Duration.Companion.seconds
 
 open class KraftEffectTextureView : KraftTextureView {
@@ -55,8 +53,37 @@ open class KraftEffectTextureView : KraftTextureView {
         }
     }
 
+    var ratio = 0.0f
+        set(value) {
+            field = value
+            requestLayout()
+        }
+
     init {
         addWindowSurfaceBufferListener(sizeChangeListener)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        if (ratio != 0.0f) {
+            val width = MeasureSpec.getSize(widthMeasureSpec)
+            val height = MeasureSpec.getSize(heightMeasureSpec)
+
+            val newHeight: Int
+            val newWidth: Int
+            if (width / ratio < height) {
+                newWidth = width
+                newHeight = Math.round(width / ratio).toInt()
+            } else {
+                newHeight = height
+                newWidth = Math.round(height * ratio).toInt()
+            }
+
+            val newWidthSpec = MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY)
+            val newHeightSpec = MeasureSpec.makeMeasureSpec(newHeight, MeasureSpec.EXACTLY)
+            super.onMeasure(newWidthSpec, newHeightSpec)
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        }
     }
 
     fun setEffect(
