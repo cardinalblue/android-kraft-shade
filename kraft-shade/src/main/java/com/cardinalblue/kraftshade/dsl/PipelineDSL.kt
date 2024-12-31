@@ -31,13 +31,12 @@ sealed class BasePipelineSetupScope(
         purposeForDebug: String = "",
         block: suspend GlEnvDslScope.(runContext: Pipeline.PipelineRunContext) -> Unit
     ) {
-        val env = pipeline.glEnv
         RunTaskStep(
             stepIndex = pipeline.stepCount,
             purposeForDebug = purposeForDebug,
             runContext = pipeline.runContext,
             task = {
-                block(GlEnvDslScope(env), context)
+                block(GlEnvDslScope(this@BasePipelineSetupScope.pipeline.glEnv), context)
             },
         ).let(pipeline::addStep)
     }
