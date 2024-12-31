@@ -4,12 +4,8 @@ import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.*
 import com.cardinalblue.kraftshade.pipeline.input.Input
-import com.cardinalblue.kraftshade.shader.KraftShader
-import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
-import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
-import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
-import com.cardinalblue.kraftshade.shader.buffer.Texture
-import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
+import com.cardinalblue.kraftshade.shader.*
+import com.cardinalblue.kraftshade.shader.buffer.*
 import com.cardinalblue.kraftshade.shader.builtin.AlphaBlendKraftShader
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -35,12 +31,13 @@ sealed class BasePipelineSetupScope(
         purposeForDebug: String = "",
         block: suspend GlEnvDslScope.(runContext: Pipeline.PipelineRunContext) -> Unit
     ) {
+        val env = pipeline.glEnv
         RunTaskStep(
             stepIndex = pipeline.stepCount,
             purposeForDebug = purposeForDebug,
             runContext = pipeline.runContext,
             task = {
-                block(GlEnvDslScope(pipeline.glEnv), context)
+                block(GlEnvDslScope(env), context)
             },
         ).let(pipeline::addStep)
     }
