@@ -21,6 +21,7 @@ sealed class BasePipelineSetupScope(
 ) : GlEnvDslScope(env) {
     fun getPoolBufferSize(): GlSize = pipeline.bufferPool.bufferSize
 
+    @KraftShadeDsl
     suspend fun <T> withPipeline(block: suspend Pipeline.() -> T): T {
         return block(pipeline)
     }
@@ -285,7 +286,9 @@ class SerialTextureInputPipelineScope internal constructor(
     }
 
     internal suspend fun applyToPipeline() {
-        val stepIterator = steps.iterator()
+        check(!steps.isEmpty()) {
+            "serial steps should have at least one step"
+        }
 
         // this is ping pong buffer mechanism
         var drawToBuffer1 = true
@@ -294,10 +297,6 @@ class SerialTextureInputPipelineScope internal constructor(
             "$bufferReferencePrefix-ping",
             "$bufferReferencePrefix-pong",
         )
-
-        check(stepIterator.hasNext()) {
-            "serial steps should have at least one step"
-        }
 
         var isFirstShaderStep = true
         val lastShaderStep = steps.indexOfLast { it is InternalShaderStep }

@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.pipeline
 
+import com.cardinalblue.kraftshade.dsl.KraftShadeDsl
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
@@ -14,6 +15,7 @@ import com.cardinalblue.kraftshade.util.KraftLogger
  * This will be renamed to Pipeline later
  * Implementation will be added based on future instructions
  */
+@KraftShadeDsl
 class Pipeline internal constructor(
     internal val glEnv: GlEnv,
     internal val bufferPool: TextureBufferPool,
@@ -227,6 +229,7 @@ class Pipeline internal constructor(
     }
 }
 
+@KraftShadeDsl
 class PipelineRunningScope(
     private val pipeline: Pipeline
 ) {
