@@ -19,6 +19,10 @@ dependencyResolutionManagement {
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/cardinalblue/android-public-maven-packages")
+            credentials {
+                username = ""
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
