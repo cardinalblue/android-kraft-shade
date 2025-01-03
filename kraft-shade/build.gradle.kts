@@ -6,6 +6,8 @@ plugins {
     id("maven-publish")
 }
 
+val kraftShadeLibVersion = "0.2.0"
+
 android {
     namespace = "com.cardinalblue.kraftshade"
     compileSdk = 34
@@ -93,20 +95,10 @@ afterEvaluate {
             val packageGroupId = namespace.split(".").dropLast(1).joinToString(".")
             val packageArtifactId = namespace.split(".").last()
 
-            val envKey = "MAVEN_PACKAGE_VERSION"
-            val envVersion = System.getenv(envKey)
-            val packageVersion = if (envVersion != null && envVersion.isNotBlank()) {
-                envVersion
-            } else {
-                println("Environment variable $envKey is not set. Use default version 0.1.0 for publication.")
-                "0.1.0"
-            }
-
             create<MavenPublication>("release") {
                 groupId = packageGroupId
                 artifactId = packageArtifactId
-                version = packageVersion
-
+                version = kraftShadeLibVersion
                 from(components["release"])
             }
         }
