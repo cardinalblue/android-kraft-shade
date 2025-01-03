@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":kraft-shade-compose"))
+    implementation(libs.kraftshade.compose)
 
     // Jetpack
     implementation(libs.androidx.core.ktx)
