@@ -73,7 +73,7 @@ afterEvaluate {
         repositories {
             maven {
                 name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/cardinalblue/android-maven-packages")
+                url = uri("https://maven.pkg.github.com/cardinalblue/android-public-maven-packages")
 
                 credentials {
                     username = ""
