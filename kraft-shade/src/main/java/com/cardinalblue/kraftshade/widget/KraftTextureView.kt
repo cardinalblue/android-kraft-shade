@@ -55,12 +55,20 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                 } else {
                     logger.tryAndLog {
                         glEnv.execute {
+                            executePendingTasks(this@execute, windowSurface)
                             task(windowSurface)
                         }
                     }
                 }
             }
         }
+    }
+
+    private suspend fun executePendingTasks(scope: GlEnvDslScope, windowSurface: WindowSurfaceBuffer) {
+        if (taskAfterAttached.isEmpty()) return
+        logger.d("executing ${taskAfterAttached.size} tasks after buffer ready")
+        taskAfterAttached.forEach { it.invoke(scope, windowSurface) }
+        taskAfterAttached.clear()
     }
 
     private suspend fun suspendInit() {
@@ -122,9 +130,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                 if (taskAfterAttached.isEmpty()) return@withLock
                 logger.tryAndLog {
                     glEnv.execute {
-                        logger.d("executing ${taskAfterAttached.size} tasks after buffer ready")
-                        taskAfterAttached.forEach { it.invoke(this@execute, surface) }
-                        taskAfterAttached.clear()
+                        executePendingTasks(this@execute, surface)
                     }
                 }
             }
