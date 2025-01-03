@@ -49,7 +49,11 @@ android {
 }
 
 dependencies {
-    api(libs.kraftshade)
+    if (gradleLocalProperties(rootDir, providers).getProperty("library.build_with_submodule") == "true") {
+        api(project(":kraft-shade"))
+    } else {
+        api(libs.kraftshade)
+    }
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.ktx)
