@@ -1,8 +1,0 @@
-name: Publish Android Module to GitHub
-on:
-  workflow_dispatch:
-
-jobs:
-  publish:
-    name: Publish
-    uses: cardinalblue/github-actions/.github/workflows/publish-android-module-to-github.yaml@main
