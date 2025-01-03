@@ -89,9 +89,8 @@ afterEvaluate {
         }
 
         publications {
-            val namespace = android.namespace ?: throw IllegalStateException("namespace is not set")
-            val packageGroupId = namespace.split(".").dropLast(1).joinToString(".")
-            val packageArtifactId = namespace.split(".").last()
+            val packageGroupId = "com.cardinalblue"
+            val packageArtifactId = "kraftshade"
 
             val envKey = "MAVEN_PACKAGE_VERSION"
             val envVersion = System.getenv(envKey)
