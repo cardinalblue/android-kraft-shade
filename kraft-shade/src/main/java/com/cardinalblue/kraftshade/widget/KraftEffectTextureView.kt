@@ -36,16 +36,21 @@ open class KraftEffectTextureView : KraftTextureView {
 
     private val renderFlow = MutableSharedFlow<Unit>()
 
+    /**
+     * This field is a workaround. It seems GPUImage has such workaround too.
+     * Note that after the size of the surface has changed, we need to render it twice to make the
+     * size correct. Not sure if there is a better way to resolve the problem of deformation if we
+     * only render once.
+     */
+    private var renderTwiceForNextFrame = false
+
     private val sizeChangeListener = object : WindowSurfaceBuffer.Listener {
         override fun onWindowSurfaceBufferReady() {}
 
         override fun onWindowSurfaceBufferSizeChanged(size: GlSize) {
             runGlTask { windowSurface ->
-                windowSurface.beforeDraw()
-                GLES20.glClearColor(0f, 0f, 0f, 1f)
-                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-                windowSurface.afterDraw()
                 effectExecution?.onBufferSizeChanged(size)
+                renderTwiceForNextFrame = true
                 if (renderOnSizeChange) {
                     requestRender()
                 }
@@ -72,10 +77,10 @@ open class KraftEffectTextureView : KraftTextureView {
             val newWidth: Int
             if (width / ratio < height) {
                 newWidth = width
-                newHeight = Math.round(width / ratio).toInt()
+                newHeight = Math.round(width / ratio)
             } else {
                 newHeight = height
-                newWidth = Math.round(height * ratio).toInt()
+                newWidth = Math.round(height * ratio)
             }
 
             val newWidthSpec = MeasureSpec.makeMeasureSpec(newWidth, MeasureSpec.EXACTLY)
@@ -105,12 +110,19 @@ open class KraftEffectTextureView : KraftTextureView {
         }
     }
 
+    /**
+     * See the kdoc of [renderTwiceForNextFrame] for why we need to render twice.
+     */
     private fun asyncRender() {
         val effect = effectExecution ?: return
         job?.cancel()
-        job = runGlTask { windowSurface ->
+        job = runGlTask { _ ->
             logger.tryAndLog {
                 effect.run()
+                if (renderTwiceForNextFrame) {
+                    renderTwiceForNextFrame = false
+                    effect.run()
+                }
             }
         }
     }
