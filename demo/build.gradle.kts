@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -50,7 +52,11 @@ android {
 }
 
 dependencies {
-    implementation(libs.kraftshade.compose)
+    if (gradleLocalProperties(rootDir, providers).getProperty("library.build_with_submodule") == "true") {
+        implementation(project(":kraft-shade-compose"))
+    } else {
+        implementation(libs.kraftshade.compose)
+    }
 
     // Jetpack
     implementation(libs.androidx.core.ktx)
