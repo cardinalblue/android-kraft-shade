@@ -61,6 +61,7 @@ enum class Destination(
     val screen: @Composable () -> Unit,
 ) {
     Home("home", "Home", showInHomeScreen = false, screen = { HomeScreen() }),
+    ResizeTest("resize_test", "Resize Test", screen = { ResizeTestScreen() }),
     BasicShader("basic_shader", "Basic Shader", screen = { BasicShaderScreen() }),
     BlendingExample("blending_example", "Blending Example", screen = { BlendingExampleScreen() }),
     SaturationShader("saturation_shader", "Saturation Shader", screen = { SaturationShaderScreen() }),
