@@ -282,6 +282,7 @@ pipeline(windowSurface) {
 
 ### Artistic Effects
 - [x] SharpenKraftShader (GPUImageSharpenFilter)
+- [x] KuwaharaKraftShader (GPUImageKuwaharaFilter)
 
 ### Coming Soon
 
@@ -316,7 +317,6 @@ pipeline(windowSurface) {
 #### Artistic Effects
 - [ ] CGAColorspaceKraftShader (GPUImageCGAColorspaceFilter)
 - [ ] HalftoneKraftShader (GPUImageHalftoneFilter)
-- [ ] KuwaharaKraftShader (GPUImageKuwaharaFilter)
 - [ ] RGBDilationKraftShader (GPUImageRGBDilationFilter)
 - [ ] SketchKraftShader (GPUImageSketchFilter)
 - [ ] SmoothToonKraftShader (GPUImageSmoothToonFilter)
