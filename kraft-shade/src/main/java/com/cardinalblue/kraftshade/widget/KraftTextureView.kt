@@ -80,6 +80,13 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                         listener = this@KraftTextureView,
                     ).also { windowSurface ->
                         surfaceTextureListener = windowSurface.surfaceTextureListener
+                        // if the onSurfaceTextureAvailable is already emitted, we have to emit it
+                        // on our own.
+                        val surfaceTexture = surfaceTexture
+                        if (isAvailable && surfaceTexture != null) {
+                            windowSurface.surfaceTextureListener.onSurfaceTextureAvailable(
+                                surfaceTexture, width, height)
+                        }
                     }
                     windowSurface = surface
                 }
