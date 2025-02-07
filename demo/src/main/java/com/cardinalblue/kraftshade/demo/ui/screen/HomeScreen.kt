@@ -76,7 +76,6 @@ enum class Destination(
     CircularBlurPerformance("circular_blur_performance", "Circular Blur Performance", screen = { CircularBlurPerformanceTestWindow() }),
     CircularBlur("circular_blur", "Circular Blur", screen = { CircularBlurTestWindow() }),
     ToonEffect("toon_effect", "Toon Effect", screen = { ToonEffectTestWindow() }),
-    KuwaharaEffect("kuwahara_effect", "Kuwahara Effect", screen = { KuwaharaTestWindow() }),
     ErosionDilationShaderTest("erosion_dilation_shader_test", "Erosion/Dilation Shader Test", screen = { ErosionDilationTestScreen() }),
     LevelsShader("levels_shader", "Levels Shader", screen = { LevelsShaderScreen() }),
     FalseColorShader("false_color_shader", "False Color Shader", screen = { FalseColorShaderScreen() }),
