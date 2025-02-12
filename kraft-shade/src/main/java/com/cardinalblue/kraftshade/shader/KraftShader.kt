@@ -25,7 +25,7 @@ abstract class KraftShader : SuspendAutoCloseable {
 
     var glProgId = 0
         private set
-    private var glAttribPosition = 0
+    protected var glAttribPosition = 0
     protected var glAttribTextureCoordinate = 0
 
     protected open var resolution: GlSize by GlUniformDelegate("resolution", required = false)
@@ -128,8 +128,7 @@ abstract class KraftShader : SuspendAutoCloseable {
             OpenGlUtils.glTextureBuffer
         )
     }
-
-    fun actualDraw(isScreenCoordinate: Boolean) {
+    open fun actualDraw(isScreenCoordinate: Boolean) {
         val cubeBuffer = if (isScreenCoordinate) {
             OpenGlUtils.glVerticallyFlippedCubeBuffer
         } else {
