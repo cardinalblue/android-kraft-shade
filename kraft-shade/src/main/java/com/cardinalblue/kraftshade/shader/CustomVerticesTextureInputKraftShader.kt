@@ -7,7 +7,7 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 
-abstract  class CustomVerticesTwoTextureInputKraftShader(): TwoTextureInputKraftShader() {
+abstract  class CustomVerticesTextureInputKraftShader: TextureInputKraftShader() {
     private lateinit var verticesBuffer: FloatBuffer
     private lateinit var textureCoordinatesBuffer: FloatBuffer
     private lateinit var indicesBuffer: ShortBuffer
