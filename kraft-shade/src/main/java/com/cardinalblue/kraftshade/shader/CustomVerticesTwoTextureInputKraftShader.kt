@@ -13,15 +13,15 @@ abstract  class CustomVerticesTwoTextureInputKraftShader(): TwoTextureInputKraft
     private lateinit var indicesBuffer: ShortBuffer
     private var numberOfIndices: Int = 0
 
-    fun setVerticesBuffer(vertices: FloatArray) {
+    protected fun setVerticesBuffer(vertices: FloatArray) {
         verticesBuffer = vertices.asFloatBuffer()
     }
 
-    fun setTextureCoordinatesBuffer(textureCoordinates: FloatArray) {
+    protected fun setTextureCoordinatesBuffer(textureCoordinates: FloatArray) {
         textureCoordinatesBuffer = textureCoordinates.asFloatBuffer()
     }
 
-    fun setIndicesBuffer(indices: ShortArray) {
+    protected fun setIndicesBuffer(indices: ShortArray) {
         numberOfIndices = indices.size
         indicesBuffer = ByteBuffer
             .allocateDirect(indices.size * Short.SIZE_BYTES)
@@ -29,10 +29,6 @@ abstract  class CustomVerticesTwoTextureInputKraftShader(): TwoTextureInputKraft
             .asShortBuffer()
             .put(indices)
             .apply { position(0) }
-    }
-
-    override fun init() {
-        super.init()
     }
 
     override fun beforeActualDraw() {
