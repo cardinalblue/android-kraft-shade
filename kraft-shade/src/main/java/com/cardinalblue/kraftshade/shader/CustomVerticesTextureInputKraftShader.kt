@@ -31,8 +31,8 @@ abstract  class CustomVerticesTextureInputKraftShader: TextureInputKraftShader()
             .apply { position(0) }
     }
 
-    override fun beforeActualDraw() {
-        super.beforeActualDraw()
+    override fun beforeActualDraw(isScreenCoordinate: Boolean) {
+        super.beforeActualDraw(isScreenCoordinate)
 
         // set the custom texture coordinates
         GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)
