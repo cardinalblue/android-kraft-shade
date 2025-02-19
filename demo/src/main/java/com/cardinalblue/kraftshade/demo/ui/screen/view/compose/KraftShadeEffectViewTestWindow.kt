@@ -16,6 +16,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.Collap
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.model.GlMat4
+import com.cardinalblue.kraftshade.model.GlVec2
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.*
@@ -52,11 +53,16 @@ fun KraftShadeEffectViewTestWindow() {
     var highlightsG by remember { mutableFloatStateOf(0f) }
     var highlightsB by remember { mutableFloatStateOf(0f) }
     var preserveLuminosity by remember { mutableStateOf(true) }
+    var swirlRadius by remember { mutableFloatStateOf(0f) }
+    var swirlAngle by remember { mutableFloatStateOf(1.0f) }
+    var swirlCenterX by remember { mutableFloatStateOf(0.5f) }
+    var swirlCenterY by remember { mutableFloatStateOf(0.5f) }
 
-    var colorAdjustmentExpanded by remember { mutableStateOf(true) }
-    var rgbControlsExpanded by remember { mutableStateOf(true) }
-    var colorBalanceExpanded by remember { mutableStateOf(true) }
-    var effectsExpanded by remember { mutableStateOf(true) }
+    var colorAdjustmentExpanded by remember { mutableStateOf(false) }
+    var rgbControlsExpanded by remember { mutableStateOf(false) }
+    var colorBalanceExpanded by remember { mutableStateOf(false) }
+    var effectsExpanded by remember { mutableStateOf(false) }
+    var swirlExpanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -326,6 +332,51 @@ fun KraftShadeEffectViewTestWindow() {
                     valueRange = 0f..1f
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            CollapsibleSection(
+                title = "Swirl",
+                expanded = swirlExpanded,
+                onExpandedChange = { swirlExpanded = it }
+            ) {
+                ParameterSlider(
+                    label = "Radius",
+                    value = swirlRadius,
+                    onValueChange = {
+                        swirlRadius = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
+                )
+                ParameterSlider(
+                    label = "Angle",
+                    value = swirlAngle,
+                    onValueChange = {
+                        swirlAngle = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..2f
+                )
+                ParameterSlider(
+                    label = "Center X",
+                    value = swirlCenterX,
+                    onValueChange = {
+                        swirlCenterX = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
+                )
+                ParameterSlider(
+                    label = "Center Y",
+                    value = swirlCenterY,
+                    onValueChange = {
+                        swirlCenterY = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
+                )
+            }
         }
     }
 
@@ -417,6 +468,12 @@ fun KraftShadeEffectViewTestWindow() {
                         shader.midtones = floatArrayOf(midtonesR, midtonesG, midtonesB)
                         shader.highlights = floatArrayOf(highlightsR, highlightsG, highlightsB)
                         shader.preserveLuminosity = preserveLuminosity
+                    }
+
+                    step(SwirlKraftShader()) { shader ->
+                        shader.radius = swirlRadius
+                        shader.angle = swirlAngle
+                        shader.center = GlVec2(swirlCenterX, swirlCenterY)
                     }
                 }
             }

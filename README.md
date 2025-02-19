@@ -279,6 +279,14 @@ pipeline(windowSurface) {
 
 ### Blur & Distortion
 - [x] CircularBlurKraftShader
+- [ ] BilateralBlurKraftShader (GPUImageBilateralBlurFilter)
+- [ ] BoxBlurKraftShader (GPUImageBoxBlurFilter)
+- [ ] BulgeDistortionKraftShader (GPUImageBulgeDistortionFilter)
+- [ ] GaussianBlurKraftShader (GPUImageGaussianBlurFilter)
+- [ ] GlassSphereKraftShader (GPUImageGlassSphereFilter)
+- [ ] SphereRefractionKraftShader (GPUImageSphereRefractionFilter)
+- [x] SwirlKraftShader (GPUImageSwirlFilter)
+- [ ] ZoomBlurKraftShader (GPUImageZoomBlurFilter)
 
 ### Artistic Effects
 - [x] SharpenKraftShader (GPUImageSharpenFilter)
@@ -311,7 +319,6 @@ pipeline(windowSurface) {
 - [ ] GaussianBlurKraftShader (GPUImageGaussianBlurFilter)
 - [ ] GlassSphereKraftShader (GPUImageGlassSphereFilter)
 - [ ] SphereRefractionKraftShader (GPUImageSphereRefractionFilter)
-- [ ] SwirlKraftShader (GPUImageSwirlFilter)
 - [ ] ZoomBlurKraftShader (GPUImageZoomBlurFilter)
 
 #### Artistic Effects
