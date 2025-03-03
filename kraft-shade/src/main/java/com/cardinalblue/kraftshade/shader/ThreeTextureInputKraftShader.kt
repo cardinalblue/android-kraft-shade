@@ -55,8 +55,8 @@ abstract class ThreeTextureInputKraftShader(
         super.drawWithInput(texture1, texture2, size, isScreenCoordinate)
     }
 
-    override fun beforeActualDraw() {
-        super.beforeActualDraw()
+    override fun beforeActualDraw(isScreenCoordinate: Boolean) {
+        super.beforeActualDraw(isScreenCoordinate)
         thirdInput.activate()
     }
 

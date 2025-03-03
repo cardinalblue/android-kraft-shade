@@ -7,7 +7,7 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
 
-abstract  class CustomVerticesTextureInputKraftShader(): TextureInputKraftShader() {
+abstract class CustomVerticesTextureInputKraftShader(): TextureInputKraftShader() {
     private lateinit var verticesBuffer: FloatBuffer
     private lateinit var textureCoordinatesBuffer: FloatBuffer
     private lateinit var indicesBuffer: ShortBuffer
@@ -31,8 +31,8 @@ abstract  class CustomVerticesTextureInputKraftShader(): TextureInputKraftShader
             .apply { position(0) }
     }
 
-    override fun beforeActualDraw() {
-        super.beforeActualDraw()
+    override fun beforeActualDraw(isScreenCoordinate: Boolean) {
+        super.beforeActualDraw(isScreenCoordinate)
 
         // set the custom texture coordinates
         GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)

@@ -38,8 +38,8 @@ abstract class TextureInputKraftShader(
     }
 
     @CallSuper
-    override fun beforeActualDraw() {
-        super.beforeActualDraw()
+    override fun beforeActualDraw(isScreenCoordinate: Boolean) {
+        super.beforeActualDraw(isScreenCoordinate)
         input.activate()
     }
 

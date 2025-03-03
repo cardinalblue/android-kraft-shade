@@ -93,7 +93,7 @@ abstract class KraftShader : SuspendAutoCloseable {
         resolution = bufferSize
         // resolution is now ready for read, so we can calculate the texel size in here
         updateTexelSize()
-        beforeActualDraw()
+        beforeActualDraw(isScreenCoordinate)
         runPendingOnDrawTasks()
         actualDraw(isScreenCoordinate)
         afterActualDraw()
@@ -112,7 +112,7 @@ abstract class KraftShader : SuspendAutoCloseable {
      * Setup the texture in this method
      */
     @CallSuper
-    open fun beforeActualDraw() {
+    open fun beforeActualDraw(isScreenCoordinate: Boolean) {
         if (clearColorBeforeDraw) {
             GLES20.glClearColor(0f, 0f, 0f, 0f)
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)

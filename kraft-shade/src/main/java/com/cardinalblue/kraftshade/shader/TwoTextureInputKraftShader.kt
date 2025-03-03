@@ -53,8 +53,8 @@ abstract class TwoTextureInputKraftShader(
         super.drawWithInput(texture1, size, isScreenCoordinate)
     }
 
-    override fun beforeActualDraw() {
-        super.beforeActualDraw()
+    override fun beforeActualDraw(isScreenCoordinate: Boolean) {
+        super.beforeActualDraw(isScreenCoordinate)
         secondInput.activate()
     }
 
