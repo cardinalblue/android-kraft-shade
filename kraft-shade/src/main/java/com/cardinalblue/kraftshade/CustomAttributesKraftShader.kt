@@ -24,9 +24,6 @@ interface CustomAttributesKraftShaderInterface {
 
     fun setupAttributes(programId: Int) {
         for (attribName in attributeNames) {
-            val size = IntArray(1)
-            val type = IntArray(1)
-
             val attribLocation = GLES20.glGetAttribLocation(programId, attribName)
             attributeLocationsMap[attribName] = attribLocation
         }
@@ -36,7 +33,7 @@ interface CustomAttributesKraftShaderInterface {
         verticesBuffer = vertices.asFloatBuffer()
     }
 
-    fun setTextureCoordinatesBuffer(textureCoordinates: FloatArray ) {
+    fun setTextureCoordinatesBuffer(textureCoordinates: FloatArray) {
         textureCoordinatesBuffer = textureCoordinates.asFloatBuffer()
     }
 
@@ -59,7 +56,6 @@ interface CustomAttributesKraftShaderInterface {
     fun passCustomAttributes(glAttribTextureCoordinate: Int) {
         // set the custom texture coordinates
         GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)
-        if (textureCoordinatesBuffer == null) { return }
         GLES20.glVertexAttribPointer(
             glAttribTextureCoordinate,
             2,
