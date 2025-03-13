@@ -12,11 +12,11 @@ abstract  class CustomVerticesTextureInputKraftShader: TextureInputKraftShader()
     private lateinit var textureCoordinatesBuffer: FloatBuffer
     private lateinit var indicesBuffer: ShortBuffer
     private var numberOfIndices: Int = 0
-    private var verticesSize: Int = 3
+    private var vertexDimensionSize: Int = 3
 
-    protected fun setVerticesBuffer(vertices: FloatArray, verticesSize: Int = 3) {
+    protected fun setVerticesBuffer(vertices: FloatArray, vertexDimensionSize: Int = 3) {
         verticesBuffer = vertices.asFloatBuffer()
-        this.verticesSize = verticesSize
+        this.vertexDimensionSize = vertexDimensionSize
     }
 
     protected fun setTextureCoordinatesBuffer(textureCoordinates: FloatArray) {
@@ -52,7 +52,7 @@ abstract  class CustomVerticesTextureInputKraftShader: TextureInputKraftShader()
         GLES20.glEnableVertexAttribArray(glAttribPosition)
         GLES20.glVertexAttribPointer(
             glAttribPosition,
-            verticesSize,
+            vertexDimensionSize,
             GLES20.GL_FLOAT,
             false,
             0,
