@@ -10,14 +10,14 @@ abstract class TextureInputKraftShader(
     samplerUniformName: String = "inputImageTexture",
     sizeUniformName: String = "textureSize",
 ) : KraftShader() {
-    private val input = KraftShaderTextureInput(
+    protected val input = KraftShaderTextureInput(
         textureIndex = 0,
         samplerUniformName = samplerUniformName,
         sizeUniformName = sizeUniformName,
         required = false
     )
 
-    private var _inputTexture: Texture by input.textureDelegate
+    protected var _inputTexture: Texture by input.textureDelegate
 
     open fun setInputTexture(texture: Texture) {
         _inputTexture = texture
