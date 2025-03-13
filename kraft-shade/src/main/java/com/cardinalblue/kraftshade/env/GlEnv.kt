@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.env
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLES20
+import android.opengl.GLES30
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
@@ -110,8 +111,8 @@ class GlEnv(
 
     init {
         post {
-            GLES20.glEnable(GLES20.GL_BLEND)
-            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+            GLES30.glBlendEquation(GLES30.GL_MAX)
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
         }
     }
 
