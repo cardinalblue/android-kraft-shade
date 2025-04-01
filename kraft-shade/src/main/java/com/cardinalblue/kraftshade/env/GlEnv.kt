@@ -111,8 +111,8 @@ class GlEnv(
 
     init {
         post {
-            GLES20.glEnable(GLES20.GL_BLEND)
-            GLES30.glBlendEquation(GLES30.GL_MAX)
+            GLES30.glEnable(GLES30.GL_BLEND)
+            GLES30.glBlendEquation(GLES30.GL_FUNC_ADD)
             GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
         }
     }
