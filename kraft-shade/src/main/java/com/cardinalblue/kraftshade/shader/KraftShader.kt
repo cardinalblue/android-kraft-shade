@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.shader
 
 import android.opengl.GLES20
+import android.opengl.GLES30
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
@@ -191,6 +192,11 @@ abstract class KraftShader : SuspendAutoCloseable {
             }
             runOnDraw.add(key to task)
         }
+    }
+
+    protected fun resetBlendEquation() {
+        GLES30.glBlendEquation(GLES30.GL_FUNC_ADD)
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     fun destroy() {
