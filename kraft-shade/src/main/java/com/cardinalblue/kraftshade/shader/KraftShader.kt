@@ -6,6 +6,7 @@ import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.model.GlSizeF
+import com.cardinalblue.kraftshade.resource.KraftResource
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.builtin.KraftShaderWithTexelSize
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
@@ -16,7 +17,7 @@ import java.util.LinkedList
 
 typealias GlTask = () -> Unit
 
-abstract class KraftShader : SuspendAutoCloseable {
+abstract class KraftShader : SuspendAutoCloseable, KraftResource {
     var debug: Boolean = false
     var clearColorBeforeDraw: Boolean = true
 
@@ -204,6 +205,11 @@ abstract class KraftShader : SuspendAutoCloseable {
         logger.i("Destroying shader program: ${this::class.simpleName}")
         GLES20.glDeleteProgram(glProgId)
         initialized = false
+    }
+
+    @CallSuper
+    override suspend fun delete() {
+        destroy()
     }
 
     override suspend fun close() {

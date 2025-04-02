@@ -323,7 +323,7 @@ pipeline(windowSurface) {
 
 #### Artistic Effects
 - [ ] CGAColorspaceKraftShader (GPUImageCGAColorspaceFilter)
-- [ ] HalftoneKraftShader (GPUImageHalftoneFilter)
+- [x] HalftoneKraftShader (GPUImageHalftoneFilter)
 - [ ] RGBDilationKraftShader (GPUImageRGBDilationFilter)
 - [ ] SketchKraftShader (GPUImageSketchFilter)
 - [ ] SmoothToonKraftShader (GPUImageSmoothToonFilter)

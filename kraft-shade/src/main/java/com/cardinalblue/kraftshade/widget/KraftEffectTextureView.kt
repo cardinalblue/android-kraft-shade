@@ -99,8 +99,13 @@ open class KraftEffectTextureView : KraftTextureView {
             val effect = with(effectExecutionProvider) {
                 provide(windowSurface)
             }
-            this@KraftEffectTextureView.effectExecution = effect
+            val previousEffectExecution = effectExecution
+            effectExecution = effect
             afterSet(this, windowSurface)
+
+            runGlTask {
+                previousEffectExecution?.destroy()
+            }
         }
     }
 

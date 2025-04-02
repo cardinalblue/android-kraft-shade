@@ -3,7 +3,9 @@ package com.cardinalblue.kraftshade.shader.buffer
 import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLUtils
+import com.cardinalblue.kraftshade.dsl.BasePipelineSetupScope
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.util.UnboundedKraftResource
 
 class LoadedTexture() : Texture() {
     private var _size: GlSize = GlSize(0, 0)
@@ -20,4 +22,10 @@ class LoadedTexture() : Texture() {
     }
 }
 
-fun Bitmap.asTexture() = LoadedTexture(this)
+/**
+ * You have to handle the release of this texture manually if you use this API. check
+ * [BasePipelineSetupScope.asTexture] for an alternative that automatically releases
+ * the texture when the pipeline is destroyed.
+ */
+@UnboundedKraftResource
+fun Bitmap.asTextureUnbounded() = LoadedTexture(this)

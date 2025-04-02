@@ -5,12 +5,14 @@ import android.opengl.GLES20
 import com.cardinalblue.kraftshade.IncompleteFrameBufferAccess
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.resource.KraftResource
 import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
+import com.cardinalblue.kraftshade.util.UnboundedKraftResource
 import com.cardinalblue.kraftshade.withFrameBufferRestored
 import com.cardinalblue.kraftshade.withViewPortRestored
 import java.nio.IntBuffer
 
-abstract class Texture private constructor(create: Boolean = true) : SuspendAutoCloseable, TextureProvider {
+abstract class Texture private constructor(create: Boolean = true) : SuspendAutoCloseable, TextureProvider, KraftResource {
     var textureId: Int
         private set
 
@@ -47,7 +49,7 @@ abstract class Texture private constructor(create: Boolean = true) : SuspendAuto
 
     fun isValid() = textureId != OpenGlUtils.NO_TEXTURE_ID
 
-    open suspend fun delete() {
+    override suspend fun delete() {
         if (!isValid()) return
         GLES20.glDeleteTextures(1, intArrayOf(textureId), 0)
         textureId = OpenGlUtils.NO_TEXTURE_ID
@@ -137,6 +139,14 @@ fun interface TextureProvider {
     fun provideTexture(): Texture
 }
 
+fun TextureProvider.asKraftResource(): KraftResource {
+    return object : KraftResource {
+        override suspend fun delete() {
+            provideTexture().delete()
+        }
+    }
+}
+
 class ExternalBitmapTextureProvider(
     private val provider: () -> Bitmap?,
 ) : TextureProvider {
@@ -160,6 +170,7 @@ class ExternalBitmapTextureProvider(
     }
 }
 
-fun sampledBitmapTextureProvider(provider: () -> Bitmap?): TextureProvider {
+@UnboundedKraftResource
+fun sampledBitmapTextureProviderUnbounded(provider: () -> Bitmap?): TextureProvider {
     return ExternalBitmapTextureProvider(provider)
 }

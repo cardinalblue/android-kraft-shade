@@ -5,6 +5,9 @@ import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.SampledInput
+import com.cardinalblue.kraftshade.resource.KraftLifecycleOwner
+import com.cardinalblue.kraftshade.resource.KraftResource
+import com.cardinalblue.kraftshade.resource.KraftResourceSet
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.Texture
@@ -20,7 +23,7 @@ class Pipeline internal constructor(
     internal val glEnv: GlEnv,
     internal val bufferPool: TextureBufferPool,
     internal val automaticRecycle: Boolean = true,
-) : EffectExecution {
+) : EffectExecution, KraftLifecycleOwner {
     private val sampledInputs: MutableSet<SampledInput<*>> = mutableSetOf()
     private val steps: MutableList<PipelineStep> = mutableListOf()
     val stepCount: Int get() = steps.size
@@ -37,10 +40,10 @@ class Pipeline internal constructor(
     private val postponedTasks: MutableList<suspend GlEnv.() -> Unit> = mutableListOf()
 
     /**
-     * Destroy all the child pipelines when the parent pipeline is destroyed
+     * Some resources are scoped with the pipeline. When the pipeline is destroyed, these resources
+     * should be destroyed as well.
      */
-    private val childPipelines: MutableList<Pipeline> = mutableListOf()
-    private val childTextureBuffers: MutableList<TextureBuffer> = mutableListOf()
+    private val resourceSet: KraftResourceSet = KraftResourceSet()
 
     internal val pipelineRunningScope = PipelineRunningScope(this)
 
@@ -48,9 +51,17 @@ class Pipeline internal constructor(
         logger.d("initialized with buffer pool buffer size ${bufferPool.bufferSize}")
     }
 
+    /**
+     * Bind the resource to the pipeline lifecycle. The resource will be destroyed when the pipeline
+     * is destroyed.
+     */
+    override fun bindResource(resource: KraftResource) {
+        resourceSet.add(resource)
+    }
+
     fun createIntermediateTextureBuffer(glSize: GlSize): TextureBuffer {
         return TextureBuffer(glSize).also { buffer ->
-            childTextureBuffers.add(buffer)
+            resourceSet.add(buffer)
         }
     }
 
@@ -95,11 +106,20 @@ class Pipeline internal constructor(
         }
     }
 
+    /**
+     * @param bindShader if true, the shader will be bound to the pipeline lifecycle. The shader
+     * will be destroyed when the pipeline is destroyed.
+     */
     fun <T : KraftShader> addStep(
         shader: T,
+        bindShader: Boolean = true,
         targetBuffer: GlBufferProvider,
         setupAction: suspend PipelineRunningScope.(T) -> Unit = {},
     ) {
+        if (bindShader) {
+            resourceSet.add(shader)
+        }
+
         RunShaderStep(
             stepIndex = steps.size,
             shader = shader,
@@ -168,8 +188,11 @@ class Pipeline internal constructor(
         logger.d("destroy")
         postponedTasks.clear()
         bufferPool.delete()
-        childPipelines.forEach { it.destroy() }
-        childTextureBuffers.forEach { it.delete() }
+        resourceSet.clear()
+    }
+
+    override suspend fun delete() {
+        destroy()
     }
 
     override suspend fun onBufferSizeChanged(size: GlSize) {
