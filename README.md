@@ -286,7 +286,7 @@ pipeline(windowSurface) {
 - [ ] GlassSphereKraftShader (GPUImageGlassSphereFilter)
 - [ ] SphereRefractionKraftShader (GPUImageSphereRefractionFilter)
 - [x] SwirlKraftShader (GPUImageSwirlFilter)
-- [ ] ZoomBlurKraftShader (GPUImageZoomBlurFilter)
+- [x] ZoomBlurKraftShader (GPUImageZoomBlurFilter)
 
 ### Artistic Effects
 - [x] SharpenKraftShader (GPUImageSharpenFilter)
@@ -319,7 +319,6 @@ pipeline(windowSurface) {
 - [ ] GaussianBlurKraftShader (GPUImageGaussianBlurFilter)
 - [ ] GlassSphereKraftShader (GPUImageGlassSphereFilter)
 - [ ] SphereRefractionKraftShader (GPUImageSphereRefractionFilter)
-- [ ] ZoomBlurKraftShader (GPUImageZoomBlurFilter)
 
 #### Artistic Effects
 - [ ] CGAColorspaceKraftShader (GPUImageCGAColorspaceFilter)
