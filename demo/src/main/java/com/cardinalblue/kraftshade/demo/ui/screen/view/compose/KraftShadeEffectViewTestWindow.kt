@@ -57,12 +57,17 @@ fun KraftShadeEffectViewTestWindow() {
     var swirlAngle by remember { mutableFloatStateOf(1.0f) }
     var swirlCenterX by remember { mutableFloatStateOf(0.5f) }
     var swirlCenterY by remember { mutableFloatStateOf(0.5f) }
+    
+    var zoomBlurSize by remember { mutableFloatStateOf(1.0f) }
+    var zoomBlurCenterX by remember { mutableFloatStateOf(0.5f) }
+    var zoomBlurCenterY by remember { mutableFloatStateOf(0.5f) }
 
     var colorAdjustmentExpanded by remember { mutableStateOf(false) }
     var rgbControlsExpanded by remember { mutableStateOf(false) }
     var colorBalanceExpanded by remember { mutableStateOf(false) }
     var effectsExpanded by remember { mutableStateOf(false) }
     var swirlExpanded by remember { mutableStateOf(false) }
+    var zoomBlurExpanded by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -377,6 +382,42 @@ fun KraftShadeEffectViewTestWindow() {
                     valueRange = 0f..1f
                 )
             }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            CollapsibleSection(
+                title = "Zoom Blur",
+                expanded = zoomBlurExpanded,
+                onExpandedChange = { zoomBlurExpanded = it }
+            ) {
+                ParameterSlider(
+                    label = "Blur Size",
+                    value = zoomBlurSize,
+                    onValueChange = {
+                        zoomBlurSize = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..2f
+                )
+                ParameterSlider(
+                    label = "Center X",
+                    value = zoomBlurCenterX,
+                    onValueChange = {
+                        zoomBlurCenterX = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
+                )
+                ParameterSlider(
+                    label = "Center Y",
+                    value = zoomBlurCenterY,
+                    onValueChange = {
+                        zoomBlurCenterY = it
+                        state.requestRender()
+                    },
+                    valueRange = 0f..1f
+                )
+            }
         }
     }
 
@@ -474,6 +515,11 @@ fun KraftShadeEffectViewTestWindow() {
                         shader.radius = swirlRadius
                         shader.angle = swirlAngle
                         shader.center = GlVec2(swirlCenterX, swirlCenterY)
+                    }
+                    
+                    step(ZoomBlurKraftShader()) { shader ->
+                        shader.blurSize = zoomBlurSize
+                        shader.blurCenter = GlVec2(zoomBlurCenterX, zoomBlurCenterY)
                     }
                 }
             }
