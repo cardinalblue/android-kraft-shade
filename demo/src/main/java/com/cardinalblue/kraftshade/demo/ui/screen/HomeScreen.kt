@@ -80,6 +80,7 @@ enum class Destination(
     ErosionDilationShaderTest("erosion_dilation_shader_test", "Erosion/Dilation Shader Test", screen = { ErosionDilationTestScreen() }),
     LevelsShader("levels_shader", "Levels Shader", screen = { LevelsShaderScreen() }),
     FalseColorShader("false_color_shader", "False Color Shader", screen = { FalseColorShaderScreen() }),
+    PipelineCollection("pipeline_collection", "Pipeline Collection", screen = { PipelineCollectionTestWindow() }),
 }
 
 fun NavHostController.navigate(destination: Destination) {

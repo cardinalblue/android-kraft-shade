@@ -1,14 +1,17 @@
 package com.cardinalblue.kraftshade.dsl
 
+import android.graphics.Bitmap
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.*
 import com.cardinalblue.kraftshade.pipeline.input.Input
+import com.cardinalblue.kraftshade.resource.KraftResource
 import com.cardinalblue.kraftshade.shader.*
 import com.cardinalblue.kraftshade.shader.buffer.*
 import com.cardinalblue.kraftshade.shader.builtin.AlphaBlendKraftShader
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
+import com.cardinalblue.kraftshade.util.UnboundedKraftResource
 
 @KraftShadeDsl
 sealed class BasePipelineSetupScope(
@@ -69,6 +72,28 @@ sealed class BasePipelineSetupScope(
         scope.block()
         scope.applyToPipeline()
     }
+
+    /**
+     * Bind the resource to the pipeline lifecycle. The resource will be destroyed when the pipeline
+     * is destroyed.
+     */
+    fun bindResource(resource: KraftResource) {
+        pipeline.bindResource(resource)
+    }
+
+    @OptIn(UnboundedKraftResource::class)
+    fun Bitmap.asTexture(): Texture {
+        return asTextureUnbounded().also { texture ->
+            bindResource(texture)
+        }
+    }
+
+    @OptIn(UnboundedKraftResource::class)
+    fun sampledBitmapTextureProvider(provider: () -> Bitmap?): TextureProvider {
+        val textureProvider = sampledBitmapTextureProviderUnbounded(provider)
+        pipeline.bindResource(textureProvider.asKraftResource())
+        return textureProvider
+    }
 }
 
 @KraftShadeDsl
@@ -83,15 +108,20 @@ class GraphPipelineSetupScope(
      * it as one of [inputs] will help the pipeline to automatically recycle the buffer correctly.
      * See the implementation of [stepWithInputTexture] that takes [BufferReference] as the input.
      * It is following the described pattern (not the one taking constant texture).
+     *
+     * @param bindShaderToPipeline if true, the shader will be bound to the pipeline lifecycle. The
+     *  shader will be destroyed when the pipeline is destroyed.
      */
     @KraftShadeDsl
     suspend fun <S : KraftShader> step(
         shader: S,
         targetBuffer: GlBufferProvider,
+        bindShaderToPipeline: Boolean = true,
         setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) {
         pipeline.addStep(
             shader = shader,
+            bindShader = bindShaderToPipeline,
             targetBuffer = targetBuffer,
             setupAction = setupAction,
         )
@@ -183,9 +213,10 @@ class SerialTextureInputPipelineScope internal constructor(
     @KraftShadeDsl
     suspend fun <S : TextureInputKraftShader> step(
         shader: S,
+        bindShaderToPipeline: Boolean = true,
         setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) {
-        steps.add(InternalSingleShaderSimpleStep(shader, setupAction))
+        steps.add(InternalSingleShaderSimpleStep(shader, bindShaderToPipeline, setupAction))
     }
 
     /**
@@ -200,9 +231,10 @@ class SerialTextureInputPipelineScope internal constructor(
     @KraftShadeDsl
     suspend fun <S : KraftShader> stepIgnoringInputTexture(
         shader: S,
+        bindShaderToPipeline: Boolean = true,
         setupAction: suspend PipelineRunningScope.(S, TextureProvider) -> Unit = { _, _ -> },
     ) {
-        steps.add(InternalStepIgnoringInputTexture(shader, setupAction))
+        steps.add(InternalStepIgnoringInputTexture(shader, bindShaderToPipeline, setupAction))
     }
 
     /**
@@ -227,9 +259,10 @@ class SerialTextureInputPipelineScope internal constructor(
     fun <S : TextureInputKraftShader> stepWithMixture(
         shader: S,
         mixturePercentInput: Input<Float>,
+        bindShaderToPipeline: Boolean = true,
         setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) {
-        steps.add(InternalSingleShaderMixtureStep(shader, mixturePercentInput, setupAction))
+        steps.add(InternalSingleShaderMixtureStep(shader, bindShaderToPipeline, mixturePercentInput, setupAction))
     }
 
     /**
@@ -323,6 +356,7 @@ class SerialTextureInputPipelineScope internal constructor(
                 is InternalStepIgnoringInputTexture<*> -> {
                     pipeline.addStep(
                         shader = step.shader,
+                        bindShader = step.bindShaderToPipeline,
                         targetBuffer = targetBufferForStep,
                         setupAction = { step.setup(this, inputTextureForStep) },
                     )
@@ -361,6 +395,7 @@ class SerialTextureInputPipelineScope internal constructor(
             pipeline.addStep(
                 shader = step.shader,
                 targetBuffer = target,
+                bindShader = step.bindShaderToPipeline,
                 setupAction = { shader ->
                     step.shader.setInputTexture(textureForStep.provideTexture())
                     step.setup(this)
@@ -411,6 +446,7 @@ class SerialTextureInputPipelineScope internal constructor(
 
     private abstract class InternalSingleShaderStep<S : TextureInputKraftShader>(
         val shader: S,
+        val bindShaderToPipeline: Boolean = true,
         val setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
     ) : InternalShaderStep() {
         suspend fun setup(scope: PipelineRunningScope) {
@@ -420,17 +456,20 @@ class SerialTextureInputPipelineScope internal constructor(
 
     private class InternalSingleShaderSimpleStep<S : TextureInputKraftShader>(
         shader: S,
+        bindShaderToPipeline: Boolean = true,
         setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
-    )  : InternalSingleShaderStep<S>(shader, setupAction)
+    )  : InternalSingleShaderStep<S>(shader, bindShaderToPipeline, setupAction)
 
     private class InternalSingleShaderMixtureStep<S : TextureInputKraftShader>(
         shader: S,
+        bindShaderToPipeline: Boolean = true,
         val mixturePercentInput: Input<Float>,
         setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
-    ) : InternalSingleShaderStep<S>(shader, setupAction)
+    ) : InternalSingleShaderStep<S>(shader, bindShaderToPipeline, setupAction)
 
     private class InternalStepIgnoringInputTexture<S : KraftShader>(
         val shader: S,
+        val bindShaderToPipeline: Boolean = true,
         val setupAction: suspend PipelineRunningScope.(S, TextureProvider) -> Unit = { _, _ -> },
     ) : InternalShaderStep() {
         suspend fun setup(scope: PipelineRunningScope, inputTexture: TextureProvider) {

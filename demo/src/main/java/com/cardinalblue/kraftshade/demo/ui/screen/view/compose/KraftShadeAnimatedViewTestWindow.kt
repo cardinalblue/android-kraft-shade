@@ -12,7 +12,6 @@ import com.cardinalblue.kraftshade.compose.KraftShadeAnimatedView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeAnimatedState
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
-import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 
 @Composable

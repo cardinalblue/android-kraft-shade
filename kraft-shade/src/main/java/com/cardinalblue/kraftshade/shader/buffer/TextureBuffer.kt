@@ -3,12 +3,13 @@ package com.cardinalblue.kraftshade.shader.buffer
 import android.graphics.Bitmap
 import android.opengl.GLES20
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.resource.KraftResource
 import com.cardinalblue.kraftshade.util.KraftLogger
 import com.cardinalblue.kraftshade.withFrameBufferRestored
 
 class TextureBuffer(
     override val size: GlSize
-) : Texture(), GlBuffer {
+) : Texture(), GlBuffer, KraftResource {
     private val logger = KraftLogger("TextureBuffer")
 
     private var bufferId: Int = 0
