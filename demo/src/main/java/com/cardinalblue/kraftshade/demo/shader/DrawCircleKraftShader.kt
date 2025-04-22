@@ -9,7 +9,7 @@ class DrawCircleKraftShader(
     color: GlColor = GlColor.Red,
     backgroundColor: GlColor = GlColor.Transparent,
     scale: Float = 1f,
-) : KraftShader() {
+) : KraftShader(3) {
     var color: GlColor by GlUniformDelegate("color")
     var backgroundColor: GlColor by GlUniformDelegate("bgColor")
     var scale: Float  by GlUniformDelegate("scale")
@@ -39,19 +39,24 @@ class DrawCircleKraftShader(
 
 @Language("GLSL")
 const val DRAW_CIRCLE_FRAGMENT_SHADER = """
+#version 300 es
+precision highp float;
+
 uniform highp vec2 resolution;
 uniform lowp vec4 color;
 uniform lowp vec4 bgColor;
 uniform lowp float scale;
+
+out vec4 fragColor;
 
 void main()
 {
    lowp float minor = min(resolution.x, resolution.y);
    if (distance(vec2(resolution.x, resolution.y) / 2.0, gl_FragCoord.xy) <= minor * scale / 2.0)
    {
-       gl_FragColor = color;
+       fragColor = color;
    } else {
-       gl_FragColor = bgColor;
+       fragColor = bgColor;
    }
 }
 """

@@ -1,6 +1,6 @@
 package com.cardinalblue.kraftshade.shader
 
-import android.opengl.GLES20
+import android.opengl.GLES30
 import com.cardinalblue.kraftshade.OpenGlUtils.asFloatBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -37,11 +37,11 @@ abstract  class CustomVerticesTextureInputKraftShader: TextureInputKraftShader()
         super.beforeActualDraw(isScreenCoordinate)
 
         // set the custom texture coordinates
-        GLES20.glEnableVertexAttribArray(glAttribTextureCoordinate)
-        GLES20.glVertexAttribPointer(
+        GLES30.glEnableVertexAttribArray(glAttribTextureCoordinate)
+        GLES30.glVertexAttribPointer(
             glAttribTextureCoordinate,
             2,
-            GLES20.GL_FLOAT,
+            GLES30.GL_FLOAT,
             false,
             0,
             textureCoordinatesBuffer
@@ -49,8 +49,8 @@ abstract  class CustomVerticesTextureInputKraftShader: TextureInputKraftShader()
     }
 
     override fun actualDraw(isScreenCoordinate: Boolean) {
-        GLES20.glEnableVertexAttribArray(glAttribPosition)
-        GLES20.glVertexAttribPointer(
+        GLES30.glEnableVertexAttribArray(glAttribPosition)
+        GLES30.glVertexAttribPointer(
             glAttribPosition,
             vertexDimensionSize,
             GLES20.GL_FLOAT,
@@ -58,8 +58,8 @@ abstract  class CustomVerticesTextureInputKraftShader: TextureInputKraftShader()
             0,
             verticesBuffer
         )
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indicesBuffer)
-        GLES20.glDisableVertexAttribArray(glAttribPosition)
+        GLES30.glDrawElements(GLES30.GL_TRIANGLES, numberOfIndices, GLES30.GL_UNSIGNED_SHORT, indicesBuffer)
+        GLES30.glDisableVertexAttribArray(glAttribPosition)
     }
 
 }

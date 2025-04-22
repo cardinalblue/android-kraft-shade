@@ -1,6 +1,6 @@
 package com.cardinalblue.kraftshade.shader
 
-import android.opengl.GLES20
+import android.opengl.GLES30
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
@@ -43,6 +43,6 @@ abstract class TextureInputKraftShader(
     }
 
     override fun afterActualDraw() {
-        GLES20.glDisableVertexAttribArray(glAttribTextureCoordinate)
+        GLES30.glDisableVertexAttribArray(glAttribTextureCoordinate)
     }
 }

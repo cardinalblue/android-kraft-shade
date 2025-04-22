@@ -1,6 +1,6 @@
 package com.cardinalblue.kraftshade.shader.util
 
-import android.opengl.GLES20
+import android.opengl.GLES30
 import com.cardinalblue.kraftshade.model.*
 import com.cardinalblue.kraftshade.shader.KraftShader
 import kotlin.properties.ReadWriteProperty
@@ -12,7 +12,7 @@ open class GlUniformDelegate<T : Any>(
     protected val checkValueForSet: (T) -> Unit = {},
 ) : ReadWriteProperty<KraftShader, T> {
     private val location: Int by lazy {
-        GLES20.glGetUniformLocation(shader.glProgId, name).also { location ->
+        GLES30.glGetUniformLocation(shader.glProgId, name).also { location ->
             check(!required || location != -1) {
                 "required uniform not found: $name"
             }
@@ -56,18 +56,18 @@ open class GlUniformDelegate<T : Any>(
             val location = location
             if (location == -1)  return@runOnDraw
             when (value) {
-                is Boolean -> GLES20.glUniform1i(location, if (value) 1 else 0)
-                is Int -> GLES20.glUniform1i(location, value)
-                is Float -> GLES20.glUniform1f(location, value)
+                is Boolean -> GLES30.glUniform1i(location, if (value) 1 else 0)
+                is Int -> GLES30.glUniform1i(location, value)
+                is Float -> GLES30.glUniform1f(location, value)
                 is FloatArray -> setFloatArrayValues(value)
                 is GlFloatArray -> setFloatArrayValues(value.backingArray)
 
                 is GlSize -> setFloatArrayValues(value.vec2)
                 is GlSizeF -> setFloatArrayValues(value.vec2)
 
-                is GlMat2 -> GLES20.glUniformMatrix2fv(location, 1, false, value.arr, 0)
-                is GlMat3 -> GLES20.glUniformMatrix3fv(location, 1, false, value.arr, 0)
-                is GlMat4 -> GLES20.glUniformMatrix4fv(location, 1, false, value.arr, 0)
+                is GlMat2 -> GLES30.glUniformMatrix2fv(location, 1, false, value.arr, 0)
+                is GlMat3 -> GLES30.glUniformMatrix3fv(location, 1, false, value.arr, 0)
+                is GlMat4 -> GLES30.glUniformMatrix4fv(location, 1, false, value.arr, 0)
 
                 is GlVec2 -> setFloatArrayValues(value.vec2)
                 is GlVec3 -> setFloatArrayValues(value.vec3)
@@ -80,10 +80,10 @@ open class GlUniformDelegate<T : Any>(
 
     private fun setFloatArrayValues(array: FloatArray) {
         when (array.size) {
-            2 -> GLES20.glUniform2fv(location, 1, array, 0)
-            3 -> GLES20.glUniform3fv(location, 1, array, 0)
-            4 -> GLES20.glUniform4fv(location, 1, array, 0)
-            else -> GLES20.glUniform1fv(location, array.size, array, 0)
+            2 -> GLES30.glUniform2fv(location, 1, array, 0)
+            3 -> GLES30.glUniform3fv(location, 1, array, 0)
+            4 -> GLES30.glUniform4fv(location, 1, array, 0)
+            else -> GLES30.glUniform1fv(location, array.size, array, 0)
         }
     }
 

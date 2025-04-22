@@ -2,7 +2,7 @@
 package com.cardinalblue.kraftshade.widget
 
 import android.content.Context
-import android.opengl.GLES20
+import android.opengl.GLES30
 import android.util.AttributeSet
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize

@@ -3,81 +3,37 @@ package com.cardinalblue.kraftshade
 import android.graphics.Bitmap
 import android.opengl.GLES30
 import android.opengl.GLUtils
-import android.util.Log
 import com.cardinalblue.kraftshade.model.GlSize
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-object OpenGlUtils {
-    const val NO_TEXTURE_ID: Int = -1
-
-    val CUBE = floatArrayOf(
-        -1.0f, -1.0f,
-        1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, 1.0f,
-    )
-
-    val VERTICALLY_FLIPPED_CUBE = floatArrayOf(
-        -1.0f, 1.0f,
-        1.0f, 1.0f,
-        -1.0f, -1.0f,
-        1.0f, -1.0f,
-    )
-
+/**
+ * Utility class for OpenGL ES 3.0 operations.
+ * Extends the functionality provided by [OpenGlUtils] with OpenGL ES 3.0 specific features.
+ */
+object OpenGlUtils30 {
     /**
-     * For frame buffer objects or PixelBuffer
+     * Checks to see if a GLES error has been raised.
      */
-    val glCubeBuffer: FloatBuffer = CUBE.asFloatBuffer()
-        get() {
-            field.position(0)
-            return field
+    fun checkGlError(op: String) {
+        val error = GLES30.glGetError()
+        if (error != GLES30.GL_NO_ERROR) {
+            val msg = op + ": glError 0x" + Integer.toHexString(error)
+            throw RuntimeException(msg)
         }
-
-    /**
-     * For screen coordinate (WindowSurface)
-     */
-    val glVerticallyFlippedCubeBuffer: FloatBuffer = VERTICALLY_FLIPPED_CUBE.asFloatBuffer()
-        get() {
-            field.position(0)
-            return field
-        }
-
-    val TEXTURE_NO_ROTATION: FloatArray = floatArrayOf(
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-    )
-
-    val TEXTURE_VERT_FLIP: FloatArray = floatArrayOf(
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-    )
-
-    val glTextureBuffer = TEXTURE_VERT_FLIP.asFloatBuffer()
-        get() {
-            field.position(0)
-            return field
-        }
-
-    fun FloatArray.asFloatBuffer(): FloatBuffer {
-        return ByteBuffer
-            .allocateDirect(size * 4)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer()
-            .put(this)
-            .apply { position(0) }
     }
 
+    /**
+     * Loads a texture from a bitmap using OpenGL ES 3.0.
+     * 
+     * @param img The bitmap to load as a texture
+     * @param usedTexId The texture ID to use, or [OpenGlUtils.NO_TEXTURE_ID] to generate a new one
+     * @param recycle Whether to recycle the bitmap after loading
+     * @return The texture ID
+     */
     @JvmOverloads
     fun loadTexture(img: Bitmap, usedTexId: Int, recycle: Boolean = true): Int {
         val textures = IntArray(1)
-        if (usedTexId == NO_TEXTURE_ID) {
+        if (usedTexId == OpenGlUtils.NO_TEXTURE_ID) {
             GLES30.glGenTextures(1, textures, 0)
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textures[0])
             GLES30.glTexParameterf(
@@ -109,9 +65,18 @@ object OpenGlUtils {
         return textures[0]
     }
 
+    /**
+     * Loads a texture from an IntBuffer using OpenGL ES 3.0.
+     * 
+     * @param data The IntBuffer containing the texture data
+     * @param width The width of the texture
+     * @param height The height of the texture
+     * @param usedTexId The texture ID to use, or [OpenGlUtils.NO_TEXTURE_ID] to generate a new one
+     * @return The texture ID
+     */
     fun loadTexture(data: IntBuffer?, width: Int, height: Int, usedTexId: Int): Int {
         val textures = IntArray(1)
-        if (usedTexId == NO_TEXTURE_ID) {
+        if (usedTexId == OpenGlUtils.NO_TEXTURE_ID) {
             GLES30.glGenTextures(1, textures, 0)
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textures[0])
             GLES30.glTexParameterf(
@@ -146,16 +111,11 @@ object OpenGlUtils {
     }
 
     /**
-     * Checks to see if a GLES error has been raised.
+     * Creates a bitmap from the current OpenGL ES 3.0 context.
+     * 
+     * @param size The size of the bitmap to create
+     * @return The created bitmap
      */
-    fun checkGlError(op: String) {
-        val error = GLES30.glGetError()
-        if (error != GLES30.GL_NO_ERROR) {
-            val msg = op + ": glError 0x" + Integer.toHexString(error)
-            throw RuntimeException(msg)
-        }
-    }
-
     fun createBitmapFromContext(size: GlSize): Bitmap {
         val pixels = IntArray(size.width * size.height)
         val buffer = IntBuffer.wrap(pixels)
@@ -165,6 +125,14 @@ object OpenGlUtils {
         }
     }
 
+    /**
+     * Gets a bitmap from a texture ID using OpenGL ES 3.0.
+     * 
+     * @param textureId The texture ID to get the bitmap from
+     * @param width The width of the texture
+     * @param height The height of the texture
+     * @return The created bitmap
+     */
     fun getBitmapFromTextureId(
         textureId: Int,
         width: Int,
@@ -172,8 +140,8 @@ object OpenGlUtils {
     ): Bitmap {
         val frameBuffer = IntArray(1) { -1 }
         try {
-            return withFrameBufferRestored {
-                withViewPortRestored {
+            return withFrameBufferRestored30 {
+                withViewPortRestored30 {
                     GLES30.glViewport(0, 0, width, height)
                     // Create framebuffer
                     GLES30.glGenFramebuffers(1, frameBuffer, 0)
@@ -189,7 +157,7 @@ object OpenGlUtils {
                     )
 
                     // Check framebuffer status
-                    IncompleteFrameBufferAccess.checkAndThrow()
+                    IncompleteFrameBufferAccess30.checkAndThrow()
 
                     // Read pixels
                     createBitmapFromContext(GlSize(width, height))
@@ -203,7 +171,13 @@ object OpenGlUtils {
     }
 }
 
-inline fun <T> withFrameBufferRestored(action: () -> T): T {
+/**
+ * Executes the provided action with the framebuffer state restored after execution.
+ * 
+ * @param action The action to execute
+ * @return The result of the action
+ */
+inline fun <T> withFrameBufferRestored30(action: () -> T): T {
     val fboBound = IntArray(size = 1)
     GLES30.glGetIntegerv(GLES30.GL_FRAMEBUFFER_BINDING, fboBound, 0)
     try {
@@ -213,7 +187,13 @@ inline fun <T> withFrameBufferRestored(action: () -> T): T {
     }
 }
 
-inline fun <T> withViewPortRestored(action: () -> T): T {
+/**
+ * Executes the provided action with the viewport state restored after execution.
+ * 
+ * @param action The action to execute
+ * @return The result of the action
+ */
+inline fun <T> withViewPortRestored30(action: () -> T): T {
     val viewPort = IntArray(size = 4)
     GLES30.glGetIntegerv(GLES30.GL_VIEWPORT, viewPort, 0)
     try {
@@ -223,14 +203,20 @@ inline fun <T> withViewPortRestored(action: () -> T): T {
     }
 }
 
-class IncompleteFrameBufferAccess(status: Int) : RuntimeException(
+/**
+ * Exception thrown when a framebuffer is incomplete.
+ */
+class IncompleteFrameBufferAccess30(status: Int) : RuntimeException(
     "Framebuffer not complete, status: $status"
 ) {
     companion object {
+        /**
+         * Checks if the framebuffer is complete and throws an exception if it is not.
+         */
         fun checkAndThrow() {
             val status = GLES30.glCheckFramebufferStatus(GLES30.GL_FRAMEBUFFER)
             if (status != GLES30.GL_FRAMEBUFFER_COMPLETE) {
-                throw IncompleteFrameBufferAccess(status)
+                throw IncompleteFrameBufferAccess30(status)
             }
         }
     }

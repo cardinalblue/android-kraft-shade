@@ -2,7 +2,6 @@ package com.cardinalblue.kraftshade.env
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.GLES20
 import android.opengl.GLES30
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
@@ -48,7 +47,7 @@ class GlEnv(
     }
 
     /** 
-     * The EGL context created with OpenGL ES 2.0 support.
+     * The EGL context created with OpenGL ES 3.0 support.
      * This context is essential for all OpenGL operations.
      */
     val eglContext: EGLContext = egl10.eglCreateContext(
@@ -56,7 +55,7 @@ class GlEnv(
         eglConfig,
         EGL10.EGL_NO_CONTEXT,
         intArrayOf(
-            EGL_CONTEXT_CLIENT_VERSION, 2,
+            EGL_CONTEXT_CLIENT_VERSION, 3,
             EGL10.EGL_NONE,
         ),
     ).also { context ->
@@ -70,6 +69,9 @@ class GlEnv(
 
     /** The GL10 instance associated with our EGL context */
     val gl10: GL10 = eglContext.gl as GL10
+    
+    /** The OpenGL ES version (2 or 3) */
+    val glVersion: Int = 3
 
     private val dslScope: GlEnvDslScope by lazy { GlEnvDslScope(this) }
 
@@ -87,7 +89,7 @@ class GlEnv(
             EGL10.EGL_GREEN_SIZE, 8,
             EGL10.EGL_BLUE_SIZE, 8,
             EGL10.EGL_ALPHA_SIZE, 8,
-            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
             EGL10.EGL_NONE
         )
 
@@ -240,7 +242,7 @@ class GlEnv(
     private companion object {
         /** Version number of the EGL client API */
         const val EGL_CONTEXT_CLIENT_VERSION = 0x3098
-        /** Bit indicating OpenGL ES 2.0 support */
-        const val EGL_OPENGL_ES2_BIT = 4
+        /** Bit indicating OpenGL ES 3.0 support */
+        const val EGL_OPENGL_ES3_BIT = 64
     }
 }
