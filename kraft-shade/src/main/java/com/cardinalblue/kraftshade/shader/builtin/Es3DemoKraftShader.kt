@@ -9,19 +9,21 @@ import org.intellij.lang.annotations.Language
  * A demo shader that showcases OpenGL ES 3.0 features.
  * This shader will use OpenGL ES 3.0 specific features if available, otherwise it will fall back to OpenGL ES 2.0.
  */
-class Es3DemoKraftShader(
-    glVersion: Int = 3
-) : KraftShader(glVersion) {
+class Es3DemoKraftShader: KraftShader() {
 
     /**
      * The input texture to apply the effect to.
      */
-    val inputTexture = KraftShaderTextureInput("inputImageTexture")
+    val inputTexture = KraftShaderTextureInput(1, "inputImageTexture")
 
     /**
      * The intensity of the effect, from 0.0 to 1.0.
      */
-    var intensity: Float by GlUniformDelegate("intensity", 0.5f)
+    var intensity: Float by GlUniformDelegate("intensity")
+
+    init {
+        intensity = 1.0f
+    }
 
     override fun loadVertexShader(): String {
         return DEFAULT_VERTEX_SHADER

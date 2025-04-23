@@ -15,9 +15,7 @@ import java.util.LinkedList
 
 typealias GlTask = () -> Unit
 
-abstract class KraftShader(
-    val glVersion: Int = 3
-) : SuspendAutoCloseable {
+abstract class KraftShader : SuspendAutoCloseable {
     var debug: Boolean = false
     var clearColorBeforeDraw: Boolean = true
 
