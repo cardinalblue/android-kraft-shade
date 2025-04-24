@@ -1,12 +1,12 @@
 package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.SurfaceTexture
+import android.opengl.EGL14
+import android.opengl.EGLSurface
 import android.view.TextureView
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.util.KraftLogger
-import javax.microedition.khronos.egl.EGL10
-import javax.microedition.khronos.egl.EGLSurface
 
 class WindowSurfaceBuffer(
     private val glEnv: GlEnv,
@@ -91,13 +91,11 @@ class WindowSurfaceBuffer(
         // in this case, windowSurface is not created yet, so we don't have to destroy it
         if (surfaceTexture == null) return
 
-        with(glEnv.egl10) {
-            eglMakeCurrent(
-                glEnv.eglDisplay, EGL10.EGL_NO_SURFACE,
-                EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT
-            )
-            eglDestroySurface(glEnv.eglDisplay, windowSurface)
-        }
+        EGL14.eglMakeCurrent(
+            glEnv.eglDisplay, EGL14.EGL_NO_SURFACE,
+            EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT
+        )
+        EGL14.eglDestroySurface(glEnv.eglDisplay, windowSurface)
     }
 
     override suspend fun close() {

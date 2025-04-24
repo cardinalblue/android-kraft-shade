@@ -2,7 +2,12 @@ package com.cardinalblue.kraftshade.env
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.GLES30
+import android.opengl.EGL14
+import android.opengl.EGLConfig
+import android.opengl.EGLContext
+import android.opengl.EGLDisplay
+import android.opengl.EGLSurface
+import android.opengl.GLES20
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
@@ -11,7 +16,6 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.Collections
 import java.util.concurrent.Executors
-import javax.microedition.khronos.egl.*
 import javax.microedition.khronos.opengles.GL10
 
 /**
@@ -26,41 +30,36 @@ class GlEnv(
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val logger = KraftLogger("GlEnv")
 
-    /** The EGL10 instance used for all EGL operations */
-    val egl10: EGL10 = EGLContext.getEGL() as EGL10
-
-    /** 
+    /**
      * The EGL display connection.
      * Initialized with the default display and version information.
      */
-    val eglDisplay: EGLDisplay = egl10
-        .eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY)
-        .also { display ->
-            val version = IntArray(2)
-            egl10.eglInitialize(display, version)
-            logger.i("EGL initialized with version ${version[0]}.${version[1]}")
-        }
+    val eglDisplay: EGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY).also { display ->
+        val version = IntArray(2)
+        EGL14.eglInitialize(display, version, 0, version, 1)
+        logger.i("EGL initialized with version ${version[0]}.${version[1]}")
+    }
 
     /** The chosen EGL configuration that matches our requirements */
     val eglConfig: EGLConfig = chooseEglConfig().also {
         logger.d("EGL config chosen")
     }
 
-    /** 
-     * The EGL context created with OpenGL ES 3.0 support.
+    /**
+     * The EGL context created with OpenGL ES 2.0 support.
      * This context is essential for all OpenGL operations.
      */
-    val eglContext: EGLContext = egl10.eglCreateContext(
+    val eglContext: EGLContext = EGL14.eglCreateContext(
         eglDisplay,
         eglConfig,
-        EGL10.EGL_NO_CONTEXT,
+        EGL14.EGL_NO_CONTEXT,
         intArrayOf(
-            EGL_CONTEXT_CLIENT_VERSION, 3,
-            EGL10.EGL_NONE,
-        ),
+            EGL_CONTEXT_CLIENT_VERSION, 2,
+            EGL14.EGL_NONE
+        ), 0
     ).also { context ->
-        if (context == EGL10.EGL_NO_CONTEXT) {
-            val error = egl10.eglGetError()
+        if (context == EGL14.EGL_NO_CONTEXT) {
+            val error = EGL14.eglGetError()
             logger.e("Failed to create EGL context, error: 0x${Integer.toHexString(error)}")
             throw RuntimeException("Failed to create EGL context")
         }
@@ -68,10 +67,9 @@ class GlEnv(
     }
 
     /** The GL10 instance associated with our EGL context */
-    val gl10: GL10 = eglContext.gl as GL10
-    
     /** The OpenGL ES version (2 or 3) */
     val glVersion: Int = 3
+//    val gl10: GL10? = null // EGL14 doesn't provide direct GL access like EGL10 did
 
     private val dslScope: GlEnvDslScope by lazy { GlEnvDslScope(this) }
 
@@ -79,22 +77,23 @@ class GlEnv(
 
     /**
      * Chooses an appropriate EGL configuration that matches our rendering requirements.
-     * 
+     *
      * @return The chosen EGL configuration
      * @throws IllegalStateException if no suitable configuration is found or if the selection process fails
      */
     private fun chooseEglConfig(): EGLConfig {
         val configSpec = intArrayOf(
-            EGL10.EGL_RED_SIZE, 8,
-            EGL10.EGL_GREEN_SIZE, 8,
-            EGL10.EGL_BLUE_SIZE, 8,
-            EGL10.EGL_ALPHA_SIZE, 8,
-            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
-            EGL10.EGL_NONE
+            EGL14.EGL_RED_SIZE, 8,
+            EGL14.EGL_GREEN_SIZE, 8,
+            EGL14.EGL_BLUE_SIZE, 8,
+            EGL14.EGL_ALPHA_SIZE, 8,
+            EGL14.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL14.EGL_NONE
         )
 
         val numConfig = IntArray(1)
-        if (!egl10.eglChooseConfig(eglDisplay, configSpec, null, 0, numConfig)) {
+        val configs = arrayOfNulls<EGLConfig>(1)
+        if (!EGL14.eglChooseConfig(eglDisplay, configSpec, 0, configs, 0, 1, numConfig, 0)) {
             throw IllegalStateException("eglChooseConfig failed")
         }
 
@@ -103,19 +102,13 @@ class GlEnv(
             throw IllegalStateException("No configs match configSpec")
         }
 
-        val configs = arrayOfNulls<EGLConfig>(numConfigs)
-        if (!egl10.eglChooseConfig(eglDisplay, configSpec, configs, numConfigs, numConfig)) {
-            throw IllegalStateException("eglChooseConfig#2 failed")
-        }
-
         return configs[0] ?: throw IllegalStateException("No config chosen")
     }
 
     init {
         post {
-            GLES30.glEnable(GLES30.GL_BLEND)
-            GLES30.glBlendEquation(GLES30.GL_FUNC_ADD)
-            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
+            GLES20.glEnable(GLES20.GL_BLEND)
+            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
         }
     }
 
@@ -136,45 +129,43 @@ class GlEnv(
 
     /**
      * Creates a pixel buffer surface with the specified size.
-     * 
+     *
      * @param size The size of the pixel buffer surface
      * @return The created EGL surface
      */
     fun createPbufferSurface(size: GlSize): EGLSurface {
-        return egl10
-            .eglCreatePbufferSurface(
-                eglDisplay,
-                eglConfig,
-                intArrayOf(
-                    EGL10.EGL_WIDTH, size.width,
-                    EGL10.EGL_HEIGHT, size.height,
-                    EGL10.EGL_NONE
-                )
-            )
+        return EGL14.eglCreatePbufferSurface(
+            eglDisplay,
+            eglConfig,
+            intArrayOf(
+                EGL14.EGL_WIDTH, size.width,
+                EGL14.EGL_HEIGHT, size.height,
+                EGL14.EGL_NONE
+            ), 0
+        )
     }
 
     /**
      * Creates a window surface from a SurfaceTexture.
-     * 
+     *
      * @param surfaceTexture The Android SurfaceTexture to create the surface from
      * @return The created EGL surface
      */
     fun createWindowSurface(surfaceTexture: SurfaceTexture): EGLSurface {
         logger.d("Creating window surface")
-        return egl10
-            .eglCreateWindowSurface(
-                eglDisplay,
-                eglConfig,
-                surfaceTexture,
-                intArrayOf(
-                    EGL10.EGL_NONE
-                ),
-            )
+        return EGL14.eglCreateWindowSurface(
+            eglDisplay,
+            eglConfig,
+            surfaceTexture,
+            intArrayOf(
+                EGL14.EGL_NONE
+            ), 0
+        )
     }
 
     /**
      * Creates a pixel buffer for off-screen rendering.
-     * 
+     *
      * @param width The width of the pixel buffer
      * @param height The height of the pixel buffer
      * @return A new PixelBuffer instance
@@ -186,29 +177,29 @@ class GlEnv(
     /**
      * Swaps the buffers for the specified EGL surface.
      * This is typically called after rendering to display the results.
-     * 
+     *
      * @param eglSurface The EGL surface to swap buffers for
      * @return true if the buffer swap was successful, false otherwise
      */
     fun swapBuffers(eglSurface: EGLSurface): Boolean {
         logger.v("Swapping buffers")
-        return egl10.eglSwapBuffers(eglDisplay, eglSurface)
+        return EGL14.eglSwapBuffers(eglDisplay, eglSurface)
     }
 
     /**
      * Makes the specified EGL surface and context current.
-     * 
+     *
      * @param surface The EGL surface to make current, defaults to EGL_NO_SURFACE
      */
-    fun makeCurrent(surface: EGLSurface = EGL10.EGL_NO_SURFACE) {
+    fun makeCurrent(surface: EGLSurface = EGL14.EGL_NO_SURFACE) {
         logger.v("Making surface current")
-        egl10.eglMakeCurrent(eglDisplay, surface, surface, eglContext)
+        EGL14.eglMakeCurrent(eglDisplay, surface, surface, eglContext)
     }
 
     /**
      * Executes the provided block with the GL context made current.
      * This function ensures all GL operations are performed on the correct thread.
-     * 
+     *
      * @param block The suspend function to execute within the GL context
      * @return The result of the block execution
      */
@@ -233,16 +224,16 @@ class GlEnv(
      * This should be called when the GL environment is no longer needed.
      */
     suspend fun terminate() = execute {
-        egl10.eglDestroyContext(eglDisplay, eglContext)
-        egl10.eglTerminate(eglDisplay)
+        EGL14.eglDestroyContext(eglDisplay, eglContext)
+        EGL14.eglTerminate(eglDisplay)
         logger.d("EGL terminated")
         dispatcher.close()
     }
 
     private companion object {
         /** Version number of the EGL client API */
-        const val EGL_CONTEXT_CLIENT_VERSION = 0x3098
-        /** Bit indicating OpenGL ES 3.0 support */
-        const val EGL_OPENGL_ES3_BIT = 64
+        const val EGL_CONTEXT_CLIENT_VERSION = EGL14.EGL_CONTEXT_CLIENT_VERSION
+        /** Bit indicating OpenGL ES 2.0 support */
+        const val EGL_OPENGL_ES2_BIT = EGL14.EGL_OPENGL_ES2_BIT
     }
 }
