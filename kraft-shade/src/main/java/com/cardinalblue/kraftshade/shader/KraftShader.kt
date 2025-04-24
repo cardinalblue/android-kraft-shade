@@ -220,12 +220,37 @@ abstract class KraftShader : SuspendAutoCloseable {
     companion object {
         val DEFAULT_VERTEX_SHADER: String get() = DEFAULT_VERTEX_SHADER_INTERNAL
         val DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE: String get() = DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_INTERNAL
+        val DEFAULT_VERTEX_SHADER_30: String get() = DEFAULT_VERTEX_SHADER_INTERNAL_30
+        val DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_30: String get() = DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_INTERNAL_30
     }
 }
 
 @Language("GLSL")
 private const val DEFAULT_VERTEX_SHADER_INTERNAL = """
-    #version 300 es
+    attribute vec4 position;
+    attribute vec4 inputTextureCoordinate;
+    varying vec2 textureCoordinate;
+
+    uniform highp vec2 resolution;
+
+    void main()
+    {
+        gl_Position = position;
+        textureCoordinate = inputTextureCoordinate.xy;
+    }
+"""
+
+@Language("GLSL")
+private const val DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_INTERNAL = """
+    attribute vec4 position;
+    void main()
+    {
+        gl_Position = position;
+    }
+"""
+
+@Language("GLSL")
+private const val DEFAULT_VERTEX_SHADER_INTERNAL_30 = """#version 300 es
     in vec4 position;
     in vec4 inputTextureCoordinate;
     out vec2 textureCoordinate;
@@ -240,8 +265,7 @@ private const val DEFAULT_VERTEX_SHADER_INTERNAL = """
 """
 
 @Language("GLSL")
-private const val DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_INTERNAL = """
-    #version 300 es
+private const val DEFAULT_VERTEX_SHADER_WITHOUT_TEXTURE_INTERNAL_30 = """#version 300 es
     in vec4 position;
     void main()
     {
