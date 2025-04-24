@@ -53,7 +53,7 @@ abstract  class CustomVerticesTextureInputKraftShader: TextureInputKraftShader()
         GLES30.glVertexAttribPointer(
             glAttribPosition,
             vertexDimensionSize,
-            GLES20.GL_FLOAT,
+            GLES30.GL_FLOAT,
             false,
             0,
             verticesBuffer
