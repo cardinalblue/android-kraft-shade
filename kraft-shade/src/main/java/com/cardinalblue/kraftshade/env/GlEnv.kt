@@ -65,10 +65,8 @@ class GlEnv(
         logger.i("EGL context created")
     }
 
-    /** The GL10 instance associated with our EGL context */
-    /** The OpenGL ES version (2 or 3) */
+    /** The OpenGL ES version (3) */
     val glVersion: Int = 3
-//    val gl10: GL10? = null // EGL14 doesn't provide direct GL access like EGL10 did
 
     private val dslScope: GlEnvDslScope by lazy { GlEnvDslScope(this) }
 
