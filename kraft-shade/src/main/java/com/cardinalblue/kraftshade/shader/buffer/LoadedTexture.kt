@@ -1,7 +1,7 @@
 package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.Bitmap
-import android.opengl.GLES20
+import android.opengl.GLES30
 import android.opengl.GLUtils
 import com.cardinalblue.kraftshade.model.GlSize
 
@@ -15,8 +15,8 @@ class LoadedTexture() : Texture() {
 
     fun load(bitmap: Bitmap) {
         _size = GlSize(bitmap.width, bitmap.height)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId)
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
+        GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, bitmap, 0)
     }
 }
 

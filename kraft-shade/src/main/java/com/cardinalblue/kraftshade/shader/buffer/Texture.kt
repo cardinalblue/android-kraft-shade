@@ -1,7 +1,7 @@
 package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.Bitmap
-import android.opengl.GLES20
+import android.opengl.GLES30
 import com.cardinalblue.kraftshade.IncompleteFrameBufferAccess
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
@@ -19,24 +19,24 @@ abstract class Texture private constructor(create: Boolean = true) : SuspendAuto
     init {
         if (create) {
             val textures = intArrayOf(0)
-            GLES20.glGenTextures(1, textures, 0)
+            GLES30.glGenTextures(1, textures, 0)
             textureId = textures[0]
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId)
-            GLES20.glTexParameterf(
-                GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR.toFloat()
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId)
+            GLES30.glTexParameterf(
+                GLES30.GL_TEXTURE_2D,
+                GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR.toFloat()
             )
-            GLES20.glTexParameterf(
-                GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR.toFloat()
+            GLES30.glTexParameterf(
+                GLES30.GL_TEXTURE_2D,
+                GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR.toFloat()
             )
-            GLES20.glTexParameterf(
-                GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE.toFloat()
+            GLES30.glTexParameterf(
+                GLES30.GL_TEXTURE_2D,
+                GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE.toFloat()
             )
-            GLES20.glTexParameterf(
-                GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE.toFloat()
+            GLES30.glTexParameterf(
+                GLES30.GL_TEXTURE_2D,
+                GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE.toFloat()
             )
         } else {
             textureId = OpenGlUtils.NO_TEXTURE_ID
@@ -49,7 +49,7 @@ abstract class Texture private constructor(create: Boolean = true) : SuspendAuto
 
     open suspend fun delete() {
         if (!isValid()) return
-        GLES20.glDeleteTextures(1, intArrayOf(textureId), 0)
+        GLES30.glDeleteTextures(1, intArrayOf(textureId), 0)
         textureId = OpenGlUtils.NO_TEXTURE_ID
     }
 
@@ -79,16 +79,16 @@ abstract class Texture private constructor(create: Boolean = true) : SuspendAuto
         try {
             return withFrameBufferRestored {
                 withViewPortRestored {
-                    GLES20.glViewport(0, 0, size.width, size.height)
+                    GLES30.glViewport(0, 0, size.width, size.height)
                     // Create framebuffer
-                    GLES20.glGenFramebuffers(1, frameBuffer, 0)
-                    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer[0])
+                    GLES30.glGenFramebuffers(1, frameBuffer, 0)
+                    GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, frameBuffer[0])
 
                     // Attach texture to framebuffer
-                    GLES20.glFramebufferTexture2D(
-                        GLES20.GL_FRAMEBUFFER,
-                        GLES20.GL_COLOR_ATTACHMENT0,
-                        GLES20.GL_TEXTURE_2D,
+                    GLES30.glFramebufferTexture2D(
+                        GLES30.GL_FRAMEBUFFER,
+                        GLES30.GL_COLOR_ATTACHMENT0,
+                        GLES30.GL_TEXTURE_2D,
                         textureId,
                         0
                     )
@@ -99,13 +99,13 @@ abstract class Texture private constructor(create: Boolean = true) : SuspendAuto
                     // Read pixels
                     val pixels = IntArray(size.area)
                     val buffer = IntBuffer.wrap(pixels)
-                    GLES20.glReadPixels(0, 0, size.width, size.height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer)
+                    GLES30.glReadPixels(0, 0, size.width, size.height, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, buffer)
                     buffer
                 }
             }
         } finally {
             if (frameBuffer[0] != -1) {
-                GLES20.glDeleteFramebuffers(1, frameBuffer, 0)
+                GLES30.glDeleteFramebuffers(1, frameBuffer, 0)
             }
         }
     }

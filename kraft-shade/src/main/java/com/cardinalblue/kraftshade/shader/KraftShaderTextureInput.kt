@@ -1,6 +1,6 @@
 package com.cardinalblue.kraftshade.shader
 
-import android.opengl.GLES20
+import android.opengl.GLES30
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
@@ -17,11 +17,11 @@ class KraftShaderTextureInput(
     required: Boolean = true,
 ) {
     fun activate(shader: KraftShader) {
-        GLES20.glActiveTexture(mappedTextureIndex())
+        GLES30.glActiveTexture(mappedTextureIndex())
         // we won't be able to get the real property, so just pass fake ones here.
         // They shouldn't be needed anyway.
         val texture = textureDelegate.getValue(shader, this::textureDelegate)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.textureId)
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture.textureId)
         textureSamplerDelegate.setValue(shader, this::textureSamplerDelegate, textureIndex)
         textureSizeDelegate.setValue(shader, this::textureSizeDelegate, texture.size)
     }
@@ -33,38 +33,38 @@ class KraftShaderTextureInput(
 
     private fun mappedTextureIndex(): Int {
         return when(textureIndex) {
-            0 -> GLES20.GL_TEXTURE0
-            1 -> GLES20.GL_TEXTURE1
-            2 -> GLES20.GL_TEXTURE2
-            3 -> GLES20.GL_TEXTURE3
-            4 -> GLES20.GL_TEXTURE4
-            5 -> GLES20.GL_TEXTURE5
-            6 -> GLES20.GL_TEXTURE6
-            7 -> GLES20.GL_TEXTURE7
-            8 -> GLES20.GL_TEXTURE8
-            9 -> GLES20.GL_TEXTURE9
-            10 -> GLES20.GL_TEXTURE10
-            11 -> GLES20.GL_TEXTURE11
-            12 -> GLES20.GL_TEXTURE12
-            13 -> GLES20.GL_TEXTURE13
-            14 -> GLES20.GL_TEXTURE14
-            15 -> GLES20.GL_TEXTURE15
-            16 -> GLES20.GL_TEXTURE16
-            17 -> GLES20.GL_TEXTURE17
-            18 -> GLES20.GL_TEXTURE18
-            19 -> GLES20.GL_TEXTURE19
-            20 -> GLES20.GL_TEXTURE20
-            21 -> GLES20.GL_TEXTURE21
-            22 -> GLES20.GL_TEXTURE22
-            23 -> GLES20.GL_TEXTURE23
-            24 -> GLES20.GL_TEXTURE24
-            25 -> GLES20.GL_TEXTURE25
-            26 -> GLES20.GL_TEXTURE26
-            27 -> GLES20.GL_TEXTURE27
-            28 -> GLES20.GL_TEXTURE28
-            29 -> GLES20.GL_TEXTURE29
-            30 -> GLES20.GL_TEXTURE30
-            31 -> GLES20.GL_TEXTURE31
+            0 -> GLES30.GL_TEXTURE0
+            1 -> GLES30.GL_TEXTURE1
+            2 -> GLES30.GL_TEXTURE2
+            3 -> GLES30.GL_TEXTURE3
+            4 -> GLES30.GL_TEXTURE4
+            5 -> GLES30.GL_TEXTURE5
+            6 -> GLES30.GL_TEXTURE6
+            7 -> GLES30.GL_TEXTURE7
+            8 -> GLES30.GL_TEXTURE8
+            9 -> GLES30.GL_TEXTURE9
+            10 -> GLES30.GL_TEXTURE10
+            11 -> GLES30.GL_TEXTURE11
+            12 -> GLES30.GL_TEXTURE12
+            13 -> GLES30.GL_TEXTURE13
+            14 -> GLES30.GL_TEXTURE14
+            15 -> GLES30.GL_TEXTURE15
+            16 -> GLES30.GL_TEXTURE16
+            17 -> GLES30.GL_TEXTURE17
+            18 -> GLES30.GL_TEXTURE18
+            19 -> GLES30.GL_TEXTURE19
+            20 -> GLES30.GL_TEXTURE20
+            21 -> GLES30.GL_TEXTURE21
+            22 -> GLES30.GL_TEXTURE22
+            23 -> GLES30.GL_TEXTURE23
+            24 -> GLES30.GL_TEXTURE24
+            25 -> GLES30.GL_TEXTURE25
+            26 -> GLES30.GL_TEXTURE26
+            27 -> GLES30.GL_TEXTURE27
+            28 -> GLES30.GL_TEXTURE28
+            29 -> GLES30.GL_TEXTURE29
+            30 -> GLES30.GL_TEXTURE30
+            31 -> GLES30.GL_TEXTURE31
             else -> error("textureIndex should be within 0 to 31")
         }
     }

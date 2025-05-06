@@ -39,6 +39,7 @@ class DrawCircleKraftShader(
 
 @Language("GLSL")
 const val DRAW_CIRCLE_FRAGMENT_SHADER = """
+
 uniform highp vec2 resolution;
 uniform lowp vec4 color;
 uniform lowp vec4 bgColor;
