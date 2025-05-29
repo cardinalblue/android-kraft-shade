@@ -12,6 +12,8 @@ import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.Collections
@@ -23,10 +25,12 @@ import java.util.concurrent.Executors
  */
 class GlEnv(
     context: Context,
+    useUnconfinedDispatcher: Boolean = false
 ) {
     val appContext: Context = context.applicationContext
 
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val dispatcher = if (useUnconfinedDispatcher) Dispatchers.Unconfined else
+        Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val logger = KraftLogger("GlEnv")
 
     /**
@@ -224,7 +228,8 @@ class GlEnv(
         EGL14.eglDestroyContext(eglDisplay, eglContext)
         EGL14.eglTerminate(eglDisplay)
         logger.d("EGL terminated")
-        dispatcher.close()
+        (dispatcher as? ExecutorCoroutineDispatcher)
+            ?.close()
     }
 
     private companion object {
