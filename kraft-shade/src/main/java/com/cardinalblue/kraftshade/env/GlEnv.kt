@@ -2,12 +2,7 @@ package com.cardinalblue.kraftshade.env
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.opengl.EGL14
-import android.opengl.EGLConfig
-import android.opengl.EGLContext
-import android.opengl.EGLDisplay
-import android.opengl.EGLSurface
-import android.opengl.GLES30
+import android.opengl.*
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
@@ -25,7 +20,8 @@ import java.util.concurrent.Executors
  */
 class GlEnv(
     context: Context,
-    useUnconfinedDispatcher: Boolean = false
+    useUnconfinedDispatcher: Boolean = false,
+    private val externalGLContext: ExternalGLContext? = null,
 ) {
     val appContext: Context = context.applicationContext
 
@@ -37,37 +33,43 @@ class GlEnv(
      * The EGL display connection.
      * Initialized with the default display and version information.
      */
-    val eglDisplay: EGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY).also { display ->
-        val version = IntArray(2)
-        EGL14.eglInitialize(display, version, 0, version, 1)
-        logger.i("EGL initialized with version ${version[0]}.${version[1]}")
-    }
+    val eglDisplay: EGLDisplay = externalGLContext
+        ?.eglDisplay
+        ?: EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY).also { display ->
+            val version = IntArray(2)
+            EGL14.eglInitialize(display, version, 0, version, 1)
+            logger.i("EGL initialized with version ${version[0]}.${version[1]}")
+        }
 
     /** The chosen EGL configuration that matches our requirements */
-    val eglConfig: EGLConfig = chooseEglConfig().also {
-        logger.d("EGL config chosen")
-    }
+    val eglConfig: EGLConfig = externalGLContext
+        ?.eglConfig
+        ?: chooseEglConfig().also {
+            logger.d("EGL config chosen")
+        }
 
     /**
      * The EGL context created with OpenGL ES 2.0 support.
      * This context is essential for all OpenGL operations.
      */
-    val eglContext: EGLContext = EGL14.eglCreateContext(
-        eglDisplay,
-        eglConfig,
-        EGL14.EGL_NO_CONTEXT,
-        intArrayOf(
-            EGL_CONTEXT_CLIENT_VERSION, 2,
-            EGL14.EGL_NONE
-        ), 0
-    ).also { context ->
-        if (context == EGL14.EGL_NO_CONTEXT) {
-            val error = EGL14.eglGetError()
-            logger.e("Failed to create EGL context, error: 0x${Integer.toHexString(error)}")
-            throw RuntimeException("Failed to create EGL context")
+    val eglContext: EGLContext = externalGLContext
+        ?.eglContext
+        ?: EGL14.eglCreateContext(
+            eglDisplay,
+            eglConfig,
+            EGL14.EGL_NO_CONTEXT,
+            intArrayOf(
+                EGL_CONTEXT_CLIENT_VERSION, 2,
+                EGL14.EGL_NONE
+            ), 0
+        ).also { context ->
+            if (context == EGL14.EGL_NO_CONTEXT) {
+                val error = EGL14.eglGetError()
+                logger.e("Failed to create EGL context, error: 0x${Integer.toHexString(error)}")
+                throw RuntimeException("Failed to create EGL context")
+            }
+            logger.i("EGL context created")
         }
-        logger.i("EGL context created")
-    }
 
     /** The OpenGL ES version (3) */
     val glVersion: Int = 3
@@ -225,6 +227,7 @@ class GlEnv(
      * This should be called when the GL environment is no longer needed.
      */
     suspend fun terminate() = execute {
+        if (externalGLContext != null) return@execute
         EGL14.eglDestroyContext(eglDisplay, eglContext)
         EGL14.eglTerminate(eglDisplay)
         logger.d("EGL terminated")
@@ -238,4 +241,10 @@ class GlEnv(
         /** Bit indicating OpenGL ES 2.0 support */
         const val EGL_OPENGL_ES2_BIT = EGL14.EGL_OPENGL_ES2_BIT
     }
+
+    class ExternalGLContext(
+        val eglDisplay: EGLDisplay,
+        val eglConfig: EGLConfig,
+        val eglContext: EGLContext,
+    )
 }
