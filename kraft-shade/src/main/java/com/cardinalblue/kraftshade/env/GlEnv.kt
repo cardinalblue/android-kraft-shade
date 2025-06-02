@@ -23,7 +23,7 @@ class GlEnv(
     context: Context,
     useUnconfinedDispatcher: Boolean = false,
     private val enableEglAndroidRecordable: Boolean = false,
-    private val externalGLContext: ExternalGLContext? = null,
+    private val sharedContext: EGLContext? = null,
 ) {
     val appContext: Context = context.applicationContext
 
@@ -35,18 +35,14 @@ class GlEnv(
      * The EGL display connection.
      * Initialized with the default display and version information.
      */
-    val eglDisplay: EGLDisplay = externalGLContext
-        ?.eglDisplay
-        ?: EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY).also { display ->
+    val eglDisplay: EGLDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY).also { display ->
             val version = IntArray(2)
             EGL14.eglInitialize(display, version, 0, version, 1)
             logger.i("EGL initialized with version ${version[0]}.${version[1]}")
         }
 
     /** The chosen EGL configuration that matches our requirements */
-    val eglConfig: EGLConfig = externalGLContext
-        ?.eglConfig
-        ?: chooseEglConfig().also {
+    val eglConfig: EGLConfig = chooseEglConfig().also {
             logger.d("EGL config chosen")
         }
 
@@ -54,12 +50,10 @@ class GlEnv(
      * The EGL context created with OpenGL ES 2.0 support.
      * This context is essential for all OpenGL operations.
      */
-    val eglContext: EGLContext = externalGLContext
-        ?.eglContext
-        ?: EGL14.eglCreateContext(
+    val eglContext: EGLContext = EGL14.eglCreateContext(
             eglDisplay,
             eglConfig,
-            EGL14.EGL_NO_CONTEXT,
+            sharedContext ?: EGL14.EGL_NO_CONTEXT,
             intArrayOf(
                 EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
@@ -253,7 +247,6 @@ class GlEnv(
      * This should be called when the GL environment is no longer needed.
      */
     suspend fun terminate() = execute {
-        if (externalGLContext != null) return@execute
         EGL14.eglDestroyContext(eglDisplay, eglContext)
         EGL14.eglTerminate(eglDisplay)
         logger.d("EGL terminated")
@@ -269,10 +262,4 @@ class GlEnv(
 
         const val EGL_RECORDABLE_ANDROID = 0x3142
     }
-
-    class ExternalGLContext(
-        val eglDisplay: EGLDisplay,
-        val eglConfig: EGLConfig,
-        val eglContext: EGLContext,
-    )
 }
