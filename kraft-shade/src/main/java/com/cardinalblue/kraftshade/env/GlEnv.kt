@@ -31,6 +31,9 @@ class GlEnv(
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val logger = KraftLogger("GlEnv")
 
+    /** The OpenGL ES version (3) */
+    val glVersion: Int = 3
+
     /**
      * The EGL display connection.
      * Initialized with the default display and version information.
@@ -38,7 +41,7 @@ class GlEnv(
     val eglDisplay: EGLDisplay = externalGLContext
         ?.eglDisplay
         ?: EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY).also { display ->
-            val version = IntArray(2)
+            val version = IntArray(glVersion)
             EGL14.eglInitialize(display, version, 0, version, 1)
             logger.i("EGL initialized with version ${version[0]}.${version[1]}")
         }
@@ -61,7 +64,7 @@ class GlEnv(
             eglConfig,
             EGL14.EGL_NO_CONTEXT,
             intArrayOf(
-                EGL_CONTEXT_CLIENT_VERSION, 2,
+                EGL_CONTEXT_CLIENT_VERSION, glVersion,
                 EGL14.EGL_NONE
             ), 0
         ).also { context ->
@@ -72,9 +75,6 @@ class GlEnv(
             }
             logger.i("EGL context created")
         }
-
-    /** The OpenGL ES version (3) */
-    val glVersion: Int = 3
 
     private val dslScope: GlEnvDslScope by lazy { GlEnvDslScope(this) }
 
