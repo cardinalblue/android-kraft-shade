@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.env
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.*
+import android.view.Surface
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
@@ -21,6 +22,7 @@ import java.util.concurrent.Executors
 class GlEnv(
     context: Context,
     useUnconfinedDispatcher: Boolean = false,
+    private val enableEglAndroidRecordable: Boolean = false,
     private val externalGLContext: ExternalGLContext? = null,
 ) {
     val appContext: Context = context.applicationContext
@@ -90,9 +92,15 @@ class GlEnv(
             EGL14.EGL_GREEN_SIZE, 8,
             EGL14.EGL_BLUE_SIZE, 8,
             EGL14.EGL_ALPHA_SIZE, 8,
-            EGL14.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL14.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT or EGLExt.EGL_OPENGL_ES3_BIT_KHR,
+            EGL14.EGL_NONE, 0, // placeholder for recordable
             EGL14.EGL_NONE
         )
+
+        if (enableEglAndroidRecordable) {
+            configSpec[configSpec.size - 3] = EGL_RECORDABLE_ANDROID
+            configSpec[configSpec.size - 2] = 1 // true
+        }
 
         val numConfig = IntArray(1)
         val configs = arrayOfNulls<EGLConfig>(1)
@@ -160,6 +168,24 @@ class GlEnv(
             eglDisplay,
             eglConfig,
             surfaceTexture,
+            intArrayOf(
+                EGL14.EGL_NONE
+            ), 0
+        )
+    }
+
+    /**
+     * Creates a window surface from a SurfaceTexture.
+     *
+     * @param surfaceTexture The Android SurfaceTexture to create the surface from
+     * @return The created EGL surface
+     */
+    fun createWindowSurface(surface: Surface): EGLSurface {
+        logger.d("Creating window surface")
+        return EGL14.eglCreateWindowSurface(
+            eglDisplay,
+            eglConfig,
+            surface,
             intArrayOf(
                 EGL14.EGL_NONE
             ), 0
@@ -240,6 +266,8 @@ class GlEnv(
         const val EGL_CONTEXT_CLIENT_VERSION = EGL14.EGL_CONTEXT_CLIENT_VERSION
         /** Bit indicating OpenGL ES 2.0 support */
         const val EGL_OPENGL_ES2_BIT = EGL14.EGL_OPENGL_ES2_BIT
+
+        const val EGL_RECORDABLE_ANDROID = 0x3142
     }
 
     class ExternalGLContext(
