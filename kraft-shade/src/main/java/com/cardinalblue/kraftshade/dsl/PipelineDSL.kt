@@ -361,7 +361,7 @@ class SerialTextureInputPipelineScope internal constructor(
             pipeline.addStep(
                 shader = step.shader,
                 targetBuffer = target,
-                setupAction = { shader ->
+                setupAction = { _ ->
                     step.shader.setInputTexture(textureForStep.provideTexture())
                     step.setup(this)
                 },
