@@ -2,6 +2,7 @@ package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.SurfaceTexture
 import android.opengl.EGL14
+import android.opengl.EGLExt
 import android.opengl.EGLSurface
 import android.view.Surface
 import android.view.TextureView
@@ -88,6 +89,13 @@ class WindowSurfaceBuffer(
 
     fun swapBuffers() {
         glEnv.swapBuffers(windowSurface)
+    }
+
+    /**
+     * Sends the presentation time stamp to EGL. Time is expressed in nanoseconds.
+     */
+    fun setPresentationTime(nanoSeconds: Long) {
+        EGLExt.eglPresentationTimeANDROID(glEnv.eglDisplay, windowSurface, nanoSeconds)
     }
 
     override suspend fun beforeDraw() {
