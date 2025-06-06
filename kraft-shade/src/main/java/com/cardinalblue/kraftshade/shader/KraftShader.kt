@@ -3,8 +3,12 @@ package com.cardinalblue.kraftshade.shader
 import android.opengl.GLES30
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.OpenGlUtils
+import com.cardinalblue.kraftshade.model.GlMat
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.model.GlSizeF
+import com.cardinalblue.kraftshade.model.GlVec2
+import com.cardinalblue.kraftshade.model.GlVec3
+import com.cardinalblue.kraftshade.model.GlVec4
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.builtin.KraftShaderWithTexelSize
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
@@ -38,6 +42,19 @@ abstract class KraftShader : SuspendAutoCloseable {
     }
 
     abstract fun loadFragmentShader(): String
+
+    internal val properties = mutableMapOf<String, Any>()
+    fun updateProperty(name: String, value: Any) {
+        properties[name] = when (value) {
+            is GlSize -> value.vec2
+            is GlSizeF -> value.vec2
+            is GlVec2 -> value.vec2
+            is GlVec3 -> value.vec3
+            is GlVec4 -> value.vec4
+            is GlMat -> value.arr
+            else -> value
+        }
+    }
 
     private fun loadShader(strSource: String, iType: Int): Int {
         val compiled = IntArray(1)
@@ -74,6 +91,33 @@ abstract class KraftShader : SuspendAutoCloseable {
         GLES30.glDeleteShader(iVShader)
         GLES30.glDeleteShader(iFShader)
         return iProgId
+    }
+
+    fun setUniforms(properties: Map<String, Any>) {
+        properties.forEach { (name, value) ->
+            runOnDraw(name) {
+                val location = GLES30.glGetUniformLocation(glProgId, name)
+                if (location == -1) {
+                    logger.w("Uniform $name not found in shader program $debugName")
+                    return@runOnDraw
+                }
+                when (value) {
+                    is Boolean -> GLES30.glUniform1i(location, if (value) 1 else 0)
+                    is Int -> GLES30.glUniform1i(location, value)
+                    is Float -> GLES30.glUniform1f(location, value)
+                    is FloatArray -> when (value.size) {
+                        2 -> GLES30.glUniform2fv(location, 1, value, 0)
+                        3 -> GLES30.glUniform3fv(location, 1, value, 0)
+                        4 -> GLES30.glUniform4fv(location, 1, value, 0)
+                        9 -> GLES30.glUniformMatrix3fv(location, 1, false, value, 0)
+                        16 -> GLES30.glUniformMatrix4fv(location, 1, false, value, 0)
+                        else -> GLES30.glUniform1fv(location, value.size, value, 0)
+                    }
+                    is GlSize -> GLES30.glUniform2fv(location, 1, value.vec2, 0)
+                    else -> logger.w("Unsupported uniform type for $name: ${value::class.simpleName}")
+                }
+            }
+        }
     }
 
     open fun init() {

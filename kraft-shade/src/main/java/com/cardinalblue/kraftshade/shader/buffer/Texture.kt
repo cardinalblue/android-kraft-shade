@@ -138,12 +138,13 @@ fun interface TextureProvider {
 }
 
 class ExternalBitmapTextureProvider(
+    name: String? = null,
     private val provider: () -> Bitmap?,
 ) : TextureProvider {
     /**
      * need to be by lazy, because the texture is created in the GL thread.
      */
-    private val loadedTexture by lazy { LoadedTexture() }
+    private val loadedTexture by lazy { LoadedTexture(name) }
     private var bitmapHash: Int = 0
 
     override fun provideTexture(): Texture {
@@ -160,6 +161,6 @@ class ExternalBitmapTextureProvider(
     }
 }
 
-fun sampledBitmapTextureProvider(provider: () -> Bitmap?): TextureProvider {
-    return ExternalBitmapTextureProvider(provider)
+fun sampledBitmapTextureProvider(name: String? = null, provider: () -> Bitmap?): TextureProvider {
+    return ExternalBitmapTextureProvider(name, provider)
 }

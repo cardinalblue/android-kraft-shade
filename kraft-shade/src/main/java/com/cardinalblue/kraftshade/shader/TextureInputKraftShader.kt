@@ -17,7 +17,7 @@ abstract class TextureInputKraftShader(
         required = false
     )
 
-    protected var _inputTexture: Texture by input.textureDelegate
+    internal var _inputTexture: Texture by input.textureDelegate
 
     open fun setInputTexture(texture: Texture) {
         _inputTexture = texture

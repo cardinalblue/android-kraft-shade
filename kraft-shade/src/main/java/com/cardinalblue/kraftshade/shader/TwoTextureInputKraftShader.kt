@@ -24,7 +24,7 @@ abstract class TwoTextureInputKraftShader(
         required = false
     )
 
-    private var _secondInputTexture: Texture by secondInput.textureDelegate
+    internal var _secondInputTexture: Texture by secondInput.textureDelegate
 
     var texture2TransformMatrix: GlMat4 by GlUniformDelegate("texture2TransformMatrix", required = false)
 

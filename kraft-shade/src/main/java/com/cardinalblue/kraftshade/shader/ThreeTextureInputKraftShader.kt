@@ -26,7 +26,7 @@ abstract class ThreeTextureInputKraftShader(
         sizeUniformName = thirdTextureSizeUniformName,
     )
 
-    private var _thirdInputTexture: Texture by thirdInput.textureDelegate
+    internal var _thirdInputTexture: Texture by thirdInput.textureDelegate
 
     var texture3TransformMatrix: GlMat4 by GlUniformDelegate("texture3TransformMatrix", required = false)
 

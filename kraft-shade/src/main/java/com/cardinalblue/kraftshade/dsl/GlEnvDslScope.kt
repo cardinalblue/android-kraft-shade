@@ -2,10 +2,12 @@ package com.cardinalblue.kraftshade.dsl
 
 import android.graphics.BitmapFactory
 import com.cardinalblue.kraftshade.env.GlEnv
+import com.cardinalblue.kraftshade.pipeline.JsonPipeline
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
+import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
 @KraftShadeDsl
 open class GlEnvDslScope(
@@ -35,13 +37,32 @@ open class GlEnvDslScope(
         }
     }
 
+    @KraftShadeDsl
+    suspend fun pipeline(
+        targetBuffer: GlBuffer,
+        json: String,
+        textures: Map<String, TextureProvider> = emptyMap(),
+        automaticRecycle: Boolean = true,
+    ): Pipeline {
+        return env.execute {
+            JsonPipeline(
+                env = env,
+                json = json,
+                targetBuffer = targetBuffer,
+                automaticRecycle = automaticRecycle,
+                textures = textures,
+                getAsset = ::loadAssetTexture,
+            )
+        }
+    }
+
     suspend fun loadAssetTexture(assetPath: String): LoadedTexture {
         val bitmap = env.appContext.assets.open(assetPath).use {
             BitmapFactory.decodeStream(it)
         }
 
         return env.execute {
-            LoadedTexture(bitmap)
+            LoadedTexture(bitmap, name = assetPath)
         }
     }
 

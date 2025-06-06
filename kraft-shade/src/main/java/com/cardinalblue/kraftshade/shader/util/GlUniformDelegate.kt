@@ -22,22 +22,23 @@ open class GlUniformDelegate<T : Any>(
     private var value: T? = null
     private var valueHashCode: Int = Int.MAX_VALUE
 
-    private var thisUpdated: Boolean = false
+    private var thisInitialized: Boolean = false
 
     override fun getValue(thisRef: KraftShader, property: KProperty<*>): T {
-        updateThis(thisRef)
+        initialize(thisRef)
         shader = thisRef
         return requireNotNull(value) { "value not set"}
     }
 
     override fun setValue(thisRef: KraftShader, property: KProperty<*>, value: T) {
         checkValueForSet(value)
-        updateThis(thisRef)
+        initialize(thisRef)
         setValue(value)
+        thisRef.updateProperty(name, value)
     }
 
-    private fun updateThis(thisRef: KraftShader) {
-        if (thisUpdated)  return
+    private fun initialize(thisRef: KraftShader) {
+        if (thisInitialized) return
         shader = thisRef
     }
 

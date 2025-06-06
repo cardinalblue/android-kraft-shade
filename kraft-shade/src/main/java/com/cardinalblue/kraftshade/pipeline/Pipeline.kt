@@ -16,14 +16,15 @@ import com.cardinalblue.kraftshade.util.KraftLogger
  * Implementation will be added based on future instructions
  */
 @KraftShadeDsl
-class Pipeline internal constructor(
+open class Pipeline internal constructor(
     internal val glEnv: GlEnv,
     internal val bufferPool: TextureBufferPool,
     internal val automaticRecycle: Boolean = true,
 ) : EffectExecution {
     private val sampledInputs: MutableSet<SampledInput<*>> = mutableSetOf()
-    private val steps: MutableList<PipelineStep> = mutableListOf()
-    val stepCount: Int get() = steps.size
+    private val _steps: MutableList<PipelineStep> = mutableListOf()
+    internal val steps: List<PipelineStep> get() = _steps
+    val stepCount: Int get() = _steps.size
 
     internal val runContext = PipelineRunContext()
 
@@ -84,7 +85,7 @@ class Pipeline internal constructor(
     }
 
     fun addStep(step: PipelineStep) {
-        steps.add(step)
+        _steps.add(step)
         logger.d {
             val detail = when (step) {
                 is RunShaderStep<*> -> step.shader.debugName
@@ -101,7 +102,7 @@ class Pipeline internal constructor(
         setupAction: suspend PipelineRunningScope.(T) -> Unit = {},
     ) {
         RunShaderStep(
-            stepIndex = steps.size,
+            stepIndex = _steps.size,
             shader = shader,
             targetBuffer = targetBuffer,
             setupAction = setupAction,
@@ -112,7 +113,7 @@ class Pipeline internal constructor(
     override suspend fun run() {
         if (!runContext.isRenderPhase) {
             logger.d("configuration phase starts")
-            steps.forEach {
+            _steps.forEach {
                 runContext.currentStepIndex = it.stepIndex
                 it.run(pipelineRunningScope)
             }
@@ -130,7 +131,7 @@ class Pipeline internal constructor(
 
             logger.d("start to run $stepCount steps")
             run runSteps@{
-                steps.forEach { step ->
+                _steps.forEach { step ->
                     runContext.currentStepIndex = step.stepIndex
                     step.run(pipelineRunningScope)
                     onDebugAfterShaderStep?.invoke(runContext)

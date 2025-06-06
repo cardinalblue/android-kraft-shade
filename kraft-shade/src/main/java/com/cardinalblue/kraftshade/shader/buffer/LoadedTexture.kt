@@ -5,11 +5,11 @@ import android.opengl.GLES30
 import android.opengl.GLUtils
 import com.cardinalblue.kraftshade.model.GlSize
 
-class LoadedTexture() : Texture() {
+class LoadedTexture(val name: String? = null) : Texture() {
     private var _size: GlSize = GlSize(0, 0)
     override val size: GlSize get() = _size
 
-    constructor(bitmap: Bitmap) : this() {
+    constructor(bitmap: Bitmap, name: String? = null) : this(name) {
         load(bitmap)
     }
 
