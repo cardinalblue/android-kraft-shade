@@ -12,6 +12,10 @@ import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 class SourceOverBlendKraftShader : TwoTextureInputKraftShader() {
     override fun loadFragmentShader(): String = SOURCE_OVER_BLEND_FRAGMENT_SHADER
     var intensity: Float by GlUniformDelegate("intensity")
+
+    init {
+        intensity = 1.0f
+    }
 }
 
 @Language("GLSL")
