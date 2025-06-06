@@ -15,6 +15,7 @@ class AddBlendKraftShader : TwoTextureInputKraftShader() {
 
 @Language("GLSL")
 private const val ADD_BLEND_FRAGMENT_SHADER = """
+precision mediump float;
 varying highp vec2 textureCoordinate;
 varying highp vec2 textureCoordinate2;
 
