@@ -27,8 +27,8 @@ suspend fun kraftBitmap(
     context: Context,
     inputBitmap: Bitmap,
     vararg shaders: TextureInputKraftShader
-) {
-    kraftBitmap(context, inputBitmap) {
+): Bitmap {
+    return kraftBitmap(context, inputBitmap) {
         serialPipeline {
             shaders.forEach {
                 addShader { it }
@@ -65,7 +65,7 @@ suspend fun AnimatedEffectExecutionProvider.kraftBitmap(
     context: Context,
     targetSize: GlSize,
     time: Float = 0f,
-) {
+): Bitmap {
     return GlEnv(context).use {
         val targetBuffer = TextureBuffer(targetSize)
         provide(targetBuffer, constInput(time)).run()
