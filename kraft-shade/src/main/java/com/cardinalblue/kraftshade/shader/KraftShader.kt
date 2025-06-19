@@ -117,7 +117,6 @@ abstract class KraftShader : SuspendAutoCloseable {
                         16 -> GLES30.glUniformMatrix4fv(location, 1, false, value, 0)
                         else -> GLES30.glUniform1fv(location, value.size, value, 0)
                     }
-                    is GlSize -> GLES30.glUniform2fv(location, 1, value.vec2, 0)
                     else -> logger.w("Unsupported uniform type for $name: ${value::class.simpleName}")
                 }
             }
