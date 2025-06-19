@@ -5,11 +5,24 @@ import android.opengl.GLES30
 import android.opengl.GLUtils
 import com.cardinalblue.kraftshade.model.GlSize
 
-class LoadedTexture(val name: String? = null) : Texture() {
+class LoadedTexture(
+    /**
+     * The name of the texture. It is required for the texture to be used in shader serialization.
+     * If you don't need to serialize the shader, you can set it to null.
+     */
+    val name: String? = null
+) : Texture() {
     private var _size: GlSize = GlSize(0, 0)
     override val size: GlSize get() = _size
 
-    constructor(bitmap: Bitmap, name: String? = null) : this(name) {
+    constructor(
+        bitmap: Bitmap,
+        /**
+         * The name of the texture. It is required for the texture to be used in shader serialization.
+         * If you don't need to serialize the shader, you can set it to null.
+         */
+        name: String? = null
+    ) : this(name) {
         load(bitmap)
     }
 
