@@ -33,6 +33,8 @@ abstract class KraftShader : SuspendAutoCloseable {
 
     protected open var resolution: GlSize by GlUniformDelegate("resolution", required = false)
 
+    private val uniformLocationCache = mutableMapOf<String, Int>()
+
     open val debugName: String = this::class.simpleName ?: "Unknown"
 
     protected val logger = KraftLogger(this::class.simpleName ?: "KraftShader")
@@ -96,10 +98,12 @@ abstract class KraftShader : SuspendAutoCloseable {
     fun setUniforms(properties: Map<String, Any>) {
         properties.forEach { (name, value) ->
             runOnDraw(name) {
-                val location = GLES30.glGetUniformLocation(glProgId, name)
-                if (location == -1) {
-                    logger.w("Uniform $name not found in shader program $debugName")
-                    return@runOnDraw
+                val location = uniformLocationCache[name] ?: GLES30.glGetUniformLocation(glProgId, name).also {
+                    if (it == -1) {
+                        logger.w("Uniform $name not found in shader program $debugName")
+                        return@runOnDraw
+                    }
+                    uniformLocationCache[name] = it
                 }
                 when (value) {
                     is Boolean -> GLES30.glUniform1i(location, if (value) 1 else 0)
