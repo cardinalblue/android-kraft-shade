@@ -98,8 +98,7 @@ class JsonPipeline(
     private val logger = KraftLogger("JsonPipeline")
 
     override suspend fun run() {
-        val steps = parse(json)
-        steps.forEach { step -> addStep(step) }
+        if (steps.isEmpty()) { parse(json).forEach { step -> addStep(step) } }
         super.run()
     }
 
