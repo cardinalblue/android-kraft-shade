@@ -63,13 +63,13 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
                         }
 
                         if (shader is TextureInputKraftShader) {
-                            addTexture(shader._inputTexture)
+                            addTexture(shader.getInputTexture())
                         }
                         if (shader is TwoTextureInputKraftShader) {
-                            addTexture(shader._secondInputTexture)
+                            addTexture(shader.getSecondInputTexture())
                         }
                         if (shader is ThreeTextureInputKraftShader) {
-                            addTexture(shader._thirdInputTexture)
+                            addTexture(shader.getThirdInputTexture())
                         }
                     },
                     output = step.targetBuffer.provideBuffer().toString() // use object's toString() for output reference
