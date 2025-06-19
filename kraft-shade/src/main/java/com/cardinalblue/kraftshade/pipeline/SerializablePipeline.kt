@@ -1,7 +1,6 @@
 package com.cardinalblue.kraftshade.pipeline
 
 import android.content.Context
-import android.util.Log
 import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
@@ -13,6 +12,7 @@ import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
+import com.cardinalblue.kraftshade.util.KraftLogger
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlin.collections.forEach
@@ -95,10 +95,7 @@ class JsonPipeline(
     bufferPool = TextureBufferPool(targetBuffer.size),
     automaticRecycle = automaticRecycle
 ) {
-
-    companion object {
-        private const val TAG = "JsonPipeline"
-    }
+    private val logger = KraftLogger("JsonPipeline")
 
     override suspend fun run() {
         val steps = parse(json)
@@ -128,18 +125,15 @@ class JsonPipeline(
                     val secondInput = getTexture(record.inputs[1])
                     val thirdInput = getTexture(record.inputs[2])
                     firstInput?.let { shader.setInputTexture(it) }
-                        ?: Log.w(
-                            TAG,
+                        ?: logger.w(
                             "First input texture is null for shader ${shader::class.simpleName}"
                         )
                     secondInput?.let { shader.setSecondInputTexture(it) }
-                        ?: Log.w(
-                            TAG,
+                        ?: logger.w(
                             "Second input texture is null for shader ${shader::class.simpleName}"
                         )
                     thirdInput?.let { shader.setThirdInputTexture(it) }
-                        ?: Log.w(
-                            TAG,
+                        ?: logger.w(
                             "Third input texture is null for shader ${shader::class.simpleName}"
                         )
                 }
@@ -147,15 +141,13 @@ class JsonPipeline(
                 is TwoTextureInputKraftShader -> {
                     val firstInput = getTexture(record.inputs[0])
                     firstInput?.let { shader.setInputTexture(it) }
-                        ?: Log.w(
-                            TAG,
+                        ?: logger.w(
                             "First input texture is null for shader ${shader::class.simpleName}"
                         )
                     if (record.inputs.size >= 2) {
                         val secondInput = getTexture(record.inputs[1])
                         secondInput?.let { shader.setSecondInputTexture(it) }
-                            ?: Log.w(
-                                TAG,
+                            ?: logger.w(
                                 "Second input texture is null for shader ${shader::class.simpleName}"
                             )
                     }
@@ -166,8 +158,7 @@ class JsonPipeline(
                     if (record.inputs.isNotEmpty()) {
                         val inputTexture = getTexture(record.inputs[0])
                         inputTexture?.let { shader.setInputTexture(it) }
-                            ?: Log.w(
-                                TAG,
+                            ?: logger.w(
                                 "Input texture is null for shader ${shader::class.simpleName}"
                             )
                     }
