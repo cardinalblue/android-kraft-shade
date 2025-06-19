@@ -16,7 +16,6 @@ import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlin.collections.forEach
-import kotlin.reflect.full.primaryConstructor
 
 class EffectSerializer(private val context: Context, private val size: GlSize) {
     private val gson = GsonBuilder()
@@ -196,9 +195,9 @@ internal data class PipelineShaderNode(
     val output: String,
 ) {
     fun createShader(): KraftShader {
-        val shaderClass = Class.forName(shaderClassName).kotlin
-        val constructor = shaderClass.primaryConstructor ?: shaderClass.constructors.first()
-        return (constructor.callBy(emptyMap()) as KraftShader).apply {
+        val shaderClass = Class.forName(shaderClassName)
+        val constructor = shaderClass.getConstructor()
+        return (constructor.newInstance() as KraftShader).apply {
             shaderProperties.mapValues { (_, value) ->
                 when (value) {
                     is List<*> -> value.map { (it as Double).toFloat() }.toFloatArray()
