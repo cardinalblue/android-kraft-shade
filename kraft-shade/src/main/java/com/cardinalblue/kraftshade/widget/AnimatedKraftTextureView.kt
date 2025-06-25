@@ -137,7 +137,7 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
                 return
             }
 
-            job = runGlTask { windowSurface ->
+            job = runGlTask { _ ->
                 logger.tryAndLog {
                     effect.run()
                 }

@@ -2,23 +2,34 @@ package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.SurfaceTexture
 import android.opengl.EGL14
+import android.opengl.EGLExt
 import android.opengl.EGLSurface
+import android.view.Surface
 import android.view.TextureView
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.util.KraftLogger
 
+/**
+ * A WindowSurfaceBuffer can be created from following three ways:
+ * 1. From a Surface with size
+ * 2. From a SurfaceTexture with size
+ * 3. Create the buffer without any surface or surfaceTexture first, and when a SurfaceTexture is
+ *    ready, use surfaceTextureListener to set the surfaceTexture and size from external source.
+ */
 class WindowSurfaceBuffer(
     private val glEnv: GlEnv,
+    surface: SurfaceWithSize? = null,
+    surfaceTexture: SurfaceTextureWithSize? = null,
     private var listener: Listener? = null,
 ) : GlBuffer {
     private val logger = KraftLogger("WindowSurfaceBuffer")
 
     // from listener
-    private var width: Int = 0
-    private var height: Int = 0
-    private var surfaceTexture: SurfaceTexture? = null
-    val isSurfaceReady: Boolean get() = surfaceTexture != null
+    private var _size: GlSize? = surface?.size ?: surfaceTexture?.size
+    private var surfaceTexture: SurfaceTexture? = surfaceTexture?.surfaceTexture
+    private var surface: Surface? = surface?.surface
+    val isSurfaceReady: Boolean get() = surfaceTexture != null || surface != null
 
     val surfaceTextureListener by lazy {
         object : TextureView.SurfaceTextureListener {
@@ -29,8 +40,7 @@ class WindowSurfaceBuffer(
             ) {
                 logger.i("Surface texture available: ${width}x${height}")
                 this@WindowSurfaceBuffer.surfaceTexture = surface
-                this@WindowSurfaceBuffer.width = width
-                this@WindowSurfaceBuffer.height = height
+                this@WindowSurfaceBuffer._size = GlSize(width, height)
                 listener?.onWindowSurfaceBufferReady()
             }
 
@@ -41,8 +51,7 @@ class WindowSurfaceBuffer(
             ) {
                 logger.i("Surface texture size changed: ${width}x${height}")
                 this@WindowSurfaceBuffer.surfaceTexture = surface
-                this@WindowSurfaceBuffer.width = width
-                this@WindowSurfaceBuffer.height = height
+                this@WindowSurfaceBuffer._size = GlSize(width, height)
                 listener?.onWindowSurfaceBufferSizeChanged(GlSize(width, height))
             }
 
@@ -63,19 +72,30 @@ class WindowSurfaceBuffer(
 
     override val size: GlSize get() {
         check(isSurfaceReady) { "surface is not ready" }
-        check(width > 0 && height > 0) { "surface size is 0" }
-        return GlSize(width, height)
+        return _size ?: error("\"surface size is 0\"")
     }
 
     private val windowSurface: EGLSurface by lazy {
-        val surfaceTexture = requireNotNull(surfaceTexture) {
-            "surface is not ready. it should not be used yet!"
+        this.surface?.let {
+            return@lazy glEnv.createWindowSurface(it)
         }
-        glEnv.createWindowSurface(surfaceTexture)
+
+        this.surfaceTexture?.let {
+            return@lazy glEnv.createWindowSurface(it)
+        }
+
+        throw IllegalStateException("surface is not ready. it should not be used yet!")
     }
 
     fun swapBuffers() {
         glEnv.swapBuffers(windowSurface)
+    }
+
+    /**
+     * Sends the presentation time stamp to EGL. Time is expressed in nanoseconds.
+     */
+    fun setPresentationTime(nanoSeconds: Long) {
+        EGLExt.eglPresentationTimeANDROID(glEnv.eglDisplay, windowSurface, nanoSeconds)
     }
 
     override suspend fun beforeDraw() {
@@ -107,3 +127,13 @@ class WindowSurfaceBuffer(
         fun onWindowSurfaceBufferSizeChanged(size: GlSize)
     }
 }
+
+data class SurfaceWithSize(
+    val surface: Surface,
+    val size: GlSize,
+)
+
+data class SurfaceTextureWithSize(
+    val surfaceTexture: SurfaceTexture,
+    val size: GlSize,
+)

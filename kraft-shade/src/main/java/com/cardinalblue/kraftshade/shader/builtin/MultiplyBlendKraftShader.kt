@@ -2,6 +2,7 @@ package com.cardinalblue.kraftshade.shader.builtin
 
 import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
+import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
 /**
  * A multiply blend filter that multiplies the source color with the destination color.
@@ -10,6 +11,11 @@ import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
  */
 class MultiplyBlendKraftShader : TwoTextureInputKraftShader() {
     override fun loadFragmentShader(): String = MULTIPLY_BLEND_FRAGMENT_SHADER
+    var intensity: Float by GlUniformDelegate("intensity")
+
+    init {
+        intensity = 1.0f
+    }
 }
 
 @Language("GLSL")
@@ -20,6 +26,8 @@ private const val MULTIPLY_BLEND_FRAGMENT_SHADER = """
 
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
+    
+    uniform float intensity;
 
     vec4 sampleInside(sampler2D sampler, vec2 coord) {
         if (coord.x < 0.0 || coord.x > 1.0) return vec4(0.0);
@@ -31,6 +39,8 @@ private const val MULTIPLY_BLEND_FRAGMENT_SHADER = """
         vec4 base = sampleInside(inputImageTexture, textureCoordinate);
         vec4 overlayer = sampleInside(inputImageTexture2, textureCoordinate2);
 
-        gl_FragColor = overlayer * base + overlayer * (1.0 - base.a) + base * (1.0 - overlayer.a);
+        vec4 outputColor = overlayer * base + overlayer * (1.0 - base.a) + base * (1.0 - overlayer.a);
+        
+        gl_FragColor = mix(base, outputColor, intensity);
     }
 """

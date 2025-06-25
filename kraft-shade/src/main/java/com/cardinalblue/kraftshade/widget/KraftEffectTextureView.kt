@@ -47,7 +47,7 @@ open class KraftEffectTextureView : KraftTextureView {
         override fun onWindowSurfaceBufferReady() {}
 
         override fun onWindowSurfaceBufferSizeChanged(size: GlSize) {
-            runGlTask { windowSurface ->
+            runGlTask { _ ->
                 effectExecution?.onBufferSizeChanged(size)
                 renderTwiceForNextFrame = true
                 if (renderOnSizeChange) {

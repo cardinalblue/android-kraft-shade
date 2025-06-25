@@ -2,6 +2,7 @@ package com.cardinalblue.kraftshade.shader.builtin
 
 import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
+import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 
 /**
  * A normal blend filter that implements Photoshop-like blending.
@@ -15,6 +16,11 @@ import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
  */
 class NormalBlendKraftShader : TwoTextureInputKraftShader() {
     override fun loadFragmentShader(): String = NORMAL_BLEND_FRAGMENT_SHADER
+    var intensity: Float by GlUniformDelegate("intensity")
+
+    init {
+        intensity = 1.0f
+    }
 }
 
 @Language("GLSL")
@@ -25,6 +31,8 @@ private const val NORMAL_BLEND_FRAGMENT_SHADER = """
 
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
+    
+    uniform float intensity;
 
     void main() {
         vec4 base = texture2D(inputImageTexture, textureCoordinate);
@@ -36,6 +44,6 @@ private const val NORMAL_BLEND_FRAGMENT_SHADER = """
         outputColor.b = overlayer.b + base.b * base.a * (1.0 - overlayer.a);
         outputColor.a = overlayer.a + base.a * (1.0 - overlayer.a);
 
-        gl_FragColor = outputColor;
+        gl_FragColor = mix(base, outputColor, intensity);
     }
 """

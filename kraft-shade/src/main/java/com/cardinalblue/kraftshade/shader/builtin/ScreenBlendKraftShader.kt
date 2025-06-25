@@ -17,6 +17,10 @@ class ScreenBlendKraftShader : TwoTextureInputKraftShader() {
     var intensity: Float by GlUniformDelegate("intensity")
 
     override fun loadFragmentShader(): String = SCREEN_BLEND_FRAGMENT_SHADER
+
+    init {
+        intensity = 1.0f
+    }
 }
 
 @Language("GLSL")

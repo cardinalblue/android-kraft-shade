@@ -1,19 +1,28 @@
 package com.cardinalblue.kraftshade.shader.builtin
 
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
+import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import org.intellij.lang.annotations.Language
 
 class AddBlendKraftShader : TwoTextureInputKraftShader() {
     override fun loadFragmentShader(): String = ADD_BLEND_FRAGMENT_SHADER
+    var intensity: Float by GlUniformDelegate("intensity")
+
+    init {
+        intensity = 1.0f
+    }
 }
 
 @Language("GLSL")
 private const val ADD_BLEND_FRAGMENT_SHADER = """
+precision mediump float;
 varying highp vec2 textureCoordinate;
 varying highp vec2 textureCoordinate2;
 
 uniform sampler2D inputImageTexture;
 uniform sampler2D inputImageTexture2;
+
+uniform float intensity;
 
 void main()
 {
@@ -42,7 +51,8 @@ void main()
    }
 
    mediump float a = overlay.a + base.a - overlay.a * base.a;
+   vec4 outputColor = vec4(r, g, b, a);
 
-   gl_FragColor = vec4(r, g, b, a);
+   gl_FragColor = mix(base, outputColor, intensity);
 }
 """
