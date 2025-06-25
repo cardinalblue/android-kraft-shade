@@ -34,6 +34,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
+gson = { group = "com.google.code.gson", name = "gson", version = "2.13.1" }
+
 image-processing-gpuImage = { group = "jp.co.cyberagent.android", name = "gpuimage", version = "2.1.0"}
 
 [plugins]
