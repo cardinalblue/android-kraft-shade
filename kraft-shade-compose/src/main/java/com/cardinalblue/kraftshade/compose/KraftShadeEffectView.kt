@@ -47,8 +47,6 @@ open class KraftShadeEffectState(
     scope: CoroutineScope,
     var skipRender: Boolean = false,
 ) : KraftShadeBaseState<KraftEffectTextureView>(scope) {
-    private val logger = KraftLogger("KraftEffectTextureView")
-
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
         effectExecutionProvider: EffectExecutionProvider,
