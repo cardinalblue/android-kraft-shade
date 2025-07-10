@@ -49,7 +49,7 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
 
                 PipelineShaderNode(
                     shaderClassName = shader::class.qualifiedName!!,
-                    shaderProperties = shader.properties,
+                    shaderProperties = shader.properties.toMap(), // clone properties to avoid modification
                     inputs = buildList {
                         fun addTexture(texture: TextureProvider) {
                             if (texture is LoadedTexture) {
