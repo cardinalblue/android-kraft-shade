@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import com.cardinalblue.kraftshade.util.KraftLogger
 import com.cardinalblue.kraftshade.widget.KraftTextureView
 import com.cardinalblue.kraftshade.widget.KraftTextureViewTask
 import kotlinx.coroutines.CoroutineScope
@@ -17,10 +18,22 @@ open class KraftShadeBaseState<V : KraftTextureView> internal constructor(
 ) {
     protected var view: V? = null
     protected val mutex = Mutex(true)
+    protected val logger = KraftLogger("KraftEffectTextureView")
 
     internal fun setView(view: V) {
         this.view = view
-        mutex.unlock()
+        if (mutex.isLocked) {
+            mutex.unlock()
+        }
+    }
+
+    fun disposeViewAndResetForReuse() {
+        // clear view to prevent memory leak
+        this.view = null
+        if (!mutex.isLocked) {
+            mutex.tryLock()
+        }
+        logger.d("reset for reuse")
     }
 
     fun runGlTask(task: KraftTextureViewTask): Job {

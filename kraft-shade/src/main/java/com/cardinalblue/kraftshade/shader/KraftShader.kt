@@ -95,6 +95,16 @@ abstract class KraftShader : SuspendAutoCloseable {
         return iProgId
     }
 
+    open fun init(): Boolean {
+        if (initialized) return false
+        logger.i("Initializing shader program for ${this::class.simpleName}")
+        glProgId = loadProgram(loadVertexShader(), loadFragmentShader())
+        glAttribPosition = GLES30.glGetAttribLocation(glProgId, "position")
+        glAttribTextureCoordinate = GLES30.glGetAttribLocation(glProgId, "inputTextureCoordinate")
+        initialized = true
+        return true
+    }
+
     fun setUniforms(properties: Map<String, Any>) {
         properties.forEach { (name, value) ->
             runOnDraw(name) {
@@ -121,15 +131,6 @@ abstract class KraftShader : SuspendAutoCloseable {
                 }
             }
         }
-    }
-
-    open fun init() {
-        if (initialized) return
-        logger.i("Initializing shader program for ${this::class.simpleName}")
-        glProgId = loadProgram(loadVertexShader(), loadFragmentShader())
-        glAttribPosition = GLES30.glGetAttribLocation(glProgId, "position")
-        glAttribTextureCoordinate = GLES30.glGetAttribLocation(glProgId, "inputTextureCoordinate")
-        initialized = true
     }
 
     open fun draw(bufferSize: GlSize, isScreenCoordinate: Boolean) {
