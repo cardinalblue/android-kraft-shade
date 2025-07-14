@@ -2,12 +2,11 @@ package com.cardinalblue.kraftshade.dsl
 
 import android.graphics.BitmapFactory
 import com.cardinalblue.kraftshade.env.GlEnv
-import com.cardinalblue.kraftshade.pipeline.JsonPipeline
 import com.cardinalblue.kraftshade.pipeline.Pipeline
+import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
-import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
 @KraftShadeDsl
 open class GlEnvDslScope(
@@ -40,19 +39,13 @@ open class GlEnvDslScope(
     @KraftShadeDsl
     suspend fun pipeline(
         targetBuffer: GlBuffer,
-        json: String,
-        textures: Map<String, TextureProvider> = emptyMap(),
+        serializedEffect: SerializedEffect,
         automaticRecycle: Boolean = true,
     ): Pipeline {
         return env.execute {
-            JsonPipeline(
-                env = env,
-                json = json,
-                targetBuffer = targetBuffer,
-                automaticRecycle = automaticRecycle,
-                textures = textures,
-                getAsset = ::loadAssetTexture,
-            )
+            val pipeline = Pipeline(env, TextureBufferPool(targetBuffer.size), automaticRecycle)
+            serializedEffect.applyTo(pipeline, targetBuffer)
+            pipeline
         }
     }
 

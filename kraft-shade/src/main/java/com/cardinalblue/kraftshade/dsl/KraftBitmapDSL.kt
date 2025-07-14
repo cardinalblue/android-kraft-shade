@@ -2,19 +2,16 @@ package com.cardinalblue.kraftshade.dsl
 
 import android.content.Context
 import android.graphics.Bitmap
-import com.cardinalblue.kraftshade.dsl.KraftBitmapDslScope
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.AnimatedEffectExecutionProvider
 import com.cardinalblue.kraftshade.pipeline.EffectExecutionProvider
-import com.cardinalblue.kraftshade.pipeline.JsonPipeline
+import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.pipeline.input.constInput
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
-import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
-import com.cardinalblue.kraftshade.shader.buffer.asTexture
 
 suspend fun TextureInputKraftShader.apply(
     context: Context,
@@ -110,21 +107,6 @@ class KraftBitmapWithInputDslScope(
             }
         }
     }
-
-    suspend fun fromJson(
-        json: String,
-        textures: Map<String, TextureProvider> = emptyMap(),
-    ): Bitmap {
-        val kraftBitmapDslScope = KraftBitmapDslScope(input.width, input.height, env)
-        with(kraftBitmapDslScope) {
-            return fromJson(
-                json = json,
-                textures = textures.toMutableMap().apply {
-                    this["inputImageTexture"] = this@KraftBitmapWithInputDslScope.input.asTexture()
-                }
-            )
-        }
-    }
 }
 
 @KraftShadeDsl
@@ -143,24 +125,18 @@ class KraftBitmapDslScope(
                 this@KraftBitmapDslScope.outputWidth,
                 this@KraftBitmapDslScope.outputHeight
             )
-            pipeline(
-                outputBuffer,
-                block = block,
-            ).run()
+            pipeline(outputBuffer, block = block,).run()
             return outputBuffer.getBitmap()
         }
     }
 
-    suspend fun fromJson(
-        json: String,
-        textures: Map<String, TextureProvider> = emptyMap(),
-    ): Bitmap {
+    suspend fun fromSerializedEffect(serializedEffect: SerializedEffect): Bitmap {
         with(envScope) {
             val outputBuffer = TextureBuffer(
                 this@KraftBitmapDslScope.outputWidth,
                 this@KraftBitmapDslScope.outputHeight
             )
-            pipeline(outputBuffer, json, textures).run()
+            pipeline(outputBuffer, serializedEffect).run()
             return outputBuffer.getBitmap()
         }
     }

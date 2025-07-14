@@ -5,6 +5,7 @@ import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.pipeline.input.constInput
+import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
@@ -43,15 +44,10 @@ fun createEffectExecutionProviderWithPipeline(
     pipeline(targetBuffer) { block() }
 }
 
-fun createEffectExecutionProviderByJson(
-    json: String,
-    textures: Map<String, TextureProvider> = emptyMap(),
+fun createEffectExecutionProvider(
+    serializedEffect: SerializedEffect
 ) = EffectExecutionProvider { targetBuffer ->
-    pipeline(
-        targetBuffer = targetBuffer,
-        json = json,
-        textures = textures,
-    )
+    pipeline(targetBuffer, serializedEffect)
 }
 
 fun createAnimatedEffectExecutionProviderWithPipeline(

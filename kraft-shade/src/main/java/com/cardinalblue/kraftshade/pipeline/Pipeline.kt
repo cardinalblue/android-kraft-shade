@@ -16,7 +16,7 @@ import com.cardinalblue.kraftshade.util.KraftLogger
  * Implementation will be added based on future instructions
  */
 @KraftShadeDsl
-open class Pipeline internal constructor(
+class Pipeline internal constructor(
     internal val glEnv: GlEnv,
     internal val bufferPool: TextureBufferPool,
     internal val automaticRecycle: Boolean = true,

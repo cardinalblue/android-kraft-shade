@@ -1,16 +1,20 @@
-package com.cardinalblue.kraftshade.pipeline
+package com.cardinalblue.kraftshade.pipeline.serialization
 
 import android.content.Context
 import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.pipeline.BufferReference
+import com.cardinalblue.kraftshade.pipeline.Pipeline
+import com.cardinalblue.kraftshade.pipeline.RunShaderStep
+import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
 import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.ThreeTextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
-import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
+import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
-import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
+import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.util.KraftLogger
 import com.google.gson.Gson
@@ -51,14 +55,14 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
                     shaderClassName = shader::class.qualifiedName!!,
                     shaderProperties = shader.properties.toMap(), // clone properties to avoid modification
                     inputs = buildList {
-                        fun addTexture(texture: TextureProvider) {
+                        fun addTexture(texture: Texture) {
                             if (texture is LoadedTexture) {
                                 val textureName = requireNotNull(texture.name) {
                                     "Texture name cannot be null for LoadedTexture"
                                 }
                                 add(textureName)
                             } else {
-                                add(texture.toString()) // use object's toString() for output reference
+                                if (texture != Texture.Invalid) add(texture.toString()) // use object's toString() for output reference
                             }
                         }
 
@@ -72,7 +76,8 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
                             addTexture(shader.getThirdInputTexture())
                         }
                     },
-                    output = step.targetBuffer.provideBuffer().toString() // use object's toString() for output reference
+                    output = step.targetBuffer.provideBuffer()
+                        .toString() // use object's toString() for output reference
                 )
             }
 
@@ -83,102 +88,84 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
     }
 }
 
-class JsonPipeline(
-    env: GlEnv,
+class SerializedEffect(
     private val json: String,
-    private val targetBuffer: GlBuffer,
-    automaticRecycle: Boolean = true,
-    private val textures: Map<String, TextureProvider> = emptyMap(),
-    private val getAsset: (suspend (String) -> TextureProvider)? = null
-) : Pipeline(
-    glEnv = env,
-    bufferPool = TextureBufferPool(targetBuffer.size),
-    automaticRecycle = automaticRecycle
+    private val getTextureProvider: (String) -> TextureProvider?,
 ) {
-    private val logger = KraftLogger("JsonPipeline")
+    constructor(json: String, textures: Map<String, TextureProvider>) : this(
+        json,
+        getTextureProvider = { name -> textures[name] }
+    )
 
-    override suspend fun run() {
-        if (steps.isEmpty()) { parse(json).forEach { step -> addStep(step) } }
-        super.run()
-    }
+    private val logger = KraftLogger("SerializedEffect")
+    private val buffers = mutableMapOf<String, BufferReference>()
 
-    private suspend fun parse(json: String): List<RunShaderStep<KraftShader>> {
-        val records = Gson().fromJson(
-            json,
-            Array<PipelineShaderNode>::class.java
-        )
+    suspend fun applyTo(pipeline: Pipeline, targetBuffer: GlBufferProvider) {
+        val records = Gson().fromJson(json, Array<PipelineShaderNode>::class.java)
 
-        val buffers = mutableMapOf<String, TextureBuffer>()
-
-        suspend fun getTexture(name: String): TextureProvider? {
-            return if (name.startsWith("textures/")) getAsset?.invoke(name)
-            else textures[name] ?: buffers[name]
-        }
-
-        return records.mapIndexed { index, record ->
+        val steps = records.mapIndexed { index, record ->
             val shader = record.createShader()
 
-            when (shader) {
-                is ThreeTextureInputKraftShader -> {
-                    val firstInput = getTexture(record.inputs[0])
-                    val secondInput = getTexture(record.inputs[1])
-                    val thirdInput = getTexture(record.inputs[2])
-                    firstInput?.let { shader.setInputTexture(it) }
-                        ?: logger.w(
-                            "First input texture is null for shader ${shader::class.simpleName}"
-                        )
-                    secondInput?.let { shader.setSecondInputTexture(it) }
-                        ?: logger.w(
-                            "Second input texture is null for shader ${shader::class.simpleName}"
-                        )
-                    thirdInput?.let { shader.setThirdInputTexture(it) }
-                        ?: logger.w(
-                            "Third input texture is null for shader ${shader::class.simpleName}"
-                        )
-                }
+            val firstInput = record.inputs.getOrNull(0)?.let { getTexture(it) }
+            val secondInput = record.inputs.getOrNull(1)?.let { getTexture(it) }
+            val thirdInput = record.inputs.getOrNull(2)?.let { getTexture(it) }
 
-                is TwoTextureInputKraftShader -> {
-                    val firstInput = getTexture(record.inputs[0])
-                    firstInput?.let { shader.setInputTexture(it) }
-                        ?: logger.w(
-                            "First input texture is null for shader ${shader::class.simpleName}"
-                        )
-                    if (record.inputs.size >= 2) {
-                        val secondInput = getTexture(record.inputs[1])
+            RunShaderStep(
+                stepIndex = index,
+                runContext = pipeline.runContext,
+                shader = shader,
+                targetBuffer = if (index != records.lastIndex) {
+                    buffers.getOrPut(record.output) { BufferReference(pipeline) }
+                } else {
+                    targetBuffer
+                }
+            ) { shader ->
+                when (shader) {
+                    is ThreeTextureInputKraftShader -> {
+                        firstInput?.let { shader.setInputTexture(it) }
+                            ?: logger.w(
+                                "First input texture is null for shader ${shader::class.simpleName}"
+                            )
+                        secondInput?.let { shader.setSecondInputTexture(it) }
+                            ?: logger.w(
+                                "Second input texture is null for shader ${shader::class.simpleName}"
+                            )
+                        thirdInput?.let { shader.setThirdInputTexture(it) }
+                            ?: logger.w(
+                                "Third input texture is null for shader ${shader::class.simpleName}"
+                            )
+                    }
+
+                    is TwoTextureInputKraftShader -> {
+                        firstInput?.let { shader.setInputTexture(it) }
+                            ?: logger.w(
+                                "First input texture is null for shader ${shader::class.simpleName}"
+                            )
                         secondInput?.let { shader.setSecondInputTexture(it) }
                             ?: logger.w(
                                 "Second input texture is null for shader ${shader::class.simpleName}"
                             )
                     }
 
-                }
-
-                is TextureInputKraftShader -> {
-                    if (record.inputs.isNotEmpty()) {
-                        val inputTexture = getTexture(record.inputs[0])
-                        inputTexture?.let { shader.setInputTexture(it) }
+                    is TextureInputKraftShader -> {
+                        firstInput?.let { shader.setInputTexture(it) }
                             ?: logger.w(
                                 "Input texture is null for shader ${shader::class.simpleName}"
                             )
                     }
                 }
             }
-
-            RunShaderStep(
-                stepIndex = index,
-                runContext = runContext,
-                shader = shader,
-                targetBuffer = if (index != records.lastIndex) {
-                    buffers.getOrPut(record.output) { bufferPool[BufferReference(this)] }
-                } else {
-                    targetBuffer
-                }
-            )
         }
+
+        steps.forEach { step -> pipeline.addStep(step) }
+    }
+
+    private fun getTexture(name: String): TextureProvider? {
+        return buffers[name] ?: getTextureProvider(name)
     }
 }
 
-internal data class PipelineShaderNode(
+private data class PipelineShaderNode(
     val shaderClassName: String,
     val shaderProperties: Map<String, Any>,
     val inputs: List<String>,
