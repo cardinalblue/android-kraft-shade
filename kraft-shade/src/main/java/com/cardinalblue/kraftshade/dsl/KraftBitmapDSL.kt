@@ -107,6 +107,12 @@ class KraftBitmapWithInputDslScope(
             }
         }
     }
+
+    suspend fun withSerializedEffect(serializedEffect: SerializedEffect): Bitmap {
+        return withPipeline {
+            step(serializedEffect, graphTargetBuffer)
+        }
+    }
 }
 
 @KraftShadeDsl
@@ -125,18 +131,7 @@ class KraftBitmapDslScope(
                 this@KraftBitmapDslScope.outputWidth,
                 this@KraftBitmapDslScope.outputHeight
             )
-            pipeline(outputBuffer, block = block,).run()
-            return outputBuffer.getBitmap()
-        }
-    }
-
-    suspend fun fromSerializedEffect(serializedEffect: SerializedEffect): Bitmap {
-        with(envScope) {
-            val outputBuffer = TextureBuffer(
-                this@KraftBitmapDslScope.outputWidth,
-                this@KraftBitmapDslScope.outputHeight
-            )
-            pipeline(outputBuffer, serializedEffect).run()
+            pipeline(outputBuffer, block = block).run()
             return outputBuffer.getBitmap()
         }
     }
