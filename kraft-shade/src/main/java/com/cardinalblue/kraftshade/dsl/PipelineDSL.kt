@@ -4,6 +4,7 @@ import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.*
 import com.cardinalblue.kraftshade.pipeline.input.Input
+import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.shader.*
 import com.cardinalblue.kraftshade.shader.buffer.*
 import com.cardinalblue.kraftshade.shader.builtin.AlphaBlendKraftShader
@@ -39,6 +40,14 @@ sealed class BasePipelineSetupScope(
                 block(GlEnvDslScope(this@BasePipelineSetupScope.pipeline.glEnv), context)
             },
         ).let(pipeline::addStep)
+    }
+
+    @KraftShadeDsl
+    open suspend fun step(
+        effect: SerializedEffect,
+        targetBuffer: GlBufferProvider,
+    ) {
+        effect.applyTo(pipeline, targetBuffer)
     }
 
     @KraftShadeDsl
@@ -299,13 +308,15 @@ class SerialTextureInputPipelineScope internal constructor(
 
         steps.forEachIndexed { index, step ->
             val isShaderStep = step is InternalShaderStep
-            val targetBufferForStep: GlBufferProvider = if (index == lastShaderStep) this.serialTargetBuffer else {
-                if (drawToBuffer1) buffer1 else buffer2
-            }
+            val targetBufferForStep: GlBufferProvider =
+                if (index == lastShaderStep) this.serialTargetBuffer else {
+                    if (drawToBuffer1) buffer1 else buffer2
+                }
 
-            val inputTextureForStep: TextureProvider = if (isFirstShaderStep) serialStartTexture else {
-                if (drawToBuffer1) buffer2 else buffer1
-            }
+            val inputTextureForStep: TextureProvider =
+                if (isFirstShaderStep) serialStartTexture else {
+                    if (drawToBuffer1) buffer2 else buffer1
+                }
 
             when (step) {
                 is InternalRunStep -> {
@@ -421,7 +432,7 @@ class SerialTextureInputPipelineScope internal constructor(
     private class InternalSingleShaderSimpleStep<S : TextureInputKraftShader>(
         shader: S,
         setupAction: suspend PipelineRunningScope.(S) -> Unit = {},
-    )  : InternalSingleShaderStep<S>(shader, setupAction)
+    ) : InternalSingleShaderStep<S>(shader, setupAction)
 
     private class InternalSingleShaderMixtureStep<S : TextureInputKraftShader>(
         shader: S,

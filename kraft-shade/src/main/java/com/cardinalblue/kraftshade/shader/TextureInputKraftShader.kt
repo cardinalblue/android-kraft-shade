@@ -19,6 +19,10 @@ abstract class TextureInputKraftShader(
 
     protected var _inputTexture: Texture by input.textureDelegate
 
+    fun getInputTexture(): Texture {
+        return _inputTexture
+    }
+
     open fun setInputTexture(texture: Texture) {
         _inputTexture = texture
     }

@@ -4,12 +4,10 @@ import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.input.Input
-import com.cardinalblue.kraftshade.pipeline.input.SampledInput
 import com.cardinalblue.kraftshade.pipeline.input.constInput
-import com.cardinalblue.kraftshade.shader.KraftShader
+import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
-import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
 /**
@@ -44,6 +42,12 @@ fun createEffectExecutionProviderWithPipeline(
     block: suspend GraphPipelineSetupScope.() -> Unit = {}
 ) = EffectExecutionProvider { targetBuffer ->
     pipeline(targetBuffer) { block() }
+}
+
+fun createEffectExecutionProvider(
+    serializedEffect: SerializedEffect
+) = EffectExecutionProvider { targetBuffer ->
+    pipeline(targetBuffer, serializedEffect)
 }
 
 fun createAnimatedEffectExecutionProviderWithPipeline(

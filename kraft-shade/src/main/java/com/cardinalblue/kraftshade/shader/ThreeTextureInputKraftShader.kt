@@ -26,7 +26,7 @@ abstract class ThreeTextureInputKraftShader(
         sizeUniformName = thirdTextureSizeUniformName,
     )
 
-    private var _thirdInputTexture: Texture by thirdInput.textureDelegate
+    protected var _thirdInputTexture: Texture by thirdInput.textureDelegate
 
     var texture3TransformMatrix: GlMat4 by GlUniformDelegate("texture3TransformMatrix", required = false)
 
@@ -34,6 +34,10 @@ abstract class ThreeTextureInputKraftShader(
         texture3TransformMatrix = GlMat4().apply {
             setIdentity()
         }
+    }
+
+    fun getThirdInputTexture(): Texture {
+        return _thirdInputTexture
     }
 
     open fun setThirdInputTexture(texture: Texture) {

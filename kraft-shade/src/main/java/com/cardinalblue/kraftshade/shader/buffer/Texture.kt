@@ -10,7 +10,8 @@ import com.cardinalblue.kraftshade.withFrameBufferRestored
 import com.cardinalblue.kraftshade.withViewPortRestored
 import java.nio.IntBuffer
 
-abstract class Texture private constructor(create: Boolean = true) : SuspendAutoCloseable, TextureProvider {
+abstract class Texture private constructor(create: Boolean = true) : SuspendAutoCloseable,
+    TextureProvider {
     var textureId: Int
         private set
 
@@ -99,7 +100,15 @@ abstract class Texture private constructor(create: Boolean = true) : SuspendAuto
                     // Read pixels
                     val pixels = IntArray(size.area)
                     val buffer = IntBuffer.wrap(pixels)
-                    GLES30.glReadPixels(0, 0, size.width, size.height, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, buffer)
+                    GLES30.glReadPixels(
+                        0,
+                        0,
+                        size.width,
+                        size.height,
+                        GLES30.GL_RGBA,
+                        GLES30.GL_UNSIGNED_BYTE,
+                        buffer
+                    )
                     buffer
                 }
             }
@@ -138,12 +147,17 @@ fun interface TextureProvider {
 }
 
 class ExternalBitmapTextureProvider(
+    /**
+     * The name of the texture. It is required for the texture to be used in shader serialization.
+     * If you don't need to serialize the shader, you can set it to null.
+     */
+    name: String? = null,
     private val provider: () -> Bitmap?,
 ) : TextureProvider {
     /**
      * need to be by lazy, because the texture is created in the GL thread.
      */
-    private val loadedTexture by lazy { LoadedTexture() }
+    private val loadedTexture by lazy { LoadedTexture(name) }
     private var bitmapHash: Int = 0
 
     override fun provideTexture(): Texture {
@@ -160,6 +174,13 @@ class ExternalBitmapTextureProvider(
     }
 }
 
-fun sampledBitmapTextureProvider(provider: () -> Bitmap?): TextureProvider {
-    return ExternalBitmapTextureProvider(provider)
+fun sampledBitmapTextureProvider(
+    /**
+     * The name of the texture. It is required for the texture to be used in shader serialization.
+     * If you don't need to serialize the shader, you can set it to null.
+     */
+    name: String? = null,
+    provider: () -> Bitmap?
+): TextureProvider {
+    return ExternalBitmapTextureProvider(name, provider)
 }

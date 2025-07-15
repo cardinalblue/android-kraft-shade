@@ -6,6 +6,7 @@ import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.AnimatedEffectExecutionProvider
 import com.cardinalblue.kraftshade.pipeline.EffectExecutionProvider
+import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.pipeline.input.constInput
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
@@ -106,6 +107,12 @@ class KraftBitmapWithInputDslScope(
             }
         }
     }
+
+    suspend fun withSerializedEffect(serializedEffect: SerializedEffect): Bitmap {
+        return withPipeline {
+            step(serializedEffect, graphTargetBuffer)
+        }
+    }
 }
 
 @KraftShadeDsl
@@ -124,10 +131,7 @@ class KraftBitmapDslScope(
                 this@KraftBitmapDslScope.outputWidth,
                 this@KraftBitmapDslScope.outputHeight
             )
-            pipeline(
-                outputBuffer,
-                block = block,
-            ).run()
+            pipeline(outputBuffer, block = block).run()
             return outputBuffer.getBitmap()
         }
     }

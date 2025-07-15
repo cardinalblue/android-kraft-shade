@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.dsl
 import android.graphics.BitmapFactory
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.Pipeline
+import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
@@ -35,13 +36,26 @@ open class GlEnvDslScope(
         }
     }
 
+    @KraftShadeDsl
+    suspend fun pipeline(
+        targetBuffer: GlBuffer,
+        serializedEffect: SerializedEffect,
+        automaticRecycle: Boolean = true,
+    ): Pipeline {
+        return env.execute {
+            val pipeline = Pipeline(env, TextureBufferPool(targetBuffer.size), automaticRecycle)
+            serializedEffect.applyTo(pipeline, targetBuffer)
+            pipeline
+        }
+    }
+
     suspend fun loadAssetTexture(assetPath: String): LoadedTexture {
         val bitmap = env.appContext.assets.open(assetPath).use {
             BitmapFactory.decodeStream(it)
         }
 
         return env.execute {
-            LoadedTexture(bitmap)
+            LoadedTexture(bitmap, name = assetPath)
         }
     }
 
