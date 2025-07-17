@@ -17,13 +17,131 @@ import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.util.KraftLogger
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
+import java.math.BigDecimal
 import kotlin.collections.forEach
+
+/**
+ * Converts JsonElement ➜ Kotlin Any with best-fit number types.
+ * 
+ * **Problem with original Gson implementation:**
+ * By default, Gson deserializes all JSON numbers to `Double`, even when they represent integers.
+ * This causes type mismatches when working with `Map<String, Any>` containing numeric values.
+ * 
+ * **Failed example with original Gson:**
+ * ```kotlin
+ * data class Item(val properties: Map<String, Any>)
+ * 
+ * val json = """{"properties": {"count": 1, "weight": 1.5}}"""
+ * val gson = Gson()
+ * val item = gson.fromJson(json, Item::class.java)
+ * 
+ * // With original Gson:
+ * println(item.properties["count"] is Int)    // false - it's Double!
+ * println(item.properties["count"] is Double) // true - 1.0 instead of 1
+ * println(item.properties["weight"] is Double) // true - correct for decimal
+ * ```
+ * 
+ * **Solution:**
+ * This adapter intelligently converts JSON numbers to the most appropriate Kotlin type:
+ * - Whole numbers within Int range → `Int`
+ * - Whole numbers within Long range → `Long` 
+ * - Larger whole numbers → `BigInteger`
+ * - Decimal numbers → `Double`
+ * 
+ * **With NaturalNumberMapAdapter:**
+ * ```kotlin
+ * val gson = GsonBuilder()
+ *     .registerTypeAdapter(object : TypeToken<Map<String, Any>>() {}.type, NaturalNumberMapAdapter())
+ *     .create()
+ * val item = gson.fromJson(json, Item::class.java)
+ * 
+ * println(item.properties["count"] is Int)    // true - correct!
+ * println(item.properties["weight"] is Double) // true - correct!
+ * ```
+ */
+class NaturalNumberMapAdapter : JsonDeserializer<Map<String, Any>> {
+
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type,
+        ctx: JsonDeserializationContext
+    ): Map<String, Any> = json.asJsonObject.entrySet().associate { (k, v) ->
+        k to decode(v)
+    }
+
+    private fun decode(el: JsonElement): Any = when {
+        el.isJsonArray     -> el.asJsonArray.map(::decode)
+        el.isJsonObject    -> el.asJsonObject.entrySet().associate { (k, v) -> k to decode(v) }
+        el.isJsonPrimitive -> decodePrimitive(el.asJsonPrimitive)
+        else               -> error("Unexpected JSON element $el")
+    }
+
+    private fun decodePrimitive(p: JsonPrimitive): Any = when {
+        p.isString  -> p.asString
+        p.isBoolean -> p.asBoolean
+        p.isNumber  -> narrowNumber(p.asBigDecimal)
+        else        -> p.asString      // fallback
+    }
+
+    /** Decides whether the number can live in Int, Long or needs Double. */
+    private fun narrowNumber(bd: BigDecimal): Any =
+        if (bd.scale() == 0) {             // no fractional part
+            try { bd.intValueExact() }     // within Int range?
+            catch (_: ArithmeticException) {
+                try { bd.longValueExact() }  // within Long range?
+                catch (_: ArithmeticException) { bd.toBigInteger() }
+            }
+        } else bd.toDouble()
+}
+
+/**
+ * Custom deserializer for PipelineShaderNode that properly handles shaderProperties
+ * using NaturalNumberMapAdapter to ensure integers are deserialized as Int, not Double.
+ */
+internal class PipelineShaderNodeAdapter : JsonDeserializer<PipelineShaderNode> {
+    private val mapAdapter = NaturalNumberMapAdapter()
+
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type,
+        ctx: JsonDeserializationContext
+    ): PipelineShaderNode {
+        val jsonObject = json.asJsonObject
+
+        val shaderClassName = jsonObject.get("shaderClassName").asString
+        val inputs = jsonObject.get("inputs").asJsonArray.map { it.asString }
+        val output = jsonObject.get("output").asString
+
+        // Use NaturalNumberMapAdapter to properly deserialize shaderProperties
+        val shaderProperties = mapAdapter.deserialize(
+            jsonObject.get("shaderProperties"),
+            object : TypeToken<Map<String, Any>>() {}.type,
+            ctx
+        )
+
+        return PipelineShaderNode(
+            shaderClassName = shaderClassName,
+            shaderProperties = shaderProperties,
+            inputs = inputs,
+            output = output
+        )
+    }
+}
 
 class EffectSerializer(private val context: Context, private val size: GlSize) {
     private val gson = GsonBuilder()
         .setPrettyPrinting()
+        .registerTypeAdapter(
+            object : TypeToken<Map<String, Any>>() {}.type,
+            NaturalNumberMapAdapter()
+        )
         .create()
 
     suspend fun serialize(
@@ -84,7 +202,7 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
         pipeline.destroy()
         glEnv.terminate()
 
-        return gson.toJson(nodes)
+        return gson.toJson(nodes).also { println(it) }
     }
 }
 
@@ -101,7 +219,17 @@ class SerializedEffect(
     private val buffers = mutableMapOf<String, BufferReference>()
 
     suspend fun applyTo(pipeline: Pipeline, targetBuffer: GlBufferProvider) {
-        val records = Gson().fromJson(json, Array<PipelineShaderNode>::class.java)
+        val gson = GsonBuilder()
+            .registerTypeAdapter(
+                object : TypeToken<Map<String, Any>>() {}.type,
+                NaturalNumberMapAdapter()
+            )
+            .registerTypeAdapter(
+                PipelineShaderNode::class.java,
+                PipelineShaderNodeAdapter()
+            )
+            .create()
+        val records = gson.fromJson(json, Array<PipelineShaderNode>::class.java)
 
         val steps = records.mapIndexed { index, record ->
             val shader = record.createShader()
@@ -165,7 +293,7 @@ class SerializedEffect(
     }
 }
 
-private data class PipelineShaderNode(
+internal data class PipelineShaderNode(
     val shaderClassName: String,
     val shaderProperties: Map<String, Any>,
     val inputs: List<String>,
@@ -175,14 +303,18 @@ private data class PipelineShaderNode(
         val shaderClass = Class.forName(shaderClassName)
         val constructor = shaderClass.getConstructor()
         return (constructor.newInstance() as KraftShader).apply {
-            shaderProperties.mapValues { (_, value) ->
+            shaderProperties.mapNotNull { (key, value) ->
                 when (value) {
-                    is List<*> -> value.map { (it as Double).toFloat() }.toFloatArray()
-                    is Int -> value.toFloat()
-                    is Double -> value.toFloat()
-                    else -> value
+                    is List<*> -> key to value.mapNotNull {
+                        when (it) {
+                            is Number -> it.toFloat()
+                            else -> null
+                        }
+                    }.toFloatArray()
+                    is Double -> key to value.toFloat()
+                    else -> key to value
                 }
-            }.let {
+            }.toMap().let {
                 setUniforms(it)
             }
         }
