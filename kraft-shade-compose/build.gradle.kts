@@ -3,7 +3,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 android {
@@ -73,40 +73,51 @@ dependencies {
 //    debugImplementation(libs.androidx.ui.test.manifest)
 }
 
-afterEvaluate {
-    publishing {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/cardinalblue/android-public-maven-packages")
 
-                credentials {
-                    username = ""
-                    password = gradleLocalProperties(rootDir, providers).getProperty("github.personalAccessToken")
-                }
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+
+    coordinates("com.cardinalblue", "kraftshade-compose", "1.0.32")
+
+    pom {
+        name.set("KraftShade Compose")
+        description.set("A Compose library for KraftShade, a Kotlin-based image processing library")
+        inceptionYear.set("2025")
+        url.set("https://github.com/cardinalblue/android-kraft-shade")
+
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
             }
         }
 
-        publications {
-            val packageGroupId = "com.cardinalblue"
-            val packageArtifactId = "kraftshade-compose"
-
-            val envKey = "MAVEN_PACKAGE_VERSION"
-            val envVersion = System.getenv(envKey)
-            val packageVersion = if (envVersion != null && envVersion.isNotBlank()) {
-                envVersion
-            } else {
-                println("Environment variable $envKey is not set. Use default version 0.1.0 for publication.")
-                "0.1.0"
+        developers {
+            developer {
+                id.set("landicefu")
+                name.set("Landice Fu")
+                url.set("https://github.com/landicefu")
             }
 
-            create<MavenPublication>("release") {
-                groupId = packageGroupId
-                artifactId = packageArtifactId
-                version = packageVersion
-
-                from(components["release"])
+            developer {
+                id.set("YujiWongTW")
+                name.set("Yuji Wong")
+                url.set("https://github.com/YujiWongTW")
             }
+
+            developer {
+                id.set("hungyanbin")
+                name.set("Yanbin Hung")
+                url.set("https://github.com/hungyanbin")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/cardinalblue/android-kraft-shade")
+            connection.set("scm:git:git://github.com/cardinalblue/android-kraft-shade.git")
+            developerConnection.set("scm:git:ssh://git@github.com/cardinalblue/android-kraft-shade.git")
         }
     }
 }

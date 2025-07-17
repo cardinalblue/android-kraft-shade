@@ -1,10 +1,10 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
+
 
 android {
     namespace = "com.cardinalblue.kraftshade"
@@ -56,13 +56,6 @@ android {
             version = "3.22.1"
         }
     }
-
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
 }
 
 dependencies {
@@ -75,40 +68,50 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-afterEvaluate {
-    publishing {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/cardinalblue/android-public-maven-packages")
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 
-                credentials {
-                    username = ""
-                    password = gradleLocalProperties(rootDir, providers).getProperty("github.personalAccessToken")
-                }
+    coordinates("com.cardinalblue", "kraftshade", "1.0.32")
+
+    pom {
+        name.set("KraftShade")
+        description.set("KraftShade is a modern, high-performance OpenGL ES graphics rendering library for Android, designed to provide a type-safe, Kotlin-first abstraction over OpenGL ES 2.0. Built with coroutines support and a focus on developer experience, KraftShade makes complex graphics operations simple while maintaining flexibility and performance.")
+        inceptionYear.set("2025")
+        url.set("https://github.com/cardinalblue/android-kraft-shade")
+
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
             }
         }
 
-        publications {
-            val packageGroupId = "com.cardinalblue"
-            val packageArtifactId = "kraftshade"
-
-            val envKey = "MAVEN_PACKAGE_VERSION"
-            val envVersion = System.getenv(envKey)
-            val packageVersion = if (envVersion != null && envVersion.isNotBlank()) {
-                envVersion
-            } else {
-                println("Environment variable $envKey is not set. Use default version 0.1.0 for publication.")
-                "0.1.0"
+        developers {
+            developer {
+                id.set("landicefu")
+                name.set("Landice Fu")
+                url.set("https://github.com/landicefu")
             }
 
-            create<MavenPublication>("release") {
-                groupId = packageGroupId
-                artifactId = packageArtifactId
-                version = packageVersion
-
-                from(components["release"])
+            developer {
+                id.set("YujiWongTW")
+                name.set("Yuji Wong")
+                url.set("https://github.com/YujiWongTW")
             }
+
+            developer {
+                id.set("hungyanbin")
+                name.set("Yanbin Hung")
+                url.set("https://github.com/hungyanbin")
+            }
+        }
+
+        scm {
+            url.set("https://github.com/cardinalblue/android-kraft-shade")
+            connection.set("scm:git:git://github.com/cardinalblue/android-kraft-shade.git")
+            developerConnection.set("scm:git:ssh://git@github.com/cardinalblue/android-kraft-shade.git")
         }
     }
 }

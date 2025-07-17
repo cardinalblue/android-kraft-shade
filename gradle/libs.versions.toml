@@ -42,4 +42,4 @@ image-processing-gpuImage = { group = "jp.co.cyberagent.android", name = "gpuima
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
