@@ -202,7 +202,7 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
         pipeline.destroy()
         glEnv.terminate()
 
-        return gson.toJson(nodes).also { println(it) }
+        return gson.toJson(nodes)
     }
 }
 
