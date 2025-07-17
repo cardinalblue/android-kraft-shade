@@ -51,3 +51,6 @@ suspend fun Context.loadBitmapFromAsset(
         BitmapFactory.decodeStream(stream)
     }
 }
+
+val Bitmap.aspectRatio: Float
+    get() = width.toFloat() / height

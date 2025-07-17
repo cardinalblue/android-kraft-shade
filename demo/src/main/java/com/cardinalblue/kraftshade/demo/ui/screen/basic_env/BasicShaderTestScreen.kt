@@ -13,7 +13,7 @@ import com.cardinalblue.kraftshade.demo.shader.DrawCircleKraftShader
 import com.cardinalblue.kraftshade.model.GlColor
 
 @Composable
-fun BlendingExampleScreen() {
+fun BasicShaderScreen() {
     val state = rememberKraftShadeEffectState()
 
     Box(
@@ -30,8 +30,11 @@ fun BlendingExampleScreen() {
         state.runGlTask { windowSurface ->
             val shader = DrawCircleKraftShader(
                 color = GlColor.Red,
-                backgroundColor = GlColor.White.copyColor(a = 0.5f),
-            )
+                backgroundColor = GlColor.Green,
+            ).apply {
+                debug = true
+            }
+
             shader.drawTo(windowSurface)
         }
     }

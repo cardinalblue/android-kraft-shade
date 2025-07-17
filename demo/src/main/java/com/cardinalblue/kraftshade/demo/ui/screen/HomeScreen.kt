@@ -64,7 +64,6 @@ enum class Destination(
     ResizeTest("resize_test", "Resize Test", screen = { ResizeTestScreen() }),
     BasicShader("basic_shader", "Basic Shader", screen = { BasicShaderScreen() }),
     BlendingExample("blending_example", "Blending Example", screen = { BlendingExampleScreen() }),
-    SaturationShader("saturation_shader", "Saturation Shader", screen = { SaturationShaderScreen() }),
     EmbossShader("emboss_shader", "Emboss Shader", screen = { EmbossShaderScreen() }),
     LookUpTableShader("look_up_table_shader", "Look Up Table Shader", screen = { LookUpTableShaderTestScreen() }),
     TransparencyTest("transparency_test", "Transparency Test", screen = { TransparencyTestWindow() }),
