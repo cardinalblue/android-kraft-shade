@@ -203,7 +203,7 @@ pipeline(windowSurface) {
 
 ## Effect Serialization
 
-KraftShade provides a powerful serialization system that allows you to convert complex effect pipelines into JSON format and reconstruct them later. This enables effect sharing, storage, and cross-platform compatibility.
+KraftShade provides a powerful serialization system that allows you to convert complex effect pipelines into JSON format and reconstruct them later. This enables effect sharing, storage.
 
 **Important**: The serialization system creates a **snapshot** of your pipeline at the time of serialization, capturing the static structure and parameter values that were active during serialization.
 
