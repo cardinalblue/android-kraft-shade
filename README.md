@@ -7,6 +7,7 @@ KraftShade is a modern, high-performance OpenGL ES graphics rendering library fo
 - [Features & Goals](#features--goals)
 - [Core Components](#core-components)
 - [Pipeline DSL](#pipeline-dsl)
+- [Effect Serialization](#effect-serialization)
 - [Support Status](#support-status)
 - [Usage](#usage)
 - [Installation](#installation)
@@ -199,6 +200,169 @@ pipeline(windowSurface) {
     }
 }
 ```
+
+## Effect Serialization
+
+KraftShade provides a powerful serialization system that allows you to convert complex effect pipelines into JSON format and reconstruct them later. This enables effect sharing, storage.
+
+**Important**: The serialization system creates a **snapshot** of your pipeline at the time of serialization, capturing the static structure and parameter values that were active during serialization.
+
+### Core Serialization Components
+
+#### EffectSerializer
+The [`EffectSerializer`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/serialization/EffectSerializer.kt:24) converts pipeline setups into JSON format:
+
+```kotlin
+class EffectSerializer(private val context: Context, private val size: GlSize) {
+    suspend fun serialize(
+        block: suspend GraphPipelineSetupScope.() -> Unit,
+    ): String
+}
+```
+
+#### SerializedEffect
+The [`SerializedEffect`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/serialization/EffectSerializer.kt:91) reconstructs effects from JSON:
+
+```kotlin
+class SerializedEffect(
+    private val json: String,
+    private val getTextureProvider: (String) -> TextureProvider?,
+) {
+    suspend fun applyTo(pipeline: Pipeline, targetBuffer: GlBufferProvider)
+}
+```
+
+### Serialization Workflow
+
+The serialization process follows this workflow:
+
+```mermaid
+graph LR
+    A[Pipeline Setup] --> B[EffectSerializer]
+    B --> C[JSON String]
+    C --> D[SerializedEffect]
+    D --> E[Reconstructed Pipeline]
+    F[Texture Providers] --> D
+```
+
+### How Serialization Works
+
+1. **Capture Pipeline Structure**: The serializer executes your pipeline setup to collect all shader steps
+2. **Extract Shader Information**: For each step, it captures:
+   - Shader class name and properties
+   - Input texture references
+   - Output buffer references
+3. **Generate JSON**: Creates a structured JSON representation of the pipeline
+4. **Reconstruction**: Uses the JSON and provided texture providers to rebuild the exact same pipeline
+
+### Usage Example
+
+Here's a complete example showing how to serialize and deserialize an effect:
+
+```kotlin
+// Define your effect pipeline
+suspend fun createVintageEffect(
+    inputImage: Bitmap,
+    maskImage: Bitmap
+): suspend GraphPipelineSetupScope.() -> Unit = {
+    val pipelineModifier = VintageGlowPipelineModifier(
+        equalizedImage = sampledBitmapTextureProvider("input") { inputImage },
+        faceMask = sampledBitmapTextureProvider("mask") { maskImage },
+        contrast = sampledInput { 1.2f },
+        brightness = sampledInput { 0.1f },
+        intensity = sampledInput { 0.8f }
+    )
+    
+    pipelineModifier.apply {
+        addStep(
+            inputTexture = sampledBitmapTextureProvider("input") { inputImage },
+            outputBuffer = graphTargetBuffer
+        )
+    }
+}
+
+// Serialize the effect
+val context = LocalContext.current
+val serializer = EffectSerializer(context, GlSize(1024, 1024))
+val jsonString = serializer.serialize(createVintageEffect(inputBitmap, maskBitmap))
+
+// Deserialize and apply the effect
+val serializedEffect = SerializedEffect(json = jsonString) { textureId ->
+    when (textureId) {
+        "input" -> sampledBitmapTextureProvider("input") { inputBitmap }
+        "mask" -> sampledBitmapTextureProvider("mask") { maskBitmap }
+        else -> null
+    }
+}
+
+// Apply to your view
+state.setEffect { targetBuffer ->
+    createEffectExecutionProvider(serializedEffect)
+}
+```
+
+### Texture Provider Mapping
+
+When deserializing, you need to provide a mapping function that resolves texture names to [`TextureProvider`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/buffer/TextureProvider.kt) instances:
+
+```kotlin
+val serializedEffect = SerializedEffect(json = jsonString) { textureId ->
+    when (textureId) {
+        "input" -> sampledBitmapTextureProvider("input") { inputBitmap }
+        "foreground_mask" -> sampledBitmapTextureProvider("mask") { maskBitmap }
+        else -> {
+            // Handle asset textures or other resources
+            val bitmap = context.assets.open(textureId).use {
+                BitmapFactory.decodeStream(it)
+            }
+            bitmap.asTexture()
+        }
+    }
+}
+```
+
+### JSON Structure
+
+The serialized JSON contains an array of shader nodes, each with:
+
+```json
+[
+  {
+    "shaderClassName": "com.cardinalblue.kraftshade.shader.SaturationKraftShader",
+    "shaderProperties": {
+      "saturation": 1.5
+    },
+    "inputs": ["input"],
+    "output": "BufferReference@12345"
+  },
+  {
+    "shaderClassName": "com.cardinalblue.kraftshade.shader.BrightnessKraftShader",
+    "shaderProperties": {
+      "brightness": 0.2
+    },
+    "inputs": ["BufferReference@12345"],
+    "output": "BufferReference@67890"
+  }
+]
+```
+
+### Best Practices
+
+1. **Consistent Naming**: Use consistent texture names (like `"input"`, `"foreground_mask"`) for better maintainability
+2. **Size Considerations**: Choose appropriate [`GlSize`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/model/GlSize.kt) for serialization based on your target use case
+3. **Error Handling**: Always provide fallback texture providers for missing resources
+4. **Testing**: Compare original and deserialized effects to ensure consistency
+
+### Limitations
+
+- **Static Snapshot Only**: Serialization captures fixed parameter values at serialization time - dynamic inputs like [`SampledInput<T>`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/input/SampledInput.kt), animations, or time-based effects are not preserved
+- Sub-pipelines are not yet supported in serialization
+- Complex input types beyond textures may require custom handling
+- Shader properties must be serializable to JSON (primitives, arrays)
+
+### Future Improvements
+
+- **SerializableKraftShader Interface**: Implement a more flexible serialization system by defining a `SerializableKraftShader` interface. This would allow shaders to provide their own serialization information instead of the current approach where the serializer needs to recognize specific shader types like [`TwoTextureInputKraftShader`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/TwoTextureInputKraftShader.kt). This design would give better control over serialization behavior and make [`KraftShader`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/KraftShader.kt) more flexible.
 
 ## Support Status
 
