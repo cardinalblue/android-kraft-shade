@@ -14,6 +14,29 @@ import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.FalseColorKraftShader
 import kotlin.random.Random
 
+/**
+ * Demo screen that demonstrates the False Color shader effect in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [FalseColorKraftShader]
+ * to apply a false color effect to an image using two customizable colors.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Applying [FalseColorKraftShader] to create a false color effect
+ * - Interactive color selection through clickable color swatches
+ * - Converting Compose [Color] to KraftShade color formats
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates using [stepWithInputTexture] for shader configuration
+ * - Shows how to update shader parameters in real-time
+ * - Uses [LaunchedEffect] to trigger re-rendering when colors change
+ * - Maintains proper aspect ratio of the source image
+ *
+ * User interactions:
+ * - Click on color swatches to randomly change the colors used in the effect
+ */
 @Composable
 fun FalseColorShaderScreen() {
 

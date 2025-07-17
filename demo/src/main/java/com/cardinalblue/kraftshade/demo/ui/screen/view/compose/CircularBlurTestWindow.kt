@@ -15,6 +15,28 @@ import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.CircularBlurKraftShader
 
+/**
+ * Demo screen that demonstrates the Circular Blur effect in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [CircularBlurKraftShader]
+ * to apply a circular Gaussian blur effect to an image with adjustable parameters.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Applying [CircularBlurKraftShader] for circular blur effects
+ * - Interactive adjustment of shader parameters using sliders
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates creating a serial pipeline with steps
+ * - Shows how to update shader parameters in real-time
+ * - Maintains proper aspect ratio of the source image
+ *
+ * User interactions:
+ * - Slider to adjust the blur amount from 0.0 to 1.0
+ * - Slider to adjust the blur repeat count from 1 to 120
+ */
 @Composable
 fun CircularBlurTestWindow() {
     val state = rememberKraftShadeEffectState()

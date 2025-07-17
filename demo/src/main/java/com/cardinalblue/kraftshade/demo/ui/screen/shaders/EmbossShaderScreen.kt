@@ -15,6 +15,27 @@ import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.EmbossKraftShader
 
+/**
+ * Demo screen that demonstrates the Emboss shader effect in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [EmbossKraftShader]
+ * to apply an emboss effect to an image, with adjustable intensity.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Applying [EmbossKraftShader] to create an emboss effect
+ * - Interactive adjustment of shader parameters using a slider
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates creating a serial pipeline with steps
+ * - Shows how to update shader parameters in real-time
+ * - Maintains proper aspect ratio of the source image
+ *
+ * User interactions:
+ * - Slider to adjust the emboss effect intensity from 0.0 to 1.0
+ */
 @Composable
 fun EmbossShaderScreen() {
     var aspectRatio by remember { mutableFloatStateOf(1f) }

@@ -19,6 +19,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.*
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
 
+
 @Composable
 fun HomeScreen() {
     ColumnScreen {

@@ -21,6 +21,39 @@ import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.*
 
+/**
+ * Demo screen that demonstrates a comprehensive set of shader effects in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with multiple shaders
+ * in a serial pipeline to apply a wide range of adjustable visual effects to an image.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Creating a complex serial pipeline with multiple shader effects
+ * - Organizing UI controls into collapsible sections
+ * - Interactive adjustment of numerous shader parameters
+ * - Using [sampledInput] for mixture effects
+ *
+ * Shader effects demonstrated:
+ * - Color adjustments (saturation, brightness, contrast, gamma, monochrome)
+ * - RGB channel controls
+ * - Color balance (shadows, midtones, highlights)
+ * - Special effects (pixelation, edge detection, swirl, zoom blur)
+ * - White balance and highlight/shadow adjustments
+ * - Color matrix transformations
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates creating a complex serial pipeline with many steps
+ * - Shows how to update multiple shader parameters in real-time
+ * - Uses [CollapsibleSection] for organizing the UI
+ * - Maintains proper aspect ratio of the source image
+ *
+ * User interactions:
+ * - Multiple sliders organized in collapsible sections for adjusting various parameters
+ * - Toggle switches for boolean parameters
+ */
 @Composable
 fun KraftShadeEffectViewTestWindow() {
     val state = rememberKraftShadeEffectState()

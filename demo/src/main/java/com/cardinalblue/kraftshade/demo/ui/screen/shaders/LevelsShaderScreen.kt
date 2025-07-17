@@ -16,6 +16,34 @@ import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.LevelsKraftShader
 
+/**
+ * Demo screen that demonstrates the Levels adjustment shader in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [LevelsKraftShader]
+ * to apply comprehensive color level adjustments to an image with per-channel control.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Applying [LevelsKraftShader] for precise color level adjustments
+ * - Independent control of RGB channels
+ * - Adjusting input/output ranges and midpoint gamma for each channel
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates creating a serial pipeline with steps
+ * - Shows how to update multiple shader parameters in real-time
+ * - Uses [adjustRed], [adjustGreen], and [adjustBlue] methods for channel-specific adjustments
+ * - Maintains proper aspect ratio of the source image
+ *
+ * User interactions:
+ * - Multiple sliders to adjust:
+ *   - Min (black point) for each channel
+ *   - Mid (gamma) for each channel
+ *   - Max (white point) for each channel
+ *   - Min Out (output black point) for each channel
+ *   - Max Out (output white point) for each channel
+ */
 @Composable
 fun LevelsShaderScreen() {
     val state = rememberKraftShadeEffectState()

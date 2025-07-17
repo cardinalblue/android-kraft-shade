@@ -15,6 +15,34 @@ import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.ToonKraftShader
 
+/**
+ * Demo screen that demonstrates the Toon/Cartoon effect in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [ToonKraftShader]
+ * to apply a cartoon/toon effect to an image with adjustable edge detection and
+ * color quantization parameters.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Applying [ToonKraftShader] for cartoon-style rendering
+ * - Interactive adjustment of shader parameters using sliders
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates creating a serial pipeline with steps
+ * - Shows how to update shader parameters in real-time
+ * - Maintains proper aspect ratio of the source image
+ *
+ * User interactions:
+ * - Slider to adjust the edge detection threshold from 0.0 to 1.0
+ * - Slider to adjust the color quantization levels from 2 to 20
+ *
+ * Technical background:
+ * - The toon effect combines edge detection with color quantization
+ * - Edge threshold controls the sensitivity of edge detection
+ * - Quantization levels control how many distinct colors appear in the output
+ */
 @Composable
 fun ToonEffectTestWindow() {
     val state = rememberKraftShadeEffectState()

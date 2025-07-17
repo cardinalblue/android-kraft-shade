@@ -13,6 +13,25 @@ import com.cardinalblue.kraftshade.dsl.kraftBitmap
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ContrastKraftShader
 
+/**
+ * Demo screen that demonstrates the KraftBitmap DSL for image processing.
+ *
+ * This screen showcases how to use the [kraftBitmap] DSL to apply multiple shaders
+ * to an image in a serial pipeline and display the result in a Compose [Image].
+ *
+ * Features demonstrated:
+ * - Using the [kraftBitmap] DSL to process images
+ * - Creating a serial pipeline of shaders
+ * - Applying multiple effects (contrast and brightness) in sequence
+ * - Converting the result to an [ImageBitmap] for display in Compose
+ *
+ * Implementation details:
+ * - Loads an image from assets
+ * - Uses [serialPipeline] to chain multiple shaders
+ * - Applies [ContrastKraftShader] with increased contrast (4f)
+ * - Applies [BrightnessKraftShader] with decreased brightness (-0.5f)
+ * - Converts the processed bitmap to an ImageBitmap for display
+ */
 @Composable
 fun KraftBitmapTestScreen() {
     var bitmap: ImageBitmap? by remember { mutableStateOf(null) }

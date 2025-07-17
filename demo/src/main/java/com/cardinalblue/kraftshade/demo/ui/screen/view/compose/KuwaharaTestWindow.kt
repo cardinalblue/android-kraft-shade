@@ -27,6 +27,35 @@ import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.KuwaharaKraftShader
 
+/**
+ * Demo screen that demonstrates the Kuwahara filter effect in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [KuwaharaKraftShader]
+ * to apply a Kuwahara filter to an image with adjustable radius.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Applying [KuwaharaKraftShader] for edge-preserving smoothing
+ * - Interactive adjustment of filter radius using a slider
+ * - Using [CollapsibleSection] for organizing UI controls
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates creating a serial pipeline with steps
+ * - Shows how to update shader parameters in real-time
+ * - Maintains proper aspect ratio of the source image
+ *
+ * User interactions:
+ * - Slider to adjust the filter radius from 1 to 10
+ *
+ * Technical background:
+ * - The Kuwahara filter is a non-linear smoothing filter that preserves edges
+ * - It works by dividing the area around each pixel into quadrants, computing the
+ *   mean and variance in each quadrant, and replacing the pixel with the mean of
+ *   the quadrant with the smallest variance
+ * - Larger radius values create a more pronounced painterly effect
+ */
 @Composable
 fun KuwaharaTestWindow() {
     val state = rememberKraftShadeEffectState()

@@ -15,6 +15,30 @@ import com.cardinalblue.kraftshade.pipeline.input.bounceBetween
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 
+/**
+ * Demo screen that demonstrates the animated shader capabilities in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeAnimatedView] with [KraftShadeAnimatedState]
+ * to create time-based animations of shader effects, specifically a saturation effect
+ * that oscillates between grayscale and full color.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeAnimatedState] with [KraftShadeAnimatedView]
+ * - Loading and displaying an image from assets
+ * - Creating time-based animations with [timeInput]
+ * - Using [bounceBetween] to create oscillating values
+ * - Applying [SaturationKraftShader] with animated parameters
+ * - Controlling animation playback with play/pause functionality
+ *
+ * Implementation details:
+ * - Uses [setEffectAndPlay] to configure and start the animation
+ * - Demonstrates creating a serial pipeline with animated steps
+ * - Shows how to bind time-based inputs to shader parameters
+ * - Maintains proper aspect ratio of the source image
+ *
+ * User interactions:
+ * - Button to toggle between play and pause states for the animation
+ */
 @Composable
 fun KraftShadeAnimatedViewTestWindow() {
     val state = rememberKraftShadeAnimatedState()

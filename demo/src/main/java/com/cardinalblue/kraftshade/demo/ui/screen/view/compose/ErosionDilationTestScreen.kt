@@ -15,6 +15,38 @@ import com.cardinalblue.kraftshade.shader.builtin.DilationKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.ErosionKraftShader
 import com.cardinalblue.kraftshade.shader.stepWithTwoPassSamplingFilter
 
+/**
+ * Demo screen that demonstrates morphological operations (erosion and dilation) in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [ErosionKraftShader] and
+ * [DilationKraftShader] to apply morphological operations to a simple shape (circle).
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Creating a simple shape using [DrawCircleKraftShader]
+ * - Applying morphological operations with [ErosionKraftShader] and [DilationKraftShader]
+ * - Using [stepWithTwoPassSamplingFilter] for efficient two-pass filtering
+ * - Interactive adjustment of shader parameters using sliders
+ * - Creating and using intermediate buffers with [createBufferReferences]
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates creating buffer references for multi-pass rendering
+ * - Shows how to chain multiple morphological operations
+ * - Uses named steps with [step] for better debugging
+ * - Configures texel size ratios for controlling operation intensity
+ *
+ * User interactions:
+ * - Slider to adjust the erosion sample ratio from 1 to 100
+ * - Slider to adjust the dilation sample ratio from 1 to 100
+ *
+ * Technical background:
+ * - Erosion shrinks bright regions and enlarges dark regions
+ * - Dilation enlarges bright regions and shrinks dark regions
+ * - These operations are fundamental in image processing for tasks like
+ *   noise removal, feature extraction, and edge detection
+ * - The sample ratio controls the intensity of the morphological operation
+ */
 @Composable
 fun ErosionDilationTestScreen() {
     val state = rememberKraftShadeEffectState()

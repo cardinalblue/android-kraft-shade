@@ -12,6 +12,30 @@ import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.EmbossKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.LookUpTableKraftShader
 
+/**
+ * Demo screen that demonstrates the Look-Up Table (LUT) shader in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [LookUpTableKraftShader]
+ * to apply color grading to an image using a lookup table image.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Loading a LUT image from assets
+ * - Applying [LookUpTableKraftShader] for color grading
+ * - Working with multiple input textures in a shader
+ *
+ * Implementation details:
+ * - Uses [runGlTask] to execute OpenGL operations
+ * - Demonstrates setting multiple input textures on a shader
+ * - Shows how to apply a black and white LUT effect
+ * - Maintains proper aspect ratio of the source image
+ *
+ * Technical background:
+ * - A Look-Up Table (LUT) is a predefined transformation of colors used for color grading
+ * - The LUT image contains a mapping of original colors to their transformed versions
+ * - This technique is commonly used in photo and video editing for consistent color treatments
+ */
 @Composable
 fun LookUpTableShaderTestScreen() {
     var aspectRatio by remember { mutableFloatStateOf(1f) }

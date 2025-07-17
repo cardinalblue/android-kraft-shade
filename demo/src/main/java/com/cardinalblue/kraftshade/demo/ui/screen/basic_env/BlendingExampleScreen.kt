@@ -12,6 +12,24 @@ import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.demo.shader.DrawCircleKraftShader
 import com.cardinalblue.kraftshade.model.GlColor
 
+/**
+ * Demo screen that demonstrates alpha blending in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with a custom shader
+ * that demonstrates alpha blending by drawing a red circle on a semi-transparent
+ * white background.
+ *
+ * Features demonstrated:
+ * - Basic KraftShade setup with [KraftShadeEffectState]
+ * - Using a custom shader ([DrawCircleKraftShader])
+ * - Alpha blending with semi-transparent colors
+ * - Color manipulation using [GlColor.copyColor]
+ *
+ * Implementation details:
+ * - Uses [runGlTask] to execute OpenGL operations
+ * - Demonstrates setting alpha values for background colors
+ * - Shows how transparency affects rendering in OpenGL
+ */
 @Composable
 fun BlendingExampleScreen() {
     val state = rememberKraftShadeEffectState()

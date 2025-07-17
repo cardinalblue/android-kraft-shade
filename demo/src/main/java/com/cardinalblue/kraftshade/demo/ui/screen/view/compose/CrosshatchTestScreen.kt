@@ -15,6 +15,36 @@ import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.CrosshatchKraftShader
 
+/**
+ * Demo screen that demonstrates the Crosshatch shader effect in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with [CrosshatchKraftShader]
+ * to apply a crosshatch drawing effect to an image with adjustable parameters.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Applying [CrosshatchKraftShader] for artistic crosshatching effects
+ * - Interactive adjustment of shader parameters using sliders
+ * - Using [LaunchedEffect] to trigger re-rendering when parameters change
+ *
+ * Implementation details:
+ * - Uses [setEffect] to configure the rendering pipeline
+ * - Demonstrates creating a serial pipeline with steps
+ * - Shows how to update shader parameters in real-time
+ * - Maintains proper aspect ratio of the source image
+ * - Uses precise parameter control with [numberOfFractionDigits]
+ *
+ * User interactions:
+ * - Slider to adjust the crosshatch spacing from 0.01 to 0.1
+ * - Slider to adjust the line width from 0.001 to 0.01
+ *
+ * Technical background:
+ * - Crosshatching is a drawing technique that uses closely spaced parallel lines
+ *   to create tone and shading in illustrations
+ * - The crosshatch spacing controls the density of the hatching pattern
+ * - The line width controls the thickness of individual lines in the pattern
+ */
 @Composable
 fun CrosshatchTestScreen() {
     val state = rememberKraftShadeEffectState()

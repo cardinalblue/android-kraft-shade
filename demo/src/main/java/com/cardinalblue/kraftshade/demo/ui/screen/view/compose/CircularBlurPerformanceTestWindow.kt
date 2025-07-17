@@ -21,6 +21,34 @@ import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlin.time.Duration
 import kotlin.time.measureTime
 
+/**
+ * Demo screen that demonstrates performance testing of the Circular Blur shader in KraftShade.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] to run performance tests
+ * on the [CircularBlurKraftShader] with various parameter combinations and measure
+ * rendering times.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Running systematic performance tests with different parameter values
+ * - Measuring rendering time with [measureTime]
+ * - Using [DangerousKraftShadeApi] for blocking render operations
+ * - Displaying performance test results
+ *
+ * Implementation details:
+ * - Uses [setEffect] with an [afterSet] callback to run performance tests
+ * - Tests multiple combinations of repeat and amount parameters
+ * - Runs each test configuration 5 times and calculates the average
+ * - Uses [renderBlocking] to ensure accurate timing measurements
+ * - Displays real-time progress and final results
+ * - Logs results using [KraftLogger]
+ *
+ * Technical background:
+ * - Performance testing is crucial for shader effects that may be computationally expensive
+ * - The circular blur effect's performance is primarily affected by the repeat count and blur amount
+ * - This screen helps identify optimal parameter values for different performance requirements
+ */
 @Composable
 fun CircularBlurPerformanceTestWindow() {
     val logger = remember {
