@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components
+package com.cardinalblue.kraftshade.demo.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState

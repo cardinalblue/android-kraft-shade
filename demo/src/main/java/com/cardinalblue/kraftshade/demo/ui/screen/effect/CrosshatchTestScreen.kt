@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
+package com.cardinalblue.kraftshade.demo.ui.screen.effect
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,33 +10,28 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
+import com.cardinalblue.kraftshade.demo.ui.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
-import com.cardinalblue.kraftshade.shader.builtin.ColorInvertKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.CrosshatchKraftShader
-import com.cardinalblue.kraftshade.shader.builtin.MultiplyBlendKraftShader
 
 /**
- * Demo screen that demonstrates a colorful crosshatch effect using multiple shaders in KraftShade.
+ * Demo screen that demonstrates the Crosshatch shader effect in KraftShade.
  *
- * This screen showcases how to use [KraftShadeEffectView] with multiple shaders in sequence
- * to create a complex colorful crosshatch effect by combining [CrosshatchKraftShader],
- * [ColorInvertKraftShader], and [MultiplyBlendKraftShader].
+ * This screen showcases how to use [KraftShadeEffectView] with [CrosshatchKraftShader]
+ * to apply a crosshatch drawing effect to an image with adjustable parameters.
  *
  * Features demonstrated:
  * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
  * - Loading and displaying an image from assets
- * - Creating intermediate buffer references for multi-pass rendering
- * - Chaining multiple shader effects (crosshatch, invert, multiply blend)
+ * - Applying [CrosshatchKraftShader] for artistic crosshatching effects
  * - Interactive adjustment of shader parameters using sliders
  * - Using [LaunchedEffect] to trigger re-rendering when parameters change
  *
  * Implementation details:
  * - Uses [setEffect] to configure the rendering pipeline
- * - Demonstrates creating buffer references with [createBufferReferences]
- * - Shows how to create a multi-pass rendering pipeline
- * - Uses [stepWithInputTexture] for blending operations
+ * - Demonstrates creating a serial pipeline with steps
+ * - Shows how to update shader parameters in real-time
  * - Maintains proper aspect ratio of the source image
  * - Uses precise parameter control with [numberOfFractionDigits]
  *
@@ -44,14 +39,14 @@ import com.cardinalblue.kraftshade.shader.builtin.MultiplyBlendKraftShader
  * - Slider to adjust the crosshatch spacing from 0.01 to 0.1
  * - Slider to adjust the line width from 0.001 to 0.01
  *
- * Technical approach:
- * - First applies a crosshatch effect to the original image
- * - Then inverts the colors of the crosshatched result
- * - Finally multiplies the inverted crosshatch with the original image
- * - This creates a colorful effect where the original colors show through the crosshatching
+ * Technical background:
+ * - Crosshatching is a drawing technique that uses closely spaced parallel lines
+ *   to create tone and shading in illustrations
+ * - The crosshatch spacing controls the density of the hatching pattern
+ * - The line width controls the thickness of individual lines in the pattern
  */
 @Composable
-fun ColorfulCrosshatchTestScreen() {
+fun CrosshatchTestScreen() {
     val state = rememberKraftShadeEffectState()
     var aspectRatio by remember { mutableFloatStateOf(1f) }
     var crossHatchSpacing by remember { mutableFloatStateOf(0.03f) }
@@ -97,25 +92,12 @@ fun ColorfulCrosshatchTestScreen() {
                     aspectRatio = bitmap.width.toFloat() / bitmap.height
 
                     pipeline(windowSurface) {
-                        val (invertedCrosshatch) = createBufferReferences("inverted_crosshatch")
-
-                        val inputTexture = bitmap.asTexture()
-                        serialSteps(inputTexture, invertedCrosshatch) {
+                        serialSteps(bitmap.asTexture(), windowSurface) {
                             step(CrosshatchKraftShader()) { shader ->
                                 shader.crossHatchSpacing = crossHatchSpacing
                                 shader.lineWidth = lineWidth
                             }
-
-                            step(ColorInvertKraftShader())
                         }
-
-                        stepWithInputTexture(
-                            MultiplyBlendKraftShader().apply {
-                                setSecondInputTexture(inputTexture)
-                            },
-                            invertedCrosshatch,
-                            targetBuffer = windowSurface,
-                        )
                     }
                 }
             }

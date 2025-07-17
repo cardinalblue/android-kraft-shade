@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.basic_env
+package com.cardinalblue.kraftshade.demo.ui.screen.basic
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -13,25 +13,23 @@ import com.cardinalblue.kraftshade.demo.shader.DrawCircleKraftShader
 import com.cardinalblue.kraftshade.model.GlColor
 
 /**
- * Demo screen that demonstrates alpha blending in KraftShade.
+ * Demo screen that demonstrates basic shader functionality in KraftShade.
  *
- * This screen showcases how to use [KraftShadeEffectView] with a custom shader
- * that demonstrates alpha blending by drawing a red circle on a semi-transparent
- * white background.
+ * This screen showcases how to use [KraftShadeEffectView] with a simple custom shader
+ * that draws a red circle on a green background.
  *
  * Features demonstrated:
  * - Basic KraftShade setup with [KraftShadeEffectState]
  * - Using a custom shader ([DrawCircleKraftShader])
- * - Alpha blending with semi-transparent colors
- * - Color manipulation using [GlColor.copyColor]
+ * - Setting shader colors with [GlColor]
+ * - Enabling shader debugging
  *
  * Implementation details:
  * - Uses [runGlTask] to execute OpenGL operations
- * - Demonstrates setting alpha values for background colors
- * - Shows how transparency affects rendering in OpenGL
+ * - Demonstrates direct drawing to a window surface
  */
 @Composable
-fun BlendingExampleScreen() {
+fun BasicShaderScreen() {
     val state = rememberKraftShadeEffectState()
 
     Box(
@@ -48,8 +46,11 @@ fun BlendingExampleScreen() {
         state.runGlTask { windowSurface ->
             val shader = DrawCircleKraftShader(
                 color = GlColor.Red,
-                backgroundColor = GlColor.White.copyColor(a = 0.5f),
-            )
+                backgroundColor = GlColor.Green,
+            ).apply {
+                debug = true
+            }
+
             shader.drawTo(windowSurface)
         }
     }

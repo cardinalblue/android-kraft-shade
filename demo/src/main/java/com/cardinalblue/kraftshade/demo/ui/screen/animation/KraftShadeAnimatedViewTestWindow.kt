@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
+package com.cardinalblue.kraftshade.demo.ui.screen.animation
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button

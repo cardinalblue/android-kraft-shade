@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
+package com.cardinalblue.kraftshade.demo.ui.screen.blur
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio

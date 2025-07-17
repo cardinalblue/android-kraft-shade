@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.shaders
+package com.cardinalblue.kraftshade.demo.ui.screen.color
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*

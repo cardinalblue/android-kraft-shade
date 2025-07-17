@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
+package com.cardinalblue.kraftshade.demo.ui.screen.blur
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
+import com.cardinalblue.kraftshade.demo.ui.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.CircularBlurKraftShader

@@ -12,8 +12,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.CollapsibleSection
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
+import com.cardinalblue.kraftshade.demo.ui.components.CollapsibleSection
+import com.cardinalblue.kraftshade.demo.ui.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.model.GlMat4
 import com.cardinalblue.kraftshade.model.GlVec2

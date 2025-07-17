@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
+package com.cardinalblue.kraftshade.demo.ui.screen.effect
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.aspectRatio
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.CollapsibleSection
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.components.ParameterSlider
+import com.cardinalblue.kraftshade.demo.ui.components.CollapsibleSection
+import com.cardinalblue.kraftshade.demo.ui.components.ParameterSlider
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.shader.buffer.asTexture
 import com.cardinalblue.kraftshade.shader.builtin.KuwaharaKraftShader

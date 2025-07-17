@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.shaders
+package com.cardinalblue.kraftshade.demo.ui.screen.effect
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Slider

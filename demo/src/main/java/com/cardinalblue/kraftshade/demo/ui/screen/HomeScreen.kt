@@ -11,12 +11,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BasicShaderScreen
-import com.cardinalblue.kraftshade.demo.ui.screen.basic_env.BlendingExampleScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.basic.BasicShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.basic.BlendingExampleScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.dsl.KraftBitmapTestScreen
-import com.cardinalblue.kraftshade.demo.ui.screen.shaders.*
+import com.cardinalblue.kraftshade.demo.ui.screen.color.FalseColorShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.color.LevelsShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.color.LookUpTableShaderTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.EmbossShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.CrosshatchTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.ColorfulCrosshatchTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.ToonEffectTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.KuwaharaTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
-import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.*
+import com.cardinalblue.kraftshade.demo.ui.screen.blur.CircularBlurTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.blur.CircularBlurPerformanceTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.morphology.ErosionDilationTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.animation.KraftShadeAnimatedViewTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.view.ResizeTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeEffectViewTestWindow
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
 
 

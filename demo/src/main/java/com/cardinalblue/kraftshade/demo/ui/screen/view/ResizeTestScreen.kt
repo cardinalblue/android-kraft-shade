@@ -1,4 +1,4 @@
-package com.cardinalblue.kraftshade.demo.ui.screen.view.compose
+package com.cardinalblue.kraftshade.demo.ui.screen.view
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -7,7 +7,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
@@ -17,6 +16,34 @@ import com.cardinalblue.kraftshade.shader.builtin.DoNothingKraftShader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * Demo screen that demonstrates resizing capabilities of KraftShadeEffectView.
+ *
+ * This screen showcases how to use [KraftShadeEffectView] with dynamic resizing
+ * while maintaining the proper aspect ratio of the source image.
+ *
+ * Features demonstrated:
+ * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
+ * - Loading and displaying an image from assets
+ * - Dynamically resizing the view while preserving content
+ * - Using [DoNothingKraftShader] for direct image rendering
+ * - Maintaining proper aspect ratio during resizing
+ *
+ * Implementation details:
+ * - Uses nested [Box] composables for controlled resizing
+ * - Applies [fillMaxWidth] with a dynamic fraction for resizing
+ * - Uses [sampledBitmapTextureProvider] to load the image texture
+ * - Creates a simple pipeline with [DoNothingKraftShader]
+ * - Uses [derivedStateOf] for calculating aspect ratio
+ *
+ * User interactions:
+ * - Slider to adjust the size of the view from very small (0.1%) to full width (100%)
+ * - The image maintains its aspect ratio regardless of the view size
+ *
+ * Technical background:
+ * - Demonstrates how KraftShade handles texture sampling at different sizes
+ * - Shows the flexibility of the rendering pipeline for various view dimensions
+ */
 @Composable
 fun ResizeTestScreen() {
     var image by remember { mutableStateOf<Bitmap?>(null) }
