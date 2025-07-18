@@ -72,7 +72,7 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates("com.cardinalblue", "kraftshade", "1.0.32")
+    coordinates("com.cardinalblue", "kraftshade", "1.0.33")
 
     pom {
         name.set("KraftShade")
