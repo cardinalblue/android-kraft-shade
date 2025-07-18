@@ -54,6 +54,7 @@ sed -i '' "s/kraftshade = { group = \"com.cardinalblue\", name = \"kraftshade\",
 echo "Committing changes..."
 git add gradle/libs.versions.toml
 git commit -m "chore: Update kraftshade version to $user_version"
+git push
 
 echo "kraftshade $user_version has been published successfully!"
 echo "Note: No tag has been created yet. A tag will be created after publishing kraftshade-compose."
