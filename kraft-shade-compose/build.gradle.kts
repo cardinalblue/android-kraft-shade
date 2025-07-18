@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
@@ -78,9 +79,7 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    val publishVersion = project.properties["publish_version"]?.toString() ?: run {
-        throw IllegalArgumentException("publish_version property is required. Use -Ppublish_version=X.Y.Z")
-    }
+    val publishVersion = project.properties["publish_version"]?.toString()
     coordinates("com.cardinalblue", "kraftshade-compose", publishVersion)
 
     pom {

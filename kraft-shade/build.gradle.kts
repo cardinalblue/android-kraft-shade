@@ -72,9 +72,7 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    val publishVersion = project.properties["publish_version"]?.toString() ?: run {
-        throw IllegalArgumentException("publish_version property is required. Use -Ppublish_version=X.Y.Z")
-    }
+    val publishVersion = project.properties["publish_version"]?.toString()
     coordinates("com.cardinalblue", "kraftshade", publishVersion)
 
     pom {
