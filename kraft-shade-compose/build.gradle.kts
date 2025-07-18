@@ -78,7 +78,10 @@ mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
 
-    coordinates("com.cardinalblue", "kraftshade-compose", "1.0.33")
+    val publishVersion = project.properties["publish_version"]?.toString() ?: run {
+        throw IllegalArgumentException("publish_version property is required. Use -Ppublish_version=X.Y.Z")
+    }
+    coordinates("com.cardinalblue", "kraftshade-compose", publishVersion)
 
     pom {
         name.set("KraftShade Compose")
