@@ -1,5 +1,3 @@
-[![kraftshade](https://img.shields.io/maven-central/v/com.cardinalblue/kraftshade.svg?label=kraftshade)](https://central.sonatype.com/artifact/com.cardinalblue/kraftshade) [![kraftshade-compose](https://img.shields.io/maven-central/v/com.cardinalblue/kraftshade-compose.svg?label=kraftshade-compose)](https://central.sonatype.com/artifact/com.cardinalblue/kraftshade-compose)
-
 # KraftShade
 
 KraftShade is a modern, high-performance OpenGL ES graphics rendering library for Android, designed to provide a type-safe, Kotlin-first abstraction over OpenGL ES 2.0. Built with coroutines support and a focus on developer experience, KraftShade makes complex graphics operations simple while maintaining flexibility and performance.
@@ -7,12 +5,12 @@ KraftShade is a modern, high-performance OpenGL ES graphics rendering library fo
 ## Table of Contents
 - [Why Another Graphics Library?](#why-another-graphics-library)
 - [Features & Goals](#features--goals)
+- [Installation](#installation)
 - [Core Components](#core-components)
 - [Pipeline DSL](#pipeline-dsl)
 - [Effect Serialization](#effect-serialization)
 - [Support Status](#support-status)
 - [Usage](#usage)
-- [Installation](#installation)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -65,6 +63,47 @@ KraftShade addresses these limitations with:
    - Minimal overhead
    - Smart resource management
    - Optimized rendering pipeline
+
+## Installation
+
+KraftShade is available on Maven Central. You can integrate it into your project using Gradle.
+
+### Gradle (build.gradle or build.gradle.kts)
+
+#### Kotlin DSL (build.gradle.kts)
+
+```kotlin
+dependencies {
+    // Core library
+    implementation("com.cardinalblue:kraftshade:1.0.0")
+    
+    // Optional: Jetpack Compose integration
+    implementation("com.cardinalblue:kraftshade-compose:1.0.0")
+}
+```
+
+### Version Catalog (libs.versions.toml)
+
+If you're using Gradle's version catalog feature, add the following to your `libs.versions.toml` file:
+
+```toml
+[versions]
+# find the latest version from the badge at the beginning of this README file
+kraftshade = "..."
+
+[libraries]
+kraftshade-core = { group = "com.cardinalblue", name = "kraftshade", version.ref = "kraftshade" }
+kraftshade-compose = { group = "com.cardinalblue", name = "kraftshade-compose", version.ref = "kraftshade" }
+```
+
+Then in your module's build.gradle.kts file:
+
+```kotlin
+dependencies {
+    implementation(libs.kraftshade.core)
+    implementation(libs.kraftshade.compose)
+}
+```
 
 ## Core Components
 
@@ -615,24 +654,8 @@ fun ImageEffectDemo() {
 }
 ```
 
-## Installation
-
-Add KraftShade to your project's dependencies:
-
-```gradle
-dependencies {
-    implementation 'com.cardinalblue:kraftshade:1.0.0'
-}
-```
-
-### Version Compatibility
-- Minimum Android SDK: 21 (Android 5.0)
-- Target Android SDK: 34 (Android 14)
-- Kotlin: 1.9.0+
-- Jetpack Compose: 1.5.0+ (optional, for Compose integration)
 
 ## Roadmap
-
 1. **Dynamic Shader Bypass Mechanism**
    - Implement a mechanism to map GlReference outputs to inputs
    - Allow steps to skip shader execution based on inputs
