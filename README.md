@@ -74,11 +74,12 @@ KraftShade is available on Maven Central. You can integrate it into your project
 
 ```kotlin
 dependencies {
+    // find the latest version from the badge at the beginning of this README file
+
     // Core library
-    implementation("com.cardinalblue:kraftshade:1.0.0")
-    
+    implementation("com.cardinalblue:kraftshade:latest_version")
     // Optional: Jetpack Compose integration
-    implementation("com.cardinalblue:kraftshade-compose:1.0.0")
+    implementation("com.cardinalblue:kraftshade-compose:latest_version")
 }
 ```
 
