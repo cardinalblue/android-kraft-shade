@@ -1,3 +1,6 @@
+[![kraftshade](https://img.shields.io/maven-central/v/com.cardinalblue/kraftshade.svg?label=kraftshade)](https://central.sonatype.com/artifact/com.cardinalblue/kraftshade) [![kraftshade-compose](https://img.shields.io/maven-central/v/com.cardinalblue/kraftshade-compose.svg?label=kraftshade-compose)](https://central.sonatype.com/artifact/com.cardinalblue/kraftshade-compose)
+
+
 # KraftShade
 
 KraftShade is a modern, high-performance OpenGL ES graphics rendering library for Android, designed to provide a type-safe, Kotlin-first abstraction over OpenGL ES 2.0. Built with coroutines support and a focus on developer experience, KraftShade makes complex graphics operations simple while maintaining flexibility and performance.
@@ -487,7 +490,7 @@ The serialized JSON contains an array of shader nodes, each with:
 - [x] CircularBlurKraftShader
 - [ ] BilateralBlurKraftShader (GPUImageBilateralBlurFilter)
 - [ ] BoxBlurKraftShader (GPUImageBoxBlurFilter)
-- [ ] BulgeDistortionKraftShader (GPUImageBulgeDistortionFilter)
+- [x] BulgeDistortionKraftShader (GPUImageBulgeDistortionFilter)
 - [ ] GaussianBlurKraftShader (GPUImageGaussianBlurFilter)
 - [ ] GlassSphereKraftShader (GPUImageGlassSphereFilter)
 - [ ] SphereRefractionKraftShader (GPUImageSphereRefractionFilter)
@@ -689,7 +692,7 @@ We welcome contributions to KraftShade! Here's how you can help:
 ## License
 
 ```
-Copyright 2024 Cardinal Blue
+Copyright 2025 Cardinal Blue
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
