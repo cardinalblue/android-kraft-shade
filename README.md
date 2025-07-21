@@ -255,7 +255,7 @@ KraftShade provides a powerful serialization system that allows you to convert c
 ### Core Serialization Components
 
 #### EffectSerializer
-The [`EffectSerializer`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/serialization/EffectSerializer.kt:24) converts pipeline setups into JSON format:
+The [`EffectSerializer`](kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/serialization/EffectSerializer.kt:138) converts pipeline setups into JSON format:
 
 ```kotlin
 class EffectSerializer(private val context: Context, private val size: GlSize) {
@@ -266,7 +266,7 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
 ```
 
 #### SerializedEffect
-The [`SerializedEffect`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/serialization/EffectSerializer.kt:91) reconstructs effects from JSON:
+The [`SerializedEffect`](kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/serialization/EffectSerializer.kt:209) reconstructs effects from JSON:
 
 ```kotlin
 class SerializedEffect(
@@ -348,7 +348,7 @@ state.setEffect { targetBuffer ->
 
 ### Texture Provider Mapping
 
-When deserializing, you need to provide a mapping function that resolves texture names to [`TextureProvider`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/buffer/TextureProvider.kt) instances:
+When deserializing, you need to provide a mapping function that resolves texture names to [`TextureProvider`](kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/buffer/TextureProvider.kt) instances:
 
 ```kotlin
 val serializedEffect = SerializedEffect(json = jsonString) { textureId ->
@@ -394,20 +394,20 @@ The serialized JSON contains an array of shader nodes, each with:
 ### Best Practices
 
 1. **Consistent Naming**: Use consistent texture names (like `"input"`, `"foreground_mask"`) for better maintainability
-2. **Size Considerations**: Choose appropriate [`GlSize`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/model/GlSize.kt) for serialization based on your target use case
+2. **Size Considerations**: Choose appropriate [`GlSize`](kraft-shade/src/main/java/com/cardinalblue/kraftshade/model/GlSize.kt) for serialization based on your target use case
 3. **Error Handling**: Always provide fallback texture providers for missing resources
 4. **Testing**: Compare original and deserialized effects to ensure consistency
 
 ### Limitations
 
-- **Static Snapshot Only**: Serialization captures fixed parameter values at serialization time - dynamic inputs like [`SampledInput<T>`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/input/SampledInput.kt), animations, or time-based effects are not preserved
+- **Static Snapshot Only**: Serialization captures fixed parameter values at serialization time - dynamic inputs like [`SampledInput<T>`](kraft-shade/src/main/java/com/cardinalblue/kraftshade/pipeline/input/SampledInput.kt), animations, or time-based effects are not preserved
 - Sub-pipelines are not yet supported in serialization
 - Complex input types beyond textures may require custom handling
 - Shader properties must be serializable to JSON (primitives, arrays)
 
 ### Future Improvements
 
-- **SerializableKraftShader Interface**: Implement a more flexible serialization system by defining a `SerializableKraftShader` interface. This would allow shaders to provide their own serialization information instead of the current approach where the serializer needs to recognize specific shader types like [`TwoTextureInputKraftShader`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/TwoTextureInputKraftShader.kt). This design would give better control over serialization behavior and make [`KraftShader`](kraft-shade/kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/KraftShader.kt) more flexible.
+- **SerializableKraftShader Interface**: Implement a more flexible serialization system by defining a `SerializableKraftShader` interface. This would allow shaders to provide their own serialization information instead of the current approach where the serializer needs to recognize specific shader types like [`TwoTextureInputKraftShader`](kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/TwoTextureInputKraftShader.kt). This design would give better control over serialization behavior and make [`KraftShader`](kraft-shade/src/main/java/com/cardinalblue/kraftshade/shader/KraftShader.kt) more flexible.
 
 ## Support Status
 
