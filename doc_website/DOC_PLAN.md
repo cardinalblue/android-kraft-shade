@@ -122,3 +122,82 @@ The documentation will be implemented in phases:
 - Updates for new features and changes
 - Community feedback incorporation
 - Version-specific documentation
+
+## AI Documentation Guidelines
+
+This section provides guidelines for AI agents assisting with KraftShade documentation.
+
+### Core Principles
+
+- **Code-First Approach**: Always check the actual code implementation before documenting any feature or API. Documentation must accurately reflect the current implementation, not theoretical or planned features.
+
+- **Verify API Usage**: Confirm the actual way APIs are used by examining the codebase. Look for:
+  - Method signatures and parameters
+  - Return types and values
+  - Exception handling patterns
+  - Usage patterns in test cases and examples
+
+- **No Fabrication**: Do not make up or assume the existence of:
+  - DSLs that aren't in the codebase
+  - Classes or methods that don't exist
+  - Parameters or options not supported by the implementation
+  - Features mentioned in comments but not actually implemented
+
+- **Find Real Examples**: Source examples directly from the repository:
+  - Prioritize examples from test cases and demo applications
+  - Reference actual implementation code when appropriate
+  - Ensure examples are complete and functional
+  - Verify examples work with the current API version
+
+- **Visual Documentation**: Use diagrams to enhance understanding:
+  - Use Mermaid graphs for:
+    - Architecture overviews
+    - Pipeline flows
+    - Class relationships
+    - Process sequences
+    - Decision trees for complex operations
+  - Choose the appropriate diagram type:
+    ```mermaid
+    flowchart TD
+      A[Choose Diagram Type] --> B{What are you documenting?}
+      B -->|Process Flow| C[Flowchart]
+      B -->|Class Relationships| D[Class Diagram]
+      B -->|Sequence of Operations| E[Sequence Diagram]
+      B -->|State Transitions| F[State Diagram]
+    ```
+
+### Documentation Workflow
+
+1. **Research Phase**:
+   - Examine relevant code files
+   - Review tests and examples
+   - Identify key classes, methods, and patterns
+   - Note any discrepancies between code and existing docs
+
+2. **Verification Phase**:
+   - Confirm behavior through test cases
+   - Verify parameter types and constraints
+   - Check for edge cases and error handling
+   - Identify dependencies and requirements
+
+3. **Documentation Phase**:
+   - Structure content logically
+   - Include verified code examples
+   - Add appropriate diagrams
+   - Link to related documentation
+   - Include troubleshooting guidance
+
+4. **Review Phase**:
+   - Check accuracy against code
+   - Ensure completeness
+   - Verify diagram correctness
+   - Confirm terminology consistency
+
+### Best Practices
+
+- Document both "how" and "why" - explain implementation details and the reasoning behind them
+- Include common pitfalls and their solutions
+- Provide progressive examples from basic to advanced usage
+- Use consistent terminology that matches the codebase
+- Highlight performance considerations and optimization opportunities
+- Include version information when documenting evolving APIs
