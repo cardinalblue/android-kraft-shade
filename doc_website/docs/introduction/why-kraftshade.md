@@ -69,7 +69,7 @@ graph TD
   SaturationFilter --> VignetteFilter
   inputTexture --> AlphaBlendFilter
   VignetteFilter --> AlphaBlendFilter
-  
+
   AlphaBlendFilter --> windowSurfaceBuffer:::texture
 ```
 

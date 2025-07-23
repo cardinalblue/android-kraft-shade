@@ -10,6 +10,7 @@
     "deploy": "npm run build && git checkout -b temp-branch 2>/dev/null || git checkout temp-branch && git branch -D gh-pages 2>/dev/null || true && git checkout --orphan gh-pages && git reset --hard && git add ../docs/* --force && git -c user.name=\"Deploy Script\" -c user.email=\"\" commit -m \"Deploy documentation\" && git push origin gh-pages --force && git checkout - && git branch -D temp-branch 2>/dev/null || true",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve --dir=\"../docs\" --build",
+    "dev": "docusaurus start",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc"
