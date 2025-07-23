@@ -1,0 +1,8 @@
+{
+  "label": "Pipeline DSL",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Documentation of KraftShade's Pipeline DSL for setting up rendering pipelines."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "label": "Built-in Shaders",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "Documentation of KraftShade's built-in shaders."
+  }
+}

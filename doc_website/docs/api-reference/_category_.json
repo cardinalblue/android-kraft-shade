@@ -1,0 +1,8 @@
+{
+  "label": "API Reference",
+  "position": 10,
+  "link": {
+    "type": "generated-index",
+    "description": "API reference documentation for KraftShade."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "label": "Jetpack Compose Integration",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Documentation of KraftShade's Jetpack Compose integration."
+  }
+}

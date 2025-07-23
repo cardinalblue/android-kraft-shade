@@ -1,0 +1,8 @@
+{
+  "label": "Pipeline System",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Documentation of KraftShade's pipeline system."
+  }
+}

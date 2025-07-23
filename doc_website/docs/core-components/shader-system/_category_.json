@@ -1,0 +1,8 @@
+{
+  "label": "Shader System",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Documentation of KraftShade's shader system."
+  }
+}
