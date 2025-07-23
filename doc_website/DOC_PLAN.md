@@ -86,13 +86,6 @@ The documentation will be organized into the following main sections:
 - **Real-world Use Cases** - Examples from real applications
 - **Integration Examples** - Examples of integrating with other libraries
 
-## 9. API Reference
-- **Core API** - Reference for core classes and interfaces
-- **Shader API** - Reference for shader classes
-- **Pipeline API** - Reference for pipeline classes
-- **View API** - Reference for view components
-- **Utility API** - Reference for utility classes
-
 ## Implementation Plan
 
 The documentation will be implemented in phases:
@@ -110,7 +103,6 @@ The documentation will be implemented in phases:
 
 ### Phase 3: Complete Documentation
 - Examples and Tutorials
-- API Reference
 - Advanced Topics (comprehensive coverage)
 - Additional examples and use cases
 
