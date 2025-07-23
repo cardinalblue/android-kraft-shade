@@ -45,7 +45,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/cardinalblue/android-kraft-shade/tree/gh-pages/doc_website',
+            'https://github.com/cardinalblue/android-kraft-shade/tree/main/doc_website',
         },
         theme: {
           customCss: './src/css/custom.css',
