@@ -36,6 +36,10 @@ const config: Config = {
     locales: ['en'],
   },
 
+  markdown: {
+    mermaid: true,
+  },
+
   presets: [
     [
       'classic',
@@ -52,6 +56,10 @@ const config: Config = {
         },
       } satisfies Preset.Options,
     ],
+  ],
+
+  plugins: [
+    '@docusaurus/theme-mermaid',
   ],
 
   themeConfig: {
