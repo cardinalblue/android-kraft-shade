@@ -27,9 +27,6 @@ The documentation will be organized into the following main sections:
   - **Pipeline Running Flow** - How the pipeline executes per frame
   - **Buffer Management** - How buffers are managed and recycled
 - **Input System** - Guide to the input system
-  - **Input Types** - Different types of inputs
-  - **Dynamic Inputs** - Working with dynamic inputs
-  - **Input Transformations** - Transforming input values
 
 ## 4. View Components
 - **Android Views** - Using KraftShade with Android Views
@@ -44,19 +41,9 @@ The documentation will be organized into the following main sections:
 ## 5. Pipeline DSL
 - **Introduction to the DSL** - Overview of the Pipeline DSL
 - **Serial Pipeline** - Creating linear processing chains
-- **Graph Pipeline** - Creating complex multi-pass rendering
-- **Nested Pipeline** - Combining serial and graph pipelines
-- **Best Practices** - Tips and tricks for effective pipeline design
+- **Best Practices** - Tips for effective pipeline design
 
-## 6. Effect Serialization
-- **Serialization Overview** - Introduction to effect serialization
-- **EffectSerializer** - Converting pipelines to JSON
-- **SerializedEffect** - Reconstructing effects from JSON
-- **Texture Provider Mapping** - Managing texture providers
-- **Serialization Limitations** - Understanding the limitations
-- **Advanced Serialization** - Advanced serialization techniques
-
-## 7. Built-in Shaders
+## 6. Built-in Shaders
 - **Base Shaders** - Core shader implementations
 - **Color Effects** - Shaders for color manipulation
 - **Alpha & Transparency Effects** - Shaders for transparency
@@ -66,7 +53,7 @@ The documentation will be organized into the following main sections:
 - **Blending Modes** - Shaders for blending operations
 - **Blur & Distortion** - Shaders for blur and distortion effects
 
-## 8. Advanced Usage
+## 7. Advanced Topics
 - **Custom Shaders** - Creating your own shaders
   - **Shader Development Workflow** - Process for developing shaders
   - **GLSL Basics** - Introduction to GLSL for KraftShade
@@ -80,15 +67,26 @@ The documentation will be organized into the following main sections:
   - **Logging** - Using the logging system
   - **Common Issues** - Troubleshooting common problems
   - **Performance Profiling** - Profiling shader performance
+- **Effect Serialization** - Working with serialized effects
+  - **Serialization Overview** - Introduction to effect serialization
+  - **EffectSerializer** - Converting pipelines to JSON
+  - **SerializedEffect** - Reconstructing effects from JSON
+  - **Texture Provider Mapping** - Managing texture providers
+  - **Serialization Limitations** - Understanding the limitations
+  - **Advanced Serialization** - Advanced serialization techniques
+- **Advanced Pipeline DSL Concepts** - Advanced techniques for pipeline construction
+  - **Graph Pipeline** - Creating complex multi-pass rendering
+  - **Nested Pipeline** - Combining serial and graph pipelines
+  - **Complex Multi-Pass Rendering** - Advanced rendering techniques
 
-## 9. Examples and Tutorials
+## 8. Examples and Tutorials
 - **Basic Effects** - Simple effect examples
 - **Complex Effects** - More complex effect examples
 - **Animation** - Creating animated effects
 - **Real-world Use Cases** - Examples from real applications
 - **Integration Examples** - Examples of integrating with other libraries
 
-## 10. API Reference
+## 9. API Reference
 - **Core API** - Reference for core classes and interfaces
 - **Shader API** - Reference for shader classes
 - **Pipeline API** - Reference for pipeline classes
@@ -107,14 +105,13 @@ The documentation will be implemented in phases:
 
 ### Phase 2: Expanded Documentation
 - Pipeline DSL
-- Effect Serialization
 - Built-in Shaders (comprehensive coverage)
-- Advanced Usage (basic coverage)
+- Advanced Topics (basic coverage)
 
 ### Phase 3: Complete Documentation
 - Examples and Tutorials
 - API Reference
-- Advanced Usage (comprehensive coverage)
+- Advanced Topics (comprehensive coverage)
 - Additional examples and use cases
 
 ## Style Guidelines
