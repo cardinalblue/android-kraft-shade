@@ -1,8 +1,4 @@
 {
   "label": "Examples and Tutorials",
-  "position": 9,
-  "link": {
-    "type": "generated-index",
-    "description": "Examples and tutorials for using KraftShade."
-  }
+  "position": 9
 }

@@ -1,8 +1,4 @@
 {
   "label": "View Components",
-  "position": 4,
-  "link": {
-    "type": "generated-index",
-    "description": "Documentation of KraftShade's view components for Android and Jetpack Compose."
-  }
+  "position": 4
 }

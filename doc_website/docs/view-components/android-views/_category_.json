@@ -1,8 +1,4 @@
 {
   "label": "Android Views",
-  "position": 1,
-  "link": {
-    "type": "generated-index",
-    "description": "Documentation of KraftShade's Android View components."
-  }
+  "position": 1
 }

@@ -1,8 +1,4 @@
 {
   "label": "Advanced Usage",
-  "position": 8,
-  "link": {
-    "type": "generated-index",
-    "description": "Advanced usage topics for KraftShade."
-  }
+  "position": 8
 }
