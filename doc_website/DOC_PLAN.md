@@ -2,6 +2,10 @@
 
 This document outlines the structure and content plan for the KraftShade documentation website. The documentation is organized into sections and articles, following Docusaurus's structure.
 
+## Overview
+
+This document outlines the structure, current state, and future plans for the KraftShade documentation. It serves as a guide for documentation contributors and maintainers.
+
 ## Documentation Structure
 
 The documentation will be organized into the following main sections:
@@ -41,6 +45,8 @@ The documentation will be organized into the following main sections:
 ## 5. Pipeline DSL
 - **Introduction to the DSL** - Overview of the Pipeline DSL
 - **Serial Pipeline** - Creating linear processing chains
+- **Graph Pipeline** - Creating complex multi-pass rendering
+- **Nested Pipeline** - Combining serial and graph pipelines
 - **Best Practices** - Tips for effective pipeline design
 
 ## 6. Built-in Shaders
@@ -54,15 +60,6 @@ The documentation will be organized into the following main sections:
 - **Blur & Distortion** - Shaders for blur and distortion effects
 
 ## 7. Advanced Topics
-- **Custom Shaders** - Creating your own shaders
-  - **Shader Development Workflow** - Process for developing shaders
-  - **GLSL Basics** - Introduction to GLSL for KraftShade
-  - **Uniform Handling** - Working with uniforms
-  - **Texture Sampling** - Working with textures
-- **Debugging** - Debugging techniques
-  - **Logging** - Using the logging system
-  - **Common Issues** - Troubleshooting common problems
-  - **Performance Profiling** - Profiling shader performance
 - **Effect Serialization** - Working with serialized effects
   - **Serialization Overview** - Introduction to effect serialization
   - **EffectSerializer** - Converting pipelines to JSON
@@ -70,17 +67,27 @@ The documentation will be organized into the following main sections:
   - **Texture Provider Mapping** - Managing texture providers
   - **Serialization Limitations** - Understanding the limitations
   - **Advanced Serialization** - Advanced serialization techniques
-- **Advanced Pipeline DSL Concepts** - Advanced techniques for pipeline construction
-  - **Graph Pipeline** - Creating complex multi-pass rendering
-  - **Nested Pipeline** - Combining serial and graph pipelines
-  - **Complex Multi-Pass Rendering** - Advanced rendering techniques
+- **Performance Optimization** - Performance optimization techniques
+  - **Buffer Management** - Optimizing buffer usage
+  - **Pipeline Design** - Designing efficient pipelines
+  - **Texture Reuse** - Reusing textures for better performance
 
-## 8. Examples and Tutorials
-- **Basic Effects** - Simple effect examples
-- **Complex Effects** - More complex effect examples
-- **Animation** - Creating animated effects
-- **Real-world Use Cases** - Examples from real applications
-- **Integration Examples** - Examples of integrating with other libraries
+## Current State of Documentation
+
+The documentation is currently in various stages of completion:
+
+- **Complete**: 
+  - Architecture Overview
+  - KraftShader
+  - GlUniformDelegate
+  - Overview (Introduction)
+  - Installation
+
+- **In Progress**:
+  - Many sections have placeholder files with only titles
+
+- **Not Started**:
+  - Several sections need content creation
 
 ## Implementation Plan
 
@@ -98,9 +105,55 @@ The documentation will be implemented in phases:
 - Advanced Topics (basic coverage)
 
 ### Phase 3: Complete Documentation
-- Examples and Tutorials
 - Advanced Topics (comprehensive coverage)
 - Additional examples and use cases
+
+## Revision Process
+
+### Document Review and Linking
+
+As part of the ongoing documentation maintenance, we regularly review existing content and add appropriate links between related documents. This process includes:
+
+1. **Review**: Examine all existing documentation for accuracy, completeness, and clarity
+2. **Identify Connections**: Identify relationships between different documents and concepts
+3. **Add Links**: Add cross-references and links between related documents
+4. **Update DOC_PLAN.md**: Document new connections and update the documentation plan
+
+This review and linking process will be performed:
+- After completing each documentation phase
+- When adding significant new content
+- Periodically (quarterly) to ensure documentation cohesion
+
+### Current Linking Status
+
+The following connections have been identified and linked:
+
+- Architecture Overview links to:
+  - KraftShader documentation
+  - GlEnv documentation
+  - Input System documentation
+  - Pipeline Running Flow documentation
+  - Buffer Management documentation
+  - Pipeline DSL Introduction
+  - Android Views documentation
+  - Jetpack Compose documentation
+
+- KraftShader links to:
+  - GlUniformDelegate documentation
+  - Texture Inputs documentation
+  - Built-in Shaders documentation
+
+- GlUniformDelegate links to:
+  - KraftShader documentation
+
+- Overview (Introduction) links to:
+  - Installation and Quick Start Guide
+  - Why KraftShade documentation
+
+- Installation links to:
+  - Quick Start Guide
+  - Basic Concepts
+  - First Effect documentation
 
 ## Style Guidelines
 
@@ -118,6 +171,16 @@ The documentation will be implemented in phases:
 - Updates for new features and changes
 - Community feedback incorporation
 - Version-specific documentation
+
+## Contributing to Documentation
+
+Guidelines for contributing to the KraftShade documentation:
+
+1. Follow the existing structure outlined in this document
+2. Maintain consistent formatting and style
+3. Include code examples where appropriate
+4. Add links to related documentation
+5. Update this plan when adding new sections or making significant changes
 
 ## AI Documentation Guidelines
 
