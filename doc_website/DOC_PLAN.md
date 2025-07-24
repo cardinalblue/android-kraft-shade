@@ -67,10 +67,6 @@ The documentation will be organized into the following main sections:
   - **Texture Provider Mapping** - Managing texture providers
   - **Serialization Limitations** - Understanding the limitations
   - **Advanced Serialization** - Advanced serialization techniques
-- **Performance Optimization** - Performance optimization techniques
-  - **Buffer Management** - Optimizing buffer usage
-  - **Pipeline Design** - Designing efficient pipelines
-  - **Texture Reuse** - Reusing textures for better performance
 
 ## Current State of Documentation
 
