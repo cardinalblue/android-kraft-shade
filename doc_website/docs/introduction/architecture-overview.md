@@ -75,58 +75,16 @@ The OpenGL Environment is the foundation of KraftShade, providing a managed cont
 
 ### Shader System
 
-The Shader System is responsible for managing and executing GLSL shaders:
+The Shader System is responsible for managing and executing GLSL shaders. It provides a flexible and efficient way to apply various effects to textures.
 
-```mermaid
-classDiagram
-    class KraftShader {
-        <<abstract>>
-        -glProgId: Int
-        -uniformLocationCache: Map
-        +init(): Boolean
-        +draw(bufferSize: GlSize, isScreenCoordinate: Boolean)
-        +updateTexelSize()
-        +beforeActualDraw(isScreenCoordinate: Boolean)
-        +actualDraw(isScreenCoordinate: Boolean)
-        +destroy()
-    }
-    
-    class TextureInputKraftShader {
-        <<abstract>>
-        -input: KraftShaderTextureInput
-        +drawWithInput(texture: Texture, size: GlSize, isScreenCoordinate: Boolean)
-    }
-    
-    class TwoTextureInputKraftShader {
-        <<abstract>>
-        -secondInput: KraftShaderTextureInput
-        +drawWithInput(texture1: Texture, texture2: Texture, size: GlSize, isScreenCoordinate: Boolean)
-    }
-    
-    class ThreeTextureInputKraftShader {
-        <<abstract>>
-        -thirdInput: KraftShaderTextureInput
-        +drawWithInput(texture1: Texture, texture2: Texture, texture3: Texture, size: GlSize, isScreenCoordinate: Boolean)
-    }
-    
-    class KraftShaderFactory {
-        +createShader<T: KraftShader>(): T
-    }
-    
-    KraftShader <|-- TextureInputKraftShader
-    TextureInputKraftShader <|-- TwoTextureInputKraftShader
-    TextureInputKraftShader <|-- Sample3x3KraftShader
-    TextureInputKraftShader <|-- SingleDirectionForTwoPassSamplingKraftShader
-    TwoTextureInputKraftShader <|-- ThreeTextureInputKraftShader
-```
-
-Key components:
+KraftShade provides several basic types of shaders:
 
 - **KraftShader**: Abstract base class for all shaders
 - **TextureInputKraftShader**: Base class for shaders that take a texture input
 - **TwoTextureInputKraftShader**: Base class for shaders that take two texture inputs
 - **ThreeTextureInputKraftShader**: Base class for shaders that take three texture inputs
-- **KraftShaderFactory**: Factory for creating shader instances
+
+For more details on the shader system, including execution flow and parameter handling, see the [KraftShader documentation](../core-components/shader-system/kraft-shader.md).
 
 ### Pipeline System
 
