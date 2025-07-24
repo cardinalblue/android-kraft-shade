@@ -265,6 +265,113 @@ This is useful for:
 - Translating textures
 - Creating effects like tiling or mirroring
 
+## Custom Texture Inputs
+
+While KraftShade provides base classes for shaders with one, two, or three texture inputs, you may need additional texture inputs or want to customize how textures are managed in your shader. The `KraftShaderTextureInput` class allows you to create custom texture inputs for your shaders.
+
+### Creating Custom Texture Inputs
+
+To add custom texture inputs to your shader:
+
+1. Extend one of the base shader classes (typically `TextureInputKraftShader`)
+2. Define your custom texture inputs using `KraftShaderTextureInput`
+3. Create property delegates for each texture
+4. Add methods to set these textures
+5. Activate the texture inputs before drawing
+
+Here's an example of a shader with a custom texture input:
+
+```kotlin
+class WatermarkShader : TextureInputKraftShader() {
+    // Define uniform properties
+    var opacity: Float by GlUniformDelegate("opacity")
+    
+    // Define custom texture input
+    private val watermarkTextureInput = KraftShaderTextureInput(1, "watermarkTexture")
+    private var _watermarkTexture: Texture by watermarkTextureInput.textureDelegate
+
+    // Methods to set watermark texture
+    fun setWatermarkTexture(texture: Texture) {
+        _watermarkTexture = texture
+    }
+
+    fun setWatermarkTexture(texture: TextureProvider) {
+        _watermarkTexture = texture.provideTexture()
+    }
+
+    override fun loadFragmentShader(): String = """
+        precision mediump float;
+        varying vec2 textureCoordinate;
+        uniform sampler2D inputImageTexture;
+        uniform sampler2D watermarkTexture;
+        uniform float opacity;
+        
+        void main() {
+            vec4 baseColor = texture2D(inputImageTexture, textureCoordinate);
+            vec4 watermark = texture2D(watermarkTexture, textureCoordinate);
+            
+            // Blend the watermark with the base image
+            gl_FragColor = mix(baseColor, watermark, watermark.a * opacity);
+        }
+    """
+
+    // Activate the custom texture input before drawing
+    override fun beforeActualDraw(isScreenCoordinate: Boolean) {
+        super.beforeActualDraw(isScreenCoordinate)
+        watermarkTextureInput.activate()
+    }
+}
+```
+
+### Understanding KraftShaderTextureInput
+
+The `KraftShaderTextureInput` constructor takes these parameters:
+
+```kotlin
+KraftShaderTextureInput(
+    textureIndex: Int,          // The texture unit index
+    samplerUniformName: String, // The uniform name in the shader
+    sizeUniformName: String,    // The size uniform name
+    required: Boolean           // Whether this texture is required
+)
+```
+
+- **textureIndex**: Determines which texture unit (GL_TEXTURE0 + index) will be used. Must be unique within the shader. Valid values range from 0 to 31, though some devices may support fewer.
+- **samplerUniformName**: The name of the sampler uniform in the GLSL shader code. This must match the uniform name in your fragment shader.
+- **sizeUniformName**: The name of the uniform that will receive the texture size. This can be used in shaders that need to know the dimensions of the texture.
+- **required**: Whether this texture is required for the shader to function. If true, the shader will throw an exception if the texture is not set.
+
+### Using Custom Texture Inputs in GLSL
+
+In your fragment shader, declare the sampler uniforms with the same names you used when creating the `KraftShaderTextureInput` instances:
+
+```glsl
+precision mediump float;
+varying vec2 textureCoordinate;
+uniform sampler2D inputImageTexture;  // Base texture from TextureInputKraftShader
+uniform sampler2D watermarkTexture;   // Custom texture input
+
+void main() {
+    vec4 baseColor = texture2D(inputImageTexture, textureCoordinate);
+    vec4 watermark = texture2D(watermarkTexture, textureCoordinate);
+    
+    // Use both textures in your shader logic
+    gl_FragColor = mix(baseColor, watermark, watermark.a * 0.5);
+}
+```
+
+### Important Considerations
+
+1. **Texture Unit Indices**: Each texture input must have a unique texture unit index. OpenGL ES supports up to 32 texture units (0-31), but some devices may support fewer.
+
+2. **Activation**: Always call `activate()` on each custom texture input in the `beforeActualDraw()` method to ensure textures are bound to the correct texture units.
+
+3. **Texture Delegates**: Use the `textureDelegate` property from `KraftShaderTextureInput` to create a property delegate for your texture. This handles the binding and unbinding of textures automatically.
+
+4. **Texture Coordinate Handling**: By default, all textures use the same texture coordinates as the main input texture. If you need different coordinates for each texture, you'll need to implement custom vertex shaders.
+
+5. **Memory Management**: Ensure textures are properly released when the shader is no longer needed to prevent memory leaks.
+
 ## Best Practices
 
 ### Texture Management
