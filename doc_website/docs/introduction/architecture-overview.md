@@ -12,10 +12,10 @@ KraftShade's architecture is organized into several key layers:
 
 ```mermaid
 flowchart TD
-    classDef core fill:#f96,stroke:#333,stroke-width:2px
-    classDef view fill:#9cf,stroke:#333,stroke-width:2px
-    classDef dsl fill:#9f9,stroke:#333,stroke-width:2px
-    classDef pipeline fill:#f6c,stroke:#933,stroke-width:4px,stroke-dasharray: 5 2
+    classDef core fill:#c73,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
+    classDef view fill:#27c,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
+    classDef dsl fill:#3c3,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
+    classDef pipeline fill:#93c,stroke:#933,stroke-width:4px,stroke-dasharray: 5 2
     
     App[Application] --> Views
     
