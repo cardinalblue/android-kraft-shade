@@ -73,6 +73,8 @@ The OpenGL Environment is the foundation of KraftShade, providing a managed cont
 - Provides utilities for common OpenGL operations
 - Ensures thread-safety for OpenGL operations
 
+For more details on the OpenGL Environment, see the [GlEnv documentation](../core-components/glenv.md).
+
 ### Shader System
 
 The Shader System is responsible for managing and executing GLSL shaders. It provides a flexible and efficient way to apply various effects to textures.
@@ -122,6 +124,8 @@ Key components:
 - **RunTaskStep**: Step that runs a custom task
 - **TextureBufferPool**: Manages and recycles texture buffers
 
+For more details on the pipeline system, see the [Pipeline Running Flow documentation](../core-components/pipeline-system/pipeline-running-flow.md) and [Buffer Management documentation](../core-components/pipeline-system/buffer-management.md).
+
 ### Input System
 
 The Input System provides a way to feed dynamic values into shaders:
@@ -129,6 +133,8 @@ The Input System provides a way to feed dynamic values into shaders:
 - Supports time-based animations
 - Allows for user interaction inputs
 - Enables dynamic parameter changes
+
+For more details on the Input System, see the [Input System documentation](../core-components/input-system.md).
 
 ## DSL Layer
 
@@ -158,6 +164,8 @@ Key components:
 - **SerialTextureInputPipelineScope**: Scope for setting up serial pipelines
 - **KraftBitmapDslScope**: Scope for creating bitmaps with effects
 
+For more details on the DSL layer, see the [Pipeline DSL Introduction](../pipeline-dsl/introduction.md).
+
 ## View Components
 
 KraftShade provides view components for both traditional Android Views and Jetpack Compose:
@@ -186,6 +194,8 @@ Key components:
 - **KraftEffectTextureView**: View for rendering shader effects
 - **AnimatedKraftTextureView**: View for rendering animated shader effects
 
+For more details on Android Views, see the [Android Views documentation](../view-components/android-views/kraft-texture-view.md).
+
 ### Jetpack Compose
 
 For Jetpack Compose integration, KraftShade provides a similar hierarchy of state classes:
@@ -210,6 +220,8 @@ Key components:
 - **KraftShadeBaseState**: Base state for Compose integration
 - **KraftShadeEffectState**: State for rendering shader effects in Compose
 - **KraftShadeAnimatedState**: State for rendering animated shader effects in Compose
+
+For more details on Jetpack Compose integration, see the [Jetpack Compose documentation](../view-components/jetpack-compose/kraft-shade-view.md).
 
 ## Data Flow
 

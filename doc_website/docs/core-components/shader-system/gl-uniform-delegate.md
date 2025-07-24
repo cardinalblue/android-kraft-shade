@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # GlUniformDelegate
 
-The `GlUniformDelegate` is a key component of KraftShade's shader system that provides an elegant and efficient way to manage shader uniform parameters. It leverages Kotlin's property delegation feature to create a clean, type-safe API for setting shader parameters.
+The `GlUniformDelegate` is a key component of KraftShade's shader system that provides an elegant and efficient way to manage shader uniform parameters. It leverages Kotlin's property delegation feature to create a clean, type-safe API for setting shader parameters. For more information about how this fits into the shader system, see the [KraftShader documentation](./kraft-shader.md).
 
 ## Overview
 

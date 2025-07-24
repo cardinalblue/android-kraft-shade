@@ -15,6 +15,8 @@ KraftShade provides several types of shaders that extend the base `KraftShader` 
 - **TwoTextureInputKraftShader**: Base class for shaders that take two texture inputs
 - **ThreeTextureInputKraftShader**: Base class for shaders that take three texture inputs
 
+For more information about texture handling in shaders, see the [Texture Inputs documentation](./texture-inputs.md).
+
 ## Shader Execution Flow
 
 The following sequence diagram illustrates the flow of a shader's draw operation:
@@ -157,7 +159,7 @@ This deferred parameter update mechanism is efficient because:
 
 ## Creating Custom Shaders
 
-To create a custom shader, you typically extend one of the base shader classes:
+KraftShade comes with a variety of [built-in shaders](../../built-in-shaders/base-shaders.md) that you can use out of the box. However, you can also create your own custom shaders by extending one of the base shader classes:
 
 ```kotlin
 class MyCustomShader(
