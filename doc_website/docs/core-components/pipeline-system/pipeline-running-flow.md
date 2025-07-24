@@ -134,4 +134,4 @@ The pipeline running flow is designed for efficiency:
 3. **Input Sampling**: Inputs are sampled only once at the beginning of each frame.
 4. **Frame Skipping**: In animated views, if a frame is still rendering when the next frame is requested, the new frame is skipped to prevent backlog.
 
-For more information on optimizing pipeline performance, see the [Performance Optimization](../../advanced-topics/performance-optimization/pipeline-design.md) section.
+For more information on optimizing pipeline performance, see the Performance Optimization section.

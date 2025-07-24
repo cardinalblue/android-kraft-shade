@@ -383,4 +383,4 @@ Now that you've created your first complex effect with KraftShade, you can:
 - Explore the [Core Components](../core-components) in more detail
 - Learn about the [Pipeline DSL](../pipeline-dsl) for building even more complex effects
 - Check out the [Built-in Shaders](../built-in-shaders) for more ready-to-use effects
-- Dive into [Advanced Topics](../advanced-topics) like custom shader development and performance optimization
+- Dive into Advanced Topics like custom shader development and performance optimization
