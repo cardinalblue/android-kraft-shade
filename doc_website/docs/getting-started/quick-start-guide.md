@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         saturationSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 saturation = progress / 100f
-                updateEffect()
+                kraftEffectView.requestRender()
             }
             
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         brightnessSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 brightness = (progress - 50) / 50f
-                updateEffect()
+                kraftEffectView.requestRender()
             }
             
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
