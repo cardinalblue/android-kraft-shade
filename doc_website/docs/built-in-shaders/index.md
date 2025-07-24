@@ -33,15 +33,11 @@ pipeline(targetBuffer) {
         inputTexture = inputBitmap.asTexture(),
         targetBuffer = targetBuffer
     ) {
-        // Use a built-in shader
-        step(SaturationKraftShader()) {
-            saturation = sampledInput { 1.5f }  // Increase saturation by 50%
-        }
+        // Use a built-in shader to increase saturation by 50%
+        step(SaturationKraftShader(saturation = 1.5f))
         
-        // Chain with another shader
-        step(BrightnessKraftShader()) {
-            brightness = sampledInput { 0.2f }  // Increase brightness by 20%
-        }
+        // Chain with another shader to increase brightness by 20%
+        step(BrightnessKraftShader(brightness = 0.2f))
     }
 }
 ```
