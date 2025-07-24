@@ -90,51 +90,28 @@ For more details on the shader system, including execution flow and parameter ha
 
 The Pipeline System orchestrates the execution of shaders in a defined sequence:
 
-```mermaid
-classDiagram
-    class EffectExecution {
-        <<interface>>
-        +run()
-        +destroy()
-        +onBufferSizeChanged(size: GlSize)
-    }
-    
-    class Pipeline {
-        -steps: List~PipelineStep~
-        -bufferPool: TextureBufferPool
-        +addStep(step: PipelineStep)
-        +run()
-        +destroy()
-    }
-    
-    class PipelineStep {
-        <<abstract>>
-        +run(scope: PipelineRunningScope)
-    }
-    
-    class RunShaderStep {
-        -shader: KraftShader
-        +run(scope: PipelineRunningScope)
-    }
-    
-    class RunTaskStep {
-        -task: suspend () -> Unit
-        +run(scope: PipelineRunningScope)
-    }
-    
-    class TextureBufferPool {
-        -buffers: Map
-        +get(bufferReference: BufferReference): TextureBuffer
-        +recycle(bufferReference: BufferReference)
-        +delete()
-    }
-    
-    EffectExecution <|.. Pipeline
-    PipelineStep <|-- RunShaderStep
-    PipelineStep <|-- RunTaskStep
-    Pipeline --> PipelineStep
-    Pipeline --> TextureBufferPool
-```
+The Pipeline System consists of several key components that work together to execute shader operations in a defined sequence:
+
+**Key Components:**
+
+- **EffectExecution**: An interface that defines the contract for executing effects, with methods for running, destroying, and handling buffer size changes.
+
+- **Pipeline**: The main implementation class that executes a sequence of shader operations. It maintains a list of pipeline steps and manages a texture buffer pool for efficient resource usage.
+
+- **PipelineStep**: An abstract base class for all pipeline steps, defining how each step runs within the pipeline scope.
+
+- **RunShaderStep**: A concrete implementation of PipelineStep that runs a specific shader.
+
+- **RunTaskStep**: A concrete implementation of PipelineStep that runs a custom task.
+
+- **TextureBufferPool**: A utility class that manages and recycles texture buffers to improve performance and reduce memory allocation.
+
+**Relationships:**
+
+- Pipeline implements the EffectExecution interface
+- RunShaderStep and RunTaskStep extend the PipelineStep abstract class
+- Pipeline contains and manages multiple PipelineStep instances
+- Pipeline uses TextureBufferPool for buffer management
 
 Key components:
 
@@ -157,28 +134,22 @@ The Input System provides a way to feed dynamic values into shaders:
 
 KraftShade provides a Kotlin DSL for building shader pipelines:
 
-```mermaid
-classDiagram
-    class BasePipelineSetupScope {
-        <<abstract>>
-        +step(shader: KraftShader, configure: (KraftShader) -> Unit)
-    }
-    
-    class GraphPipelineSetupScope {
-        +stepWithInputTexture(shader: TextureInputKraftShader, inputTexture: Texture)
-    }
-    
-    class SerialTextureInputPipelineScope {
-        +step(shader: TextureInputKraftShader, configure: (TextureInputKraftShader) -> Unit)
-    }
-    
-    class KraftBitmapDslScope {
-        +withPipeline(setup: BasePipelineSetupScope.() -> Unit): Bitmap
-    }
-    
-    BasePipelineSetupScope <|-- GraphPipelineSetupScope
-    BasePipelineSetupScope <|-- SerialTextureInputPipelineScope
-```
+KraftShade provides a Kotlin DSL for building shader pipelines with a clean and intuitive API. The DSL layer consists of several scope classes that provide a structured way to define pipeline operations:
+
+**Key Components:**
+
+- **BasePipelineSetupScope**: The abstract base scope for all pipeline setup operations, providing common functionality like adding shader steps.
+
+- **GraphPipelineSetupScope**: A specialized scope for setting up graph pipelines, with additional methods for connecting shader inputs to specific textures.
+
+- **SerialTextureInputPipelineScope**: A scope for setting up serial pipelines, with methods optimized for linear processing chains.
+
+- **KraftBitmapDslScope**: A scope specifically for creating bitmaps with effects, providing a convenient API for bitmap processing.
+
+**Relationships:**
+
+- GraphPipelineSetupScope and SerialTextureInputPipelineScope both extend BasePipelineSetupScope
+- Each scope provides specialized methods appropriate for its pipeline type
 
 Key components:
 
@@ -193,29 +164,21 @@ KraftShade provides view components for both traditional Android Views and Jetpa
 
 ### Android Views
 
-```mermaid
-classDiagram
-    class KraftTextureView {
-        +runGlTask(task: KraftTextureViewTask): Job
-        +terminate()
-    }
-    
-    class KraftEffectTextureView {
-        +setEffect(effectExecutionProvider: EffectExecutionProvider)
-        +requestRender()
-    }
-    
-    class AnimatedKraftTextureView {
-        +setEffectWithTimeInput(effectExecutionProvider: AnimatedEffectExecutionProvider)
-        +setEffectAndPlay(effectExecutionProvider: AnimatedEffectExecutionProvider)
-        +setEffectAndPause(effectExecutionProvider: AnimatedEffectExecutionProvider)
-        +play()
-        +stop()
-    }
-    
-    KraftTextureView <|-- KraftEffectTextureView
-    KraftEffectTextureView <|-- AnimatedKraftTextureView
-```
+KraftShade provides a hierarchy of view components for traditional Android Views:
+
+**Key Components:**
+
+- **KraftTextureView**: The base view for OpenGL rendering, providing core functionality for executing OpenGL tasks and managing the rendering lifecycle.
+
+- **KraftEffectTextureView**: Extends KraftTextureView to add support for rendering shader effects, with methods for setting effects and requesting renders.
+
+- **AnimatedKraftTextureView**: Further extends KraftEffectTextureView to add support for animated effects, with methods for controlling playback.
+
+**Relationships:**
+
+- KraftEffectTextureView extends KraftTextureView
+- AnimatedKraftTextureView extends KraftEffectTextureView
+- Each view in the hierarchy adds more specialized functionality while maintaining the capabilities of its parent
 
 Key components:
 
@@ -225,28 +188,22 @@ Key components:
 
 ### Jetpack Compose
 
-```mermaid
-classDiagram
-    class KraftShadeBaseState {
-        +runGlTask(task: KraftTextureViewTask): Job
-        +terminate()
-    }
-    
-    class KraftShadeEffectState {
-        +setEffect(effectExecutionProvider: EffectExecutionProvider)
-        +requestRender()
-    }
-    
-    class KraftShadeAnimatedState {
-        +setEffectAndPlay(effectExecutionProvider: AnimatedEffectExecutionProvider)
-        +setEffectAndPause(effectExecutionProvider: AnimatedEffectExecutionProvider)
-        +play()
-        +stop()
-    }
-    
-    KraftShadeBaseState <|-- KraftShadeEffectState
-    KraftShadeEffectState <|-- KraftShadeAnimatedState
-```
+For Jetpack Compose integration, KraftShade provides a similar hierarchy of state classes:
+
+**Key Components:**
+
+- **KraftShadeBaseState**: The base state for Compose integration, providing core functionality for executing OpenGL tasks and managing the rendering lifecycle.
+
+- **KraftShadeEffectState**: Extends KraftShadeBaseState to add support for rendering shader effects, with methods for setting effects and requesting renders.
+
+- **KraftShadeAnimatedState**: Further extends KraftShadeEffectState to add support for animated effects, with methods for controlling playback.
+
+**Relationships:**
+
+- KraftShadeEffectState extends KraftShadeBaseState
+- KraftShadeAnimatedState extends KraftShadeEffectState
+- Each state in the hierarchy adds more specialized functionality while maintaining the capabilities of its parent
+- These state classes are used by the corresponding Compose components (KraftShadeView, KraftShadeEffectView, KraftShadeAnimatedView)
 
 Key components:
 
@@ -260,9 +217,9 @@ The following diagram illustrates the typical data flow in a KraftShade applicat
 
 ```mermaid
 flowchart LR
-    classDef input fill:#f96,stroke:#333,stroke-width:2px
-    classDef process fill:#9cf,stroke:#333,stroke-width:2px
-    classDef output fill:#9f9,stroke:#333,stroke-width:2px
+    classDef input fill:#27c,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
+    classDef process fill:#93c,stroke:#933,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
+    classDef output fill:#c73,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
     
     Input[Input Texture] --> Pipeline
     Params[Shader Parameters] --> Pipeline

@@ -153,18 +153,28 @@ This section provides guidelines for AI agents assisting with KraftShade documen
   - Use Mermaid graphs for:
     - Architecture overviews
     - Pipeline flows
-    - Class relationships
     - Process sequences
     - Decision trees for complex operations
+  - **Important Note**: Do not use class diagrams. Instead, provide clear and precise textual descriptions of components and their relationships.
+  - **Color Consistency**: Use the following color scheme for all diagrams to maintain visual consistency:
+    - Core Components: `fill:#c73,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap`
+    - View Components: `fill:#27c,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap`
+    - DSL Layer: `fill:#3c3,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap`
+    - Pipeline System: `fill:#93c,stroke:#933,stroke-width:4px,stroke-dasharray: 5 2`
   - Choose the appropriate diagram type:
     ```mermaid
     flowchart TD
       A[Choose Diagram Type] --> B{What are you documenting?}
       B -->|Process Flow| C[Flowchart]
-      B -->|Class Relationships| D[Class Diagram]
       B -->|Sequence of Operations| E[Sequence Diagram]
       B -->|State Transitions| F[State Diagram]
     ```
+  - For component relationships that would traditionally use class diagrams, provide structured textual descriptions that clearly explain:
+    - Component names and purposes
+    - Hierarchical relationships (inheritance/implementation)
+    - Compositional relationships
+    - Dependencies between components
+    - Key methods and properties (when relevant)
 
 ### Documentation Workflow
 
