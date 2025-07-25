@@ -46,8 +46,8 @@ For simpler use cases, especially when working with bitmaps, you can use the hig
 ```kotlin
 val processedBitmap = kraftBitmap(context, inputBitmap) {
     serialPipeline {
-        addShader { ContrastKraftShader(4f) }
-        addShader { BrightnessKraftShader(-0.5f) }
+        step(ContrastKraftShader(4f))
+        step(BrightnessKraftShader(-0.5f))
     }
 }
 ```
@@ -109,8 +109,7 @@ This creates a blend between the shader output and the original input, controlle
 
 ### Custom Run Steps
 
-For more complex operations that don't fit the shader model, you can use a custom run step:
-
+For more complex operations that don't fit the shader model, you can use a custom run step. It's guaranteed the running thread will be the one that has the GL context. You can change blending setup or do anything with or without using OpenGL API.
 ```kotlin
 serialSteps(bitmap.asTexture(), windowSurface) {
     step("Custom operation") { runContext ->

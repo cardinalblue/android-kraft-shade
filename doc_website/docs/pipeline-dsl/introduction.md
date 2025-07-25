@@ -82,8 +82,8 @@ For more complex image processing, you can use the higher-level `kraftBitmap` DS
 ```kotlin
 val processedBitmap = kraftBitmap(context, inputBitmap) {
     serialPipeline {
-        addShader { ContrastKraftShader(4f) }
-        addShader { BrightnessKraftShader(-0.5f) }
+        step(ContrastKraftShader(4f))
+        step(BrightnessKraftShader(-0.5f))
     }
 }
 ```

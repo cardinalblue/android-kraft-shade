@@ -226,8 +226,8 @@ For simple cases, use higher-level abstractions like `kraftBitmap`:
 // Simple, concise approach for basic effects
 val processedBitmap = kraftBitmap(context, inputBitmap) {
     serialPipeline {
-        addShader { ContrastKraftShader(1.5f) }
-        addShader { SaturationKraftShader(0.8f) }
+        step(ContrastKraftShader(1.5f))
+        step(SaturationKraftShader(0.8f))
     }
 }
 ```
