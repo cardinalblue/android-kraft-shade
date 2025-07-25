@@ -52,8 +52,8 @@ fun KraftBitmapTestScreen() {
         bitmap = kraftBitmap(context, inputBitmap) { // compare to GPUImage
             // compare to GPUImageFilterGroup
             serialPipeline {
-                addShader { ContrastKraftShader(4f) }
-                addShader { BrightnessKraftShader(-0.5f) }
+                step(ContrastKraftShader(4f))
+                step(BrightnessKraftShader(-0.5f))
             }
         }.asImageBitmap()
     }

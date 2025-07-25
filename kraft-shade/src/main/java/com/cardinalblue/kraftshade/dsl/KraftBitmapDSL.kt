@@ -19,7 +19,7 @@ suspend fun TextureInputKraftShader.apply(
 ): Bitmap {
     return kraftBitmap(context, inputBitmap) {
         serialPipeline {
-            addShader { this@apply }
+            step(this@apply)
         }
     }
 }
@@ -31,9 +31,7 @@ suspend fun kraftBitmap(
 ): Bitmap {
     return kraftBitmap(context, inputBitmap) {
         serialPipeline {
-            shaders.forEach {
-                addShader { it }
-            }
+            shaders.forEach(this::step)
         }
     }
 }
@@ -141,6 +139,21 @@ class KraftBitmapDslScope(
 class SimpleSerialPipelineBuilderScope {
     private val shaders: MutableList<TextureInputKraftShader> = mutableListOf()
 
+    /**
+     * Adds a shader to the serial pipeline.
+     * @param shader the shader to add that's already configured. Since this is used in kraftBitmap
+     *  DSL. The pipeline is only run once, so there is nothing that needs to be changed dynamically.
+     *  Therefore, there is no configuration block for the shader. You have to configure the shader
+     *  before adding it using this method.
+     */
+    fun step(shader: TextureInputKraftShader) {
+        shaders.add(shader)
+    }
+
+    @Deprecated(
+        message = "Use step method instead to make the syntax more consistent with other DSLs",
+        replaceWith = ReplaceWith("step(ShaderClass().apply { /* configure shader here */ })")
+    )
     suspend fun addShader(block: suspend () -> TextureInputKraftShader) {
         shaders.add(block())
     }
