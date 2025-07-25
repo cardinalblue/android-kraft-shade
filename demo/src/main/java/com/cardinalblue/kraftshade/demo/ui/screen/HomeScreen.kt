@@ -62,7 +62,7 @@ private fun OptionButton(
     destination: Destination,
 ) {
     val navController = LocalNavController.current
-    Button(onClick = { navController.navigate(destination) }) {
+    Button(onClick = { navController.navigate(destination.route) }) {
         Text(text = destination.title)
     }
 }
