@@ -117,53 +117,6 @@ step(ContrastAndSaturationKraftShader()) { shader ->
 }
 ```
 
-### Reuse Buffer References
-
-When possible, reuse buffer references to reduce memory usage:
-
-```kotlin
-// Create a limited number of buffer references
-val (buffer1, buffer2) = createBufferReferences("buffer1", "buffer2")
-
-// Reuse them across multiple steps
-stepWithInputTexture(shader1, inputTexture, buffer1)
-stepWithInputTexture(shader2, buffer1, buffer2)
-stepWithInputTexture(shader3, buffer2, buffer1)
-stepWithInputTexture(shader4, buffer1, graphTargetBuffer)
-```
-
-### Consider Buffer Sizes
-
-Be mindful of buffer sizes, especially for intermediate results:
-
-```kotlin
-// For effects that don't need full resolution, you can use smaller buffers
-val halfSizeBuffer = TextureBuffer(width / 2, height / 2)
-
-// Apply effect at lower resolution
-stepWithInputTexture(shader, inputTexture, halfSizeBuffer)
-
-// Upscale when needed
-stepWithInputTexture(upscaleShader, halfSizeBuffer, fullSizeBuffer)
-```
-
-### Use Mixture Steps Efficiently
-
-The `stepWithMixture` function adds an extra render pass. Use it judiciously:
-
-```kotlin
-// Less efficient: Using stepWithMixture for small adjustments
-stepWithMixture(
-    shader = GrayScaleKraftShader(),
-    mixturePercentInput = constInput(0.9f)
-)
-
-// More efficient: Use a shader with built-in intensity parameter if available
-step(SaturationKraftShader()) { shader ->
-    shader.saturation = 0.1f  // 0.0 would be grayscale, 0.1 is slight desaturation
-}
-```
-
 ## Code Organization
 
 ### Group Related Operations
