@@ -47,6 +47,7 @@ The documentation will be organized into the following main sections:
 - **Serial Pipeline** - Creating linear processing chains
 - **Graph Pipeline** - Creating complex multi-pass rendering
 - **Nested Pipeline** - Combining serial and graph pipelines
+- **PipelineModifier** - Creating reusable pipeline components
 - **Best Practices** - Tips for effective pipeline design
 
 ## 6. Built-in Shaders

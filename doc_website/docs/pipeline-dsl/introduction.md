@@ -54,13 +54,15 @@ val (buffer1, buffer2) = createBufferReferences("ping", "pong")
 
 ## Pipeline Types
 
-KraftShade supports three main types of pipelines:
+KraftShade supports several pipeline structures:
 
 1. **Serial Pipeline**: A linear sequence of shader operations where each step's output becomes the input for the next step.
 
 2. **Graph Pipeline**: A more complex structure where steps can have multiple inputs and outputs, allowing for non-linear processing flows.
 
 3. **Nested Pipeline**: A combination of serial and graph pipelines, allowing for modular and reusable pipeline components.
+
+4. **PipelineModifier**: Reusable pipeline components that encapsulate complex operations into single, composable units.
 
 ## Basic Usage
 
@@ -95,4 +97,5 @@ In the following sections, we'll explore each type of pipeline in more detail:
 - [Serial Pipeline](./serial-pipeline.md): Learn how to create linear processing chains
 - [Graph Pipeline](./graph-pipeline.md): Discover how to build complex multi-pass rendering graphs
 - [Nested Pipeline](./nested-pipeline.md): See how to combine serial and graph pipelines
+- [PipelineModifier](./pipeline-modifier.md): Create reusable pipeline components
 - [Best Practices](./best-practices.md): Tips for effective pipeline design

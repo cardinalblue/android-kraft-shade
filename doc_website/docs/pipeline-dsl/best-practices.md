@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # Best Practices
@@ -189,7 +189,7 @@ serialSteps(inputTexture, targetBuffer) {
 
 ### Extract Reusable Components
 
-Extract commonly used effect combinations into extension functions:
+Extract commonly used effect combinations into extension functions or use [PipelineModifier](./pipeline-modifier.md) for more complex reusable components:
 
 ```kotlin
 // Extension function for a common effect combination
