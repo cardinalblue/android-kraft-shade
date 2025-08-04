@@ -7,6 +7,7 @@ import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.EffectExecutionProvider
+import com.cardinalblue.kraftshade.shader.KraftShader
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -100,6 +101,8 @@ open class KraftEffectTextureView : KraftTextureView {
             }
             this@KraftEffectTextureView.effectExecution = effect
             afterSet(this, windowSurface)
+            // After setting the effect, we need to render it immediately.
+            requestRender()
         }
     }
 
