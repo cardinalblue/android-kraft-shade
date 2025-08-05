@@ -24,7 +24,7 @@ abstract class KraftShader : SuspendAutoCloseable {
     var clearColorBeforeDraw: Boolean = true
 
     private var initialized = false
-    private val runOnDraw = LinkedList<Pair<String?, GlTask>>()
+    private val runOnDrawTasks = LinkedList<Pair<String?, GlTask>>()
 
     var glProgId = 0
         private set
@@ -209,15 +209,15 @@ abstract class KraftShader : SuspendAutoCloseable {
     }
 
     private fun runPendingOnDrawTasks() {
-        synchronized(runOnDraw) {
-            runOnDraw.forEach { (key, task) ->
+        synchronized(runOnDrawTasks) {
+            runOnDrawTasks.forEach { (key, task) ->
                 task()
                 if (key != null) {
                     logger.v("runOnDraw: $key")
                 }
             }
-            runOnDraw.clear()
-            runOnDraw.add(null to { init() })
+            runOnDrawTasks.clear()
+            runOnDrawTasks.add(null to { init() })
         }
     }
 
@@ -226,9 +226,9 @@ abstract class KraftShader : SuspendAutoCloseable {
      * replacement won't happen
      */
     fun runOnDraw(key: String? = null, task: GlTask) {
-        synchronized(runOnDraw) {
+        synchronized(runOnDrawTasks) {
             if (key != null) {
-                val iterator = runOnDraw.iterator()
+                val iterator = runOnDrawTasks.iterator()
                 while (iterator.hasNext()) {
                     val (oldKey, _) = iterator.next()
                     if (oldKey == key) {
@@ -237,7 +237,7 @@ abstract class KraftShader : SuspendAutoCloseable {
                     }
                 }
             }
-            runOnDraw.add(key to task)
+            runOnDrawTasks.add(key to task)
         }
     }
 
