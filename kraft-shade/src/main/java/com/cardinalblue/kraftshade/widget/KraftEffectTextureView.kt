@@ -91,7 +91,7 @@ open class KraftEffectTextureView : KraftTextureView {
     }
 
     fun setEffect(
-        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = {},
+        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
         effectExecutionProvider: EffectExecutionProvider
     ) {
         runGlTask { windowSurface ->
