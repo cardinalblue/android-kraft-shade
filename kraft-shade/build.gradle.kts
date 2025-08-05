@@ -15,20 +15,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-
-        ndk {
-            abiFilters.add("armeabi-v7a")
-            abiFilters.add("arm64-v8a")
-            abiFilters.add("x86")
-            abiFilters.add("x86_64")
-        }
-
-        @Suppress("UnstableApiUsage")
-        externalNativeBuild {
-            cmake {
-                cppFlags.clear()
-            }
-        }
     }
 
     buildTypes {
@@ -48,13 +34,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
     }
 }
 
