@@ -151,7 +151,7 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
         val pipeline = Pipeline(
             glEnv = glEnv,
             bufferPool = TextureBufferPool(size),
-            automaticRecycle = false,
+            automaticBufferRecycle = false,
         )
 
         val target = pipeline.bufferPool[BufferReference(pipeline)]

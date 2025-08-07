@@ -10,6 +10,7 @@ import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
+import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
 
 /**
  * This will be renamed to Pipeline later
@@ -19,7 +20,9 @@ import com.cardinalblue.kraftshade.util.KraftLogger
 class Pipeline internal constructor(
     internal val glEnv: GlEnv,
     internal val bufferPool: TextureBufferPool,
-    internal val automaticRecycle: Boolean = true,
+    internal val automaticBufferRecycle: Boolean = true,
+    internal val automaticShaderRecycle: Boolean = true,
+    internal val automaticTextureRecycle: Boolean = true,
 ) : EffectExecution {
     private val sampledInputs: MutableSet<SampledInput<*>> = mutableSetOf()
     private val _steps: MutableList<PipelineStep> = mutableListOf()
@@ -42,6 +45,11 @@ class Pipeline internal constructor(
      */
     private val childPipelines: MutableList<Pipeline> = mutableListOf()
     private val childTextureBuffers: MutableList<TextureBuffer> = mutableListOf()
+    
+    /**
+     * Track all shaders for proper cleanup
+     */
+    private val shaders: MutableSet<KraftShader> = mutableSetOf()
 
     internal val pipelineRunningScope = PipelineRunningScope(this)
 
@@ -60,7 +68,7 @@ class Pipeline internal constructor(
     }
 
     fun getTextureFromBufferPool(bufferReference: BufferReference): Texture {
-        if (!runContext.isRenderPhase && automaticRecycle) {
+        if (!runContext.isRenderPhase && automaticBufferRecycle) {
             bufferReferenceUsage[bufferReference] = runContext.currentStepIndex
              logger.d("[BufferedReference] ${bufferReference.nameForDebug} is used at step ${runContext.currentStepIndex}")
         }
@@ -101,6 +109,8 @@ class Pipeline internal constructor(
         targetBuffer: GlBufferProvider,
         setupAction: suspend PipelineRunningScope.(T) -> Unit = {},
     ) {
+        shaders.add(shader)
+        
         RunShaderStep(
             stepIndex = _steps.size,
             shader = shader,
@@ -149,7 +159,7 @@ class Pipeline internal constructor(
                     }
 
                     // Recycle buffers that won't be used anymore
-                    if (automaticRecycle) {
+                    if (automaticBufferRecycle) {
                         recycleUnusedBuffers(step.stepIndex)
                     }
                 }
@@ -167,10 +177,19 @@ class Pipeline internal constructor(
 
     override suspend fun destroy() {
         logger.d("destroy")
+        // Clean up shaders
+        if (automaticShaderRecycle) {
+            shaders.forEach { shader -> shader.destroy(includeTextures = automaticTextureRecycle) }
+            shaders.clear()
+        }
+        
+        // Clean up other resources
         postponedTasks.clear()
         bufferPool.delete()
         childPipelines.forEach { it.destroy() }
         childTextureBuffers.forEach { it.delete() }
+        
+        logger.d("destroy completed")
     }
 
     override suspend fun onBufferSizeChanged(size: GlSize) {

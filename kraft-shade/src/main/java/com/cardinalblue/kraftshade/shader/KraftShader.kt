@@ -10,6 +10,7 @@ import com.cardinalblue.kraftshade.model.GlVec2
 import com.cardinalblue.kraftshade.model.GlVec3
 import com.cardinalblue.kraftshade.model.GlVec4
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
+import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.builtin.KraftShaderWithTexelSize
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 import com.cardinalblue.kraftshade.util.KraftLogger
@@ -34,6 +35,7 @@ abstract class KraftShader : SuspendAutoCloseable {
     protected open var resolution: GlSize by GlUniformDelegate("resolution", required = false)
 
     private val uniformLocationCache = mutableMapOf<String, Int>()
+    private val ownedTextures = mutableSetOf<Texture>()
 
     open val debugName: String = this::class.simpleName ?: "Unknown"
 
@@ -245,16 +247,45 @@ abstract class KraftShader : SuspendAutoCloseable {
         GLES30.glBlendEquation(GLES30.GL_FUNC_ADD)
         GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
     }
+    
+    fun trackTexture(texture: Texture) {
+        ownedTextures.add(texture)
+        logger.d("tracking texture: ${texture::class.simpleName} (total: ${ownedTextures.size})")
+    }
 
-    fun destroy() {
-        if (!initialized) return
+    suspend fun destroy(includeTextures: Boolean) {
+        if (!initialized)  return
         logger.i("Destroying shader program: ${this::class.simpleName}")
-        GLES30.glDeleteProgram(glProgId)
-        initialized = false
+        
+        try {
+            // Clear pending tasks to avoid memory leaks
+            synchronized(runOnDrawTasks) {
+                runOnDrawTasks.clear()
+            }
+            
+            // Clear uniform cache
+            uniformLocationCache.clear()
+
+            // Clean up owned textures - call suspend function from a suspend context
+            if (includeTextures) {
+                ownedTextures.forEach { texture -> texture.delete() }
+                ownedTextures.clear()
+            }
+            
+            // Delete OpenGL program
+            if (glProgId != 0) {
+                GLES30.glDeleteProgram(glProgId)
+                glProgId = 0
+            }
+            
+            initialized = false
+        } catch (e: Exception) {
+            logger.e("Error destroying shader ${debugName}: ${e.message}", e)
+        }
     }
 
     override suspend fun close() {
-        destroy()
+        destroy(includeTextures = true)
     }
 
     fun KraftShaderTextureInput.activate() {
