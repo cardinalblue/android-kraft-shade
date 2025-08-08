@@ -10,7 +10,6 @@ import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
-import com.cardinalblue.kraftshade.util.SuspendAutoCloseable
 
 /**
  * This will be renamed to Pipeline later
@@ -121,6 +120,7 @@ class Pipeline internal constructor(
     }
 
     override suspend fun run() {
+        if (runContext.isDestroyed) return
         if (!runContext.isRenderPhase) {
             logger.d("configuration phase starts")
             _steps.forEach {
@@ -176,18 +176,19 @@ class Pipeline internal constructor(
     }
 
     override suspend fun destroy() {
+        runContext.isDestroyed = true
         logger.d("destroy")
-        // Clean up shaders
-        if (automaticShaderRecycle) {
-            shaders.forEach { shader -> shader.destroy(includeTextures = automaticTextureRecycle) }
-            shaders.clear()
-        }
-        
         // Clean up other resources
         postponedTasks.clear()
         bufferPool.delete()
         childPipelines.forEach { it.destroy() }
-        childTextureBuffers.forEach { it.delete() }
+        childTextureBuffers.forEach { it.close() }
+
+        // Clean up shaders
+        if (automaticShaderRecycle) {
+            shaders.forEach { shader -> shader.close(deleteRecursively = automaticTextureRecycle) }
+            shaders.clear()
+        }
         
         logger.d("destroy completed")
     }
@@ -218,6 +219,7 @@ class Pipeline internal constructor(
 
         internal var forceAbort: Boolean = false
 
+        var isDestroyed: Boolean = false
         /**
          * Can be used to check the result for the previous step
          */

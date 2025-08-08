@@ -118,7 +118,7 @@ class WindowSurfaceBuffer(
         EGL14.eglDestroySurface(glEnv.eglDisplay, windowSurface)
     }
 
-    override suspend fun close() {
+    override suspend fun close(deleteRecursively: Boolean) {
         delete()
     }
 

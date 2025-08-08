@@ -40,7 +40,7 @@ class PixelBuffer internal constructor(
         EGL14.eglDestroySurface(glEnv.eglDisplay, pbufferSurface)
     }
 
-    override suspend fun close() {
+    override suspend fun close(deleteRecursively: Boolean) {
         delete()
     }
 

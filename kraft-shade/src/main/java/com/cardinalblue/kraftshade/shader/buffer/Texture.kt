@@ -54,7 +54,7 @@ abstract class Texture private constructor(create: Boolean = true) : SuspendAuto
         textureId = OpenGlUtils.NO_TEXTURE_ID
     }
 
-    override suspend fun close() {
+    override suspend fun close(deleteRecursively: Boolean) {
         delete()
     }
 

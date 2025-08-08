@@ -35,7 +35,8 @@ abstract class KraftShader : SuspendAutoCloseable {
     protected open var resolution: GlSize by GlUniformDelegate("resolution", required = false)
 
     private val uniformLocationCache = mutableMapOf<String, Int>()
-    private val ownedTextures = mutableSetOf<Texture>()
+
+    private val autoCloseables = mutableSetOf<SuspendAutoCloseable>()
 
     open val debugName: String = this::class.simpleName ?: "Unknown"
 
@@ -249,11 +250,11 @@ abstract class KraftShader : SuspendAutoCloseable {
     }
     
     fun trackTexture(texture: Texture) {
-        ownedTextures.add(texture)
-        logger.d("tracking texture: ${texture::class.simpleName} (total: ${ownedTextures.size})")
+        autoCloseables.add(texture)
+        logger.d("tracking texture: ${texture::class.simpleName} (total: ${autoCloseables.size})")
     }
 
-    suspend fun destroy(includeTextures: Boolean) {
+    suspend fun destroy(deleteRecursively: Boolean) {
         if (!initialized)  return
         logger.i("Destroying shader program: ${this::class.simpleName}")
         
@@ -266,10 +267,10 @@ abstract class KraftShader : SuspendAutoCloseable {
             // Clear uniform cache
             uniformLocationCache.clear()
 
-            // Clean up owned textures - call suspend function from a suspend context
-            if (includeTextures) {
-                ownedTextures.forEach { texture -> texture.delete() }
-                ownedTextures.clear()
+            // Clean up owned autoCloseables, currently only textures
+            if (deleteRecursively) {
+                autoCloseables.forEach { texture -> texture.close() }
+                autoCloseables.clear()
             }
             
             // Delete OpenGL program
@@ -284,8 +285,8 @@ abstract class KraftShader : SuspendAutoCloseable {
         }
     }
 
-    override suspend fun close() {
-        destroy(includeTextures = true)
+    override suspend fun close(deleteRecursively: Boolean) {
+        destroy(deleteRecursively = deleteRecursively)
     }
 
     fun KraftShaderTextureInput.activate() {
