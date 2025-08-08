@@ -32,6 +32,7 @@ open class KraftEffectTextureView : KraftTextureView {
     var renderOnSizeChange: Boolean = true
 
     protected var job: Job? = null
+    private var setEffectJob: Job? = null
 
     private val renderFlow = MutableSharedFlow<Unit>()
 
@@ -94,7 +95,14 @@ open class KraftEffectTextureView : KraftTextureView {
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
         effectExecutionProvider: EffectExecutionProvider
     ) {
-        runGlTask { windowSurface ->
+        // Cancel previous setEffect job if it's still running
+        val oldSetEffectJob = setEffectJob
+        if (oldSetEffectJob != null && oldSetEffectJob.isActive) {
+            oldSetEffectJob.cancel()
+        }
+        
+        setEffectJob = runGlTask { windowSurface ->
+            effectExecution?.destroy()
             val effect = with(effectExecutionProvider) {
                 provide(windowSurface)
             }
@@ -129,7 +137,7 @@ open class KraftEffectTextureView : KraftTextureView {
     @OptIn(FlowPreview::class)
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        attachScope = CoroutineScope(Job())
+        attachScope = CoroutineScope(Job() + CoroutineName("KraftEffectTextureView-${hashCode()}"))
             .also { scope ->
                 scope.launch {
                     renderFlow
@@ -143,7 +151,11 @@ open class KraftEffectTextureView : KraftTextureView {
 
     override fun onDetachedFromWindow() {
         attachScope?.cancel()
+        job?.cancel()
+        setEffectJob?.cancel()
         attachScope = null
+        job = null
+        setEffectJob = null
         super.onDetachedFromWindow()
     }
 }

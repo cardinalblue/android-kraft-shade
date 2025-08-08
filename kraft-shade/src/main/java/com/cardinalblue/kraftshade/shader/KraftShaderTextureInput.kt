@@ -84,5 +84,9 @@ private class TextureDelegate(
             "invalid input texture"
         }
         texture = value
+        // Track new texture
+        if (value.isValid()) {
+            thisRef.trackTexture(value)
+        }
     }
 }

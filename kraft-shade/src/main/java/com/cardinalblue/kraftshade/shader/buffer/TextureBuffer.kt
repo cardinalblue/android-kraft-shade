@@ -57,7 +57,9 @@ class TextureBuffer(
     override suspend fun delete() {
         logger.i("Deleting texture buffer")
         super.delete()
-        GLES30.glDeleteFramebuffers(1, intArrayOf(bufferId), 0)
-        bufferId = -1
+        if (bufferId != -1) {
+            GLES30.glDeleteFramebuffers(1, intArrayOf(bufferId), 0)
+            bufferId = -1
+        }
     }
 }

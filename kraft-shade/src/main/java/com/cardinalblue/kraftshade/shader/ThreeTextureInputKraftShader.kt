@@ -40,10 +40,39 @@ abstract class ThreeTextureInputKraftShader(
         return _thirdInputTexture
     }
 
+    /**
+     * Sets the third input texture for this shader.
+     * 
+     * **Important**: This method is expected to be called only once in the shader's lifecycle.
+     * Replacing the texture dynamically could make the previous texture resource untrackable,
+     * and you might forget to call [Texture.delete] on it when it's no longer needed,
+     * potentially causing memory leaks.
+     * 
+     * **For dynamic texture replacement**, use [setThirdInputTexture] with [TextureProvider] instead.
+     * For example, use [sampledBitmapTextureProvider] for dynamically loading [android.graphics.Bitmap]s.
+     * 
+     * @param texture The texture to set as the third input. This texture will be automatically tracked
+     *                by the shader for proper cleanup when the shader is destroyed.
+     * 
+     * @see setThirdInputTexture
+     * @see com.cardinalblue.kraftshade.shader.buffer.sampledBitmapTextureProvider
+     */
     open fun setThirdInputTexture(texture: Texture) {
         this._thirdInputTexture = texture
     }
 
+    /**
+     * Sets the third input texture using a [TextureProvider].
+     * 
+     * This is the **recommended approach for dynamic texture replacement**, as the [TextureProvider]
+     * manages the texture lifecycle and can be safely replaced multiple times without causing
+     * memory leaks. The provider will handle resource cleanup automatically.
+     * 
+     * @param texture The texture provider that will supply the third texture. Use functions like
+     *                [sampledBitmapTextureProvider] for dynamic content loading.
+     * 
+     * @see sampledBitmapTextureProvider
+     */
     fun setThirdInputTexture(texture: TextureProvider) {
         setThirdInputTexture(texture.provideTexture())
     }
