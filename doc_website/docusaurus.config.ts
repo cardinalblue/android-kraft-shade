@@ -73,7 +73,7 @@ const config: Config = {
         "@type": "Organization",
         "name": "Cardinal Blue Software",
         "url": "https://cardinalblue.com",
-        "logo": "https://cardinalblue.github.io/android-kraft-shade/img/logo.svg",
+        "logo": "https://cardinalblue.github.io/android-kraft-shade/img/logo.png",
         "sameAs": [
           "https://github.com/cardinalblue",
           "https://piccollage.com"
@@ -100,7 +100,7 @@ const config: Config = {
       title: 'Kraft Shade',
       logo: {
         alt: 'Kraft Shade Logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.png',
       },
       items: [
         {
