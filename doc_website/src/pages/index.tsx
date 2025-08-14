@@ -109,7 +109,7 @@ export default function Home(): ReactNode {
       "Effect serialization",
       "Performance optimized"
     ],
-    "screenshot": "https://cardinalblue.github.io/android-kraft-shade/img/docusaurus-social-card.jpg",
+    "screenshot": "https://cardinalblue.github.io/android-kraft-shade/img/kraft-social-card.png",
     "softwareHelp": {
       "@type": "CreativeWork",
       "name": "KraftShade Documentation",

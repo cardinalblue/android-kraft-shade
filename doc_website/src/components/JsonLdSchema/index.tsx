@@ -38,7 +38,7 @@ export function TechArticleSchema({
       "url": "https://cardinalblue.com",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://cardinalblue.github.io/android-kraft-shade/img/logo.svg"
+        "url": "https://cardinalblue.github.io/android-kraft-shade/img/logo.png"
       }
     },
     "mainEntityOfPage": {
