@@ -12,7 +12,7 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: 'Modern Architecture',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: require('@site/static/img/undraw_mountain.svg').default,
     description: (
       <>
         Kotlin-first design with coroutines support, easy to use DSL for pipeline construction,
@@ -22,7 +22,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Flexible Pipeline',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('@site/static/img/undraw_tree.svg').default,
     description: (
       <>
         Composable effects, support for complex multi-pass rendering, efficient texture and buffer management,
@@ -32,7 +32,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Developer Experience',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/undraw_react.svg').default,
     description: (
       <>
         Flexible View components & Compose integration, flexible input system for effect adjustment and re-rendering,
