@@ -62,6 +62,33 @@ const config: Config = {
     '@docusaurus/theme-mermaid',
   ],
 
+  headTags: [
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Cardinal Blue Software",
+        "url": "https://cardinalblue.com",
+        "logo": "https://cardinalblue.github.io/android-kraft-shade/img/logo.svg",
+        "sameAs": [
+          "https://github.com/cardinalblue",
+          "https://piccollage.com"
+        ],
+        "foundingDate": "2010",
+        "description": "Cardinal Blue Software is a technology company specializing in creative mobile applications and developer tools.",
+        "makesOffer": {
+          "@type": "SoftwareApplication",
+          "name": "KraftShade",
+          "url": "https://cardinalblue.github.io/android-kraft-shade/"
+        }
+      }, null, 2),
+    },
+  ],
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',

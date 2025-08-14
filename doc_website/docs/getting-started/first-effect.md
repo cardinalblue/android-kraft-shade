@@ -2,6 +2,28 @@
 sidebar_position: 4
 ---
 
+import { HowToSchema } from '@site/src/components/JsonLdSchema';
+
+<HowToSchema
+  name="Create Your First Effect with KraftShade"
+  description="Step-by-step guide to creating a vintage photo effect using KraftShade's pipeline system with multiple shaders"
+  url="https://cardinalblue.github.io/android-kraft-shade/docs/getting-started/first-effect"
+  totalTime="PT30M"
+  steps={[
+    "Set up the project with KraftShade dependencies and sample images",
+    "Create the UI with Jetpack Compose and effect controls",
+    "Build the effect pipeline with saturation, sepia, vignette, and grain effects",
+    "Create a custom noise overlay shader for film grain effect",
+    "Test and adjust the effect parameters in real-time"
+  ]}
+  supply={[
+    "Android Studio",
+    "KraftShade library",
+    "Sample image resources",
+    "Jetpack Compose"
+  ]}
+/>
+
 # First Effect
 
 In this guide, we'll walk through creating a more complex effect using KraftShade. We'll build a vintage photo effect that combines multiple shaders to achieve a stylized look.
