@@ -1,0 +1,51 @@
+package com.cardinalblue.kraftshade.demo.ui.screen
+
+import androidx.compose.runtime.Composable
+import com.cardinalblue.kraftshade.demo.ui.screen.animation.KraftShadeAnimatedViewTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.basic.BasicShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.basic.BlendingExampleScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.blur.CircularBlurPerformanceTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.blur.CircularBlurTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.color.FalseColorShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.color.LevelsShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.color.LookUpTableShaderTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.dsl.KraftBitmapTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.ColorfulCrosshatchTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.CrosshatchTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.EmbossShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.KuwaharaTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.effect.ToonEffectTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.morphology.ErosionDilationTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.view.ResizeTestScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.view.compose.KraftShadeEffectViewTestWindow
+
+enum class Destination(
+    val route: String,
+    val title: String,
+    val isComposableSample: Boolean = true,
+    val category: Category = Category.OTHER,
+    val screen: @Composable () -> Unit,
+) {
+    Home("home", "Home", isComposableSample = false, category = Category.OTHER, screen = { HomeScreen() }),
+    ComposableSamples("compose_samples", "Compose Samples", isComposableSample = false, category = Category.OTHER, screen = { ComposableSampleScreen() }),
+    TraditionalViewSamples("traditional_view_samples", "Traditional View Samples", isComposableSample = false, category = Category.OTHER, screen = { TraditionalViewSampleScreen() }),
+    ResizeTest("resize_test", "Resize Test", category = Category.OTHER, screen = { ResizeTestScreen() }),
+    BasicShader("basic_shader", "Basic Shader", category = Category.BASIC, screen = { BasicShaderScreen() }),
+    BlendingExample("blending_example", "Blending Example", category = Category.BASIC, screen = { BlendingExampleScreen() }),
+    EmbossShader("emboss_shader", "Emboss Shader", category = Category.EFFECTS, screen = { EmbossShaderScreen() }),
+    LookUpTableShader("look_up_table_shader", "Look Up Table Shader", category = Category.COLOR, screen = { LookUpTableShaderTestScreen() }),
+    TransparencyTest("transparency_test", "Transparency Test", category = Category.OTHER, screen = { TransparencyTestWindow() }),
+    KraftShadeAnimatedView("compose_animated", "Compose (animated)", category = Category.OTHER, screen = { KraftShadeAnimatedViewTestWindow() }),
+    KraftShadeEffectView("compose_effect", "Compose (effect)", category = Category.OTHER, screen = { KraftShadeEffectViewTestWindow() }),
+    CrosshatchShader("crosshatch_shader", "Crosshatch Shader", category = Category.EFFECTS, screen = { CrosshatchTestScreen() }),
+    ColorfulCrosshatchShader("colorful_crosshatch_shader", "Colorful Crosshatch Shader", category = Category.EFFECTS, screen = { ColorfulCrosshatchTestScreen() }),
+    KraftBitmap("kraft_bitmap", "Kraft Bitmap", category = Category.OTHER, screen = { KraftBitmapTestScreen() }),
+    CircularBlurPerformance("circular_blur_performance", "Circular Blur Performance", category = Category.BLUR, screen = { CircularBlurPerformanceTestWindow() }),
+    CircularBlur("circular_blur", "Circular Blur", category = Category.BLUR, screen = { CircularBlurTestWindow() }),
+    ToonEffect("toon_effect", "Toon Effect", category = Category.EFFECTS, screen = { ToonEffectTestWindow() }),
+    KuwaharaEffect("kuwahara_effect", "Kuwahara Effect", category = Category.EFFECTS, screen = { KuwaharaTestWindow() }),
+    ErosionDilationShaderTest("erosion_dilation_shader_test", "Erosion/Dilation Shader Test", category = Category.BLUR, screen = { ErosionDilationTestScreen() }),
+    LevelsShader("levels_shader", "Levels Shader", category = Category.COLOR, screen = { LevelsShaderScreen() }),
+    FalseColorShader("false_color_shader", "False Color Shader", category = Category.COLOR, screen = { FalseColorShaderScreen() }),
+}
