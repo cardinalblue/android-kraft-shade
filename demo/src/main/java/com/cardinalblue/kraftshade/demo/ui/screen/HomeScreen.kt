@@ -35,13 +35,51 @@ import com.cardinalblue.kraftshade.demo.util.LocalNavController
 @Composable
 fun HomeScreen() {
     ColumnScreen {
+        val navController = LocalNavController.current
+        Button(
+            onClick = { navController.navigate(Destination.ComposeSamples.route) },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = "Compose Samples", fontSize = 18.sp)
+        }
+        Button(
+            onClick = { navController.navigate(Destination.TraditionalViewSamples.route) },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(text = "Traditional View Samples", fontSize = 18.sp)
+        }
+    }
+}
+
+@Composable
+fun ComposeSampleScreen() {
+    ColumnScreen {
         Destination.entries
-            .filter { it.showInHomeScreen }
+            .filter { it.isComposeSample }
             .forEach {
                 key(it) {
                     OptionButton(it)
                 }
             }
+    }
+}
+
+@Composable
+fun TraditionalViewSampleScreen() {
+    ColumnScreen {
+        Text(
+            text = "Traditional View Samples",
+            color = Color.White,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(16.dp)
+        )
+        Text(
+            text = "Coming soon...",
+            color = Color.Gray,
+            fontSize = 16.sp,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 
@@ -70,10 +108,12 @@ private fun OptionButton(
 enum class Destination(
     val route: String,
     val title: String,
-    val showInHomeScreen: Boolean = true,
+    val isComposeSample: Boolean = true,
     val screen: @Composable () -> Unit,
 ) {
-    Home("home", "Home", showInHomeScreen = false, screen = { HomeScreen() }),
+    Home("home", "Home", isComposeSample = false, screen = { HomeScreen() }),
+    ComposeSamples("compose_samples", "Compose Samples", isComposeSample = false, screen = { ComposeSampleScreen() }),
+    TraditionalViewSamples("traditional_view_samples", "Traditional View Samples", isComposeSample = false, screen = { TraditionalViewSampleScreen() }),
     ResizeTest("resize_test", "Resize Test", screen = { ResizeTestScreen() }),
     BasicShader("basic_shader", "Basic Shader", screen = { BasicShaderScreen() }),
     BlendingExample("blending_example", "Blending Example", screen = { BlendingExampleScreen() }),
