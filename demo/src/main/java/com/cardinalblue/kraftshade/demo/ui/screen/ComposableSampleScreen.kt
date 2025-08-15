@@ -33,7 +33,7 @@ fun ComposableSampleScreen() {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        val composeSamples = Destination.entries.filter { it.isComposableSample }
+        val composeSamples = Destination.entries.filter { it.sampleType == SampleType.Compose }
         val categorizedSamples = composeSamples.groupBy { it.category }
 
         Category.entries.forEach { category ->

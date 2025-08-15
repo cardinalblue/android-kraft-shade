@@ -7,9 +7,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cardinalblue.kraftshade.demo.TraditionalViewActivity
 import com.cardinalblue.kraftshade.demo.util.LocalNavController
 
 @Composable
@@ -18,8 +20,24 @@ fun GridOptionButton(
     modifier: Modifier = Modifier,
 ) {
     val navController = LocalNavController.current
+    val context = LocalContext.current
+    
     Card(
-        onClick = { navController.navigate(destination.route) },
+        onClick = { 
+            when (destination.sampleType) {
+                SampleType.TraditionalView -> {
+                    val intent = TraditionalViewActivity.createIntent(
+                        context, 
+                        destination.route, 
+                        destination.title
+                    )
+                    context.startActivity(intent)
+                }
+                else -> {
+                    navController.navigate(destination.route)
+                }
+            }
+        },
         modifier = modifier.fillMaxWidth()
     ) {
         Text(

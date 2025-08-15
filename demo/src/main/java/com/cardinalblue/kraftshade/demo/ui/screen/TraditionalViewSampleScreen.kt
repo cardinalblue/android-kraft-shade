@@ -1,29 +1,58 @@
 package com.cardinalblue.kraftshade.demo.ui.screen
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun TraditionalViewSampleScreen() {
-    ColumnScreen {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        CategoryTitle("Traditional View Samples")
         Text(
-            text = "Traditional View Samples",
-            color = Color.White,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(16.dp)
-        )
-        Text(
-            text = "Coming soon...",
+            text = "Explore Kraftshade effects using traditional Android Views",
             color = Color.Gray,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(16.dp)
+            fontSize = 14.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
+
+        val traditionalSamples = Destination.entries.filter { it.sampleType == SampleType.TraditionalView }
+        val categorizedSamples = traditionalSamples.groupBy { it.category }
+
+        Category.entries.forEach { category ->
+            val samplesInCategory = categorizedSamples[category] ?: emptyList()
+            if (samplesInCategory.isNotEmpty()) {
+                CategoryTitle(category.displayName)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .height(((samplesInCategory.size / 2 + samplesInCategory.size % 2) * 80).dp)
+                        .padding(bottom = 16.dp)
+                ) {
+                    items(samplesInCategory) { sample ->
+                        GridOptionButton(sample)
+                    }
+                }
+            }
+        }
     }
 }
