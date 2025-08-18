@@ -9,21 +9,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Basic Shader - Traditional View Implementation"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="This demonstrates how to use KraftShade with traditional Android Views instead of Jetpack Compose."
-            android:textSize="14sp"
-            android:layout_marginBottom="24dp" />
-
         <!-- Placeholder for KraftShade View -->
         <FrameLayout
             android:id="@+id/kraftShadeContainer"
@@ -42,21 +27,6 @@
                 android:textStyle="bold" />
 
         </FrameLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Features:"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="• Custom View with KraftShade integration\n• Shader parameters controls\n• Image processing demonstration\n• Traditional Android View implementation"
-            android:textSize="14sp"
-            android:lineSpacingExtra="4dp" />
 
     </LinearLayout>
 </ScrollView>
