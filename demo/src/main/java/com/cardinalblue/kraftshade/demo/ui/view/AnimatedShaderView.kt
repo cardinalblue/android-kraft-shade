@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.VideoView
 import com.cardinalblue.kraftshade.demo.R
 import com.cardinalblue.kraftshade.demo.util.loadBitmapFromAsset
 import com.cardinalblue.kraftshade.pipeline.input.bounceBetween

@@ -56,4 +56,5 @@ enum class Destination(
     FalseColorShader("false_color_shader", "False Color Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { FalseColorShaderScreen() }),
     BasicShaderTraditional("basic_shader_traditional", "Basic Shader (Traditional)", sampleType = SampleType.TraditionalView, category = Category.BASIC, screen = { /* Activity will handle this */ }),
     AnimatedShaderTraditional("animated_shader_traditional", "Animated Shader (Traditional)", sampleType = SampleType.TraditionalView, category = Category.BASIC, screen = { /* Activity will handle this */ }),
+    VideoShaderTraditional("video_shader_traditional", "Video Shader (Traditional)", sampleType = SampleType.TraditionalView, category = Category.BASIC, screen = { /* Activity will handle this */ }),
 }
