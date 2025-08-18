@@ -18,7 +18,7 @@
             android:text="Select Video"
             android:layout_marginBottom="16dp" />
 
-        <!-- Video View -->
+        <!-- Video TextureView for KraftShade Effects -->
         <FrameLayout
             android:id="@+id/kraftShadeContainer"
             android:layout_width="match_parent"
@@ -26,8 +26,8 @@
             android:background="#E0E0E0"
             android:layout_marginBottom="16dp">
 
-            <VideoView
-                android:id="@+id/videoView"
+            <com.cardinalblue.kraftshade.demo.ui.view.MediaPlayerTextureView
+                android:id="@+id/mediaPlayerTextureView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"

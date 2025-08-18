@@ -8,7 +8,6 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.VideoView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -18,11 +17,9 @@ import androidx.lifecycle.LifecycleOwner
 import com.cardinalblue.kraftshade.demo.R
 
 class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
-    private var videoView: VideoView? = null
+    private var mediaPlayerTextureView: MediaPlayerTextureView? = null
     private var placeholderText: TextView? = null
     private var photoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>? = null
-    private var currentVideoPosition: Int = 0
-    private var wasPlayingWhenPaused: Boolean = false
 
     override fun addContentTo(context: Context, container: FrameLayout) {
         val layoutInflater = LayoutInflater.from(context)
@@ -31,8 +28,8 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
 
         // Get UI components
         val selectVideoButton = contentView.findViewById<Button>(R.id.selectVideoButton)
-        this.videoView = contentView.findViewById(R.id.videoView)
-        this.placeholderText = contentView.findViewById(R.id.placeholderText)
+        mediaPlayerTextureView = contentView.findViewById(R.id.mediaPlayerTextureView)
+        placeholderText = contentView.findViewById(R.id.placeholderText)
 
         // Setup photo picker launcher and lifecycle observer if context is ComponentActivity
         if (context is ComponentActivity) {
@@ -48,9 +45,6 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
                 Toast.makeText(context, "Cannot access picker from this context", Toast.LENGTH_SHORT).show()
             }
         }
-
-        // TODO: Add video shader implementation here
-        // This is currently an empty placeholder view
     }
 
     private fun setupPhotoPickerLauncher(activity: ComponentActivity) {
@@ -72,77 +66,32 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         )
     }
     private fun handleVideoSelected(uri: Uri) {
+        // Hide placeholder and show video view
+        placeholderText?.visibility = View.GONE
+        mediaPlayerTextureView?.visibility = View.VISIBLE
+        
         // Start playing the video automatically
-        playVideo(uri)
+        mediaPlayerTextureView?.startPlayback(uri)
+        
+        Toast.makeText(mediaPlayerTextureView?.context, "Video selected successfully", Toast.LENGTH_SHORT).show()
     }
 
     // Lifecycle methods
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
-        // Resume video if it was playing
-        videoView?.let { vv ->
-            if (wasPlayingWhenPaused && currentVideoPosition > 0) {
-                vv.seekTo(currentVideoPosition)
-                vv.start()
-            }
-        }
+        mediaPlayerTextureView?.resumePlayback()
     }
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
-        // Save video state
-        videoView?.let { vv ->
-            wasPlayingWhenPaused = vv.isPlaying
-            currentVideoPosition = vv.currentPosition
-            if (vv.isPlaying) {
-                vv.pause()
-            }
-        }
+        mediaPlayerTextureView?.pausePlayback()
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        // Clean up resources
-        videoView?.stopPlayback()
-        videoView = null
+        mediaPlayerTextureView?.stopAndRelease()
+        mediaPlayerTextureView = null
         placeholderText = null
         photoPickerLauncher = null
-    }
-
-    private fun playVideo(uri: Uri) {
-        val videoView = videoView ?: return
-
-        // Hide placeholder and show video view
-        placeholderText?.visibility = View.GONE
-        videoView.visibility = View.VISIBLE
-
-        // Set video URI and prepare
-        videoView.setVideoURI(uri)
-
-        // Set completion listener to loop the video
-        videoView.setOnCompletionListener {
-            it.seekTo(0)
-            it.start()
-        }
-
-        // Set prepared listener to start playback
-        videoView.setOnPreparedListener { mediaPlayer ->
-            videoView.start()
-            // Optional: Set looping
-            mediaPlayer.isLooping = true
-        }
-
-        // Set error listener
-        videoView.setOnErrorListener { _, what, extra ->
-            Toast.makeText(
-                videoView.context,
-                "Video playback error: $what, $extra",
-                Toast.LENGTH_SHORT
-            ).show()
-            // Show placeholder again on error
-            videoView.visibility = View.GONE
-            placeholderText?.visibility = View.VISIBLE
-            true
-        }
     }
 }
