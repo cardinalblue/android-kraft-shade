@@ -6,9 +6,7 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
-import com.cardinalblue.kraftshade.demo.shader.DrawCircleKraftShader
-import com.cardinalblue.kraftshade.model.GlColor
-import com.cardinalblue.kraftshade.widget.KraftEffectTextureView
+import com.cardinalblue.kraftshade.demo.ui.view.BasicShaderView
 
 class TraditionalViewActivity : ComponentActivity() {
 
@@ -39,44 +37,8 @@ class TraditionalViewActivity : ComponentActivity() {
         
         // Add sample content based on route
         when (route) {
-            "basic_shader_traditional" -> addBasicShaderContent(contentContainer)
+            "basic_shader_traditional" -> BasicShaderView().addContentTo(this, contentContainer)
             else -> addPlaceholderContent(contentContainer, title)
-        }
-    }
-    
-    private fun addBasicShaderContent(container: FrameLayout) {
-        val contentView = layoutInflater.inflate(R.layout.basic_shader_traditional_content, container, false)
-        container.addView(contentView)
-        
-        // Get the KraftShade container and add KraftEffectTextureView
-        val kraftShadeContainer = contentView.findViewById<FrameLayout>(R.id.kraftShadeContainer)
-        
-        // Create and configure KraftEffectTextureView
-        val kraftEffectTextureView = KraftEffectTextureView(this).apply {
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        }
-        
-        // Clear existing content and add our KraftEffectTextureView
-        kraftShadeContainer.removeAllViews()
-        kraftShadeContainer.addView(kraftEffectTextureView)
-        
-        // Set up the effect using pipeline DSL
-        kraftEffectTextureView.setEffect { targetBuffer ->
-            pipeline(targetBuffer) {
-                graphSteps(
-                    targetBuffer
-                ) {
-                    val shader = DrawCircleKraftShader(
-                        color = GlColor.Red,
-                        backgroundColor = GlColor.Green,
-                        scale = 0.6f
-                    )
-                    step(shader, graphTargetBuffer)
-                }
-            }
         }
     }
     
