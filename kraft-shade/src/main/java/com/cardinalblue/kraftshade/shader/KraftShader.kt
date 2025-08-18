@@ -42,12 +42,8 @@ abstract class KraftShader : SuspendAutoCloseable {
 
     protected val logger = KraftLogger(this::class.simpleName ?: "KraftShader")
 
-    open fun loadVertexShader(): String {
-        return DEFAULT_VERTEX_SHADER
-    }
-
-    abstract fun loadFragmentShader(): String
-
+    // TODO Use reflection to collect them, instead [serializedField] and [properties]
+    internal val serializableFields = mutableMapOf<String, Any>()
     internal val properties = mutableMapOf<String, Any>()
     fun updateProperty(name: String, value: Any) {
         properties[name] = when (value) {
@@ -60,6 +56,12 @@ abstract class KraftShader : SuspendAutoCloseable {
             else -> value
         }
     }
+
+    open fun loadVertexShader(): String {
+        return DEFAULT_VERTEX_SHADER
+    }
+
+    abstract fun loadFragmentShader(): String
 
     private fun loadShader(strSource: String, iType: Int): Int {
         val compiled = IntArray(1)

@@ -3,11 +3,12 @@ package com.cardinalblue.kraftshade.shader
 import com.cardinalblue.kraftshade.model.GlSizeF
 import com.cardinalblue.kraftshade.shader.builtin.KraftShaderWithTexelSize
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
+import com.cardinalblue.kraftshade.shader.util.SerializableField
 import org.intellij.lang.annotations.Language
 
 abstract class Sample3x3KraftShader : TextureInputKraftShader(), KraftShaderWithTexelSize {
     override var texelSize: GlSizeF by GlUniformDelegate("texelSize")
-    override var texelSizeRatio: GlSizeF = GlSizeF.Unit
+    override var texelSizeRatio: GlSizeF by SerializableField(GlSizeF.Unit)
     override fun loadVertexShader(): String = SAMPLE_3x3_VERTEX_SHADER
 }
 
