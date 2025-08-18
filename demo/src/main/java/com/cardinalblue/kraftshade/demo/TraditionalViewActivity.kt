@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import com.cardinalblue.kraftshade.demo.ui.view.BasicShaderView
+import com.cardinalblue.kraftshade.demo.ui.view.AnimatedShaderView
 
 class TraditionalViewActivity : ComponentActivity() {
 
@@ -38,6 +39,7 @@ class TraditionalViewActivity : ComponentActivity() {
         // Add sample content based on route
         when (route) {
             "basic_shader_traditional" -> BasicShaderView().addContentTo(this, contentContainer)
+            "animated_shader_traditional" -> AnimatedShaderView().addContentTo(this, contentContainer)
             else -> addPlaceholderContent(contentContainer, title)
         }
     }
