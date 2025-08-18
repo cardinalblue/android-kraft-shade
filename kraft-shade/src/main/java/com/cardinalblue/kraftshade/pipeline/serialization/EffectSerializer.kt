@@ -4,6 +4,7 @@ import android.content.Context
 import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.model.GlSizeF
 import com.cardinalblue.kraftshade.pipeline.BufferReference
 import com.cardinalblue.kraftshade.pipeline.Pipeline
 import com.cardinalblue.kraftshade.pipeline.RunShaderStep
@@ -25,6 +26,7 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 import java.math.BigDecimal
+import java.util.Locale
 import kotlin.collections.forEach
 
 /**
@@ -126,9 +128,16 @@ internal class PipelineShaderNodeAdapter : JsonDeserializer<PipelineShaderNode> 
             ctx
         )
 
+        val serializableFields = mapAdapter.deserialize(
+            jsonObject.get("serializableFields"),
+            object : TypeToken<Map<String, Any>>() {}.type,
+            ctx
+        )
+
         return PipelineShaderNode(
             shaderClassName = shaderClassName,
             shaderProperties = shaderProperties,
+            serializableFields = serializableFields,
             inputs = inputs,
             output = output
         )
@@ -171,7 +180,8 @@ class EffectSerializer(private val context: Context, private val size: GlSize) {
 
                 PipelineShaderNode(
                     shaderClassName = shader::class.qualifiedName!!,
-                    shaderProperties = shader.properties.toMap(), // clone properties to avoid modification
+                    shaderProperties = shader.properties.toMap(), // clone it to avoid modification
+                    serializableFields = shader.serializableFields.toMap(), // clone it to avoid modification
                     inputs = buildList {
                         fun addTexture(texture: Texture) {
                             if (texture is LoadedTexture) {
@@ -296,6 +306,7 @@ class SerializedEffect(
 internal data class PipelineShaderNode(
     val shaderClassName: String,
     val shaderProperties: Map<String, Any>,
+    val serializableFields: Map<String, Any>,
     val inputs: List<String>,
     val output: String,
 ) {
@@ -303,6 +314,30 @@ internal data class PipelineShaderNode(
         val shaderClass = Class.forName(shaderClassName)
         val constructor = shaderClass.getConstructor()
         return (constructor.newInstance() as KraftShader).apply {
+            this@PipelineShaderNode.serializableFields.forEach {
+                val value = it.value
+
+                val method = this::class.java.methods.find { method ->
+                    method.name == "set${it.key.replaceFirstChar { c -> c.uppercase(Locale.getDefault()) }}"
+                }
+
+                method?.invoke(this, when(method.parameterTypes.firstOrNull()) {
+                    GlSizeF::class.java -> {
+                        val value = value as List<*>
+                        GlSizeF(
+                            (value[0] as Double).toFloat(),
+                            (value[1] as Double).toFloat()
+                        )
+                    }
+                    Float::class.java -> (value as Number).toFloat()
+                    Int::class.java -> (value as Number).toInt()
+                    Long::class.java -> (value as Number).toLong()
+                    Double::class.java -> (value as Number).toDouble()
+                    String::class.java -> value as String
+                    Boolean::class.java -> (value as Boolean)
+                    else -> error("Unsupported type: ${it.value::class.java}")
+                })
+            }
             shaderProperties.mapNotNull { (key, value) ->
                 when (value) {
                     is List<*> -> key to value.mapNotNull {
