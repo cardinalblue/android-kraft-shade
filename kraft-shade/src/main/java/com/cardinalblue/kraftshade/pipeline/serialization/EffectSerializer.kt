@@ -27,7 +27,6 @@ import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 import java.math.BigDecimal
 import java.util.Locale
-import kotlin.collections.forEach
 
 /**
  * Converts JsonElement ➜ Kotlin Any with best-fit number types.
@@ -128,11 +127,13 @@ internal class PipelineShaderNodeAdapter : JsonDeserializer<PipelineShaderNode> 
             ctx
         )
 
-        val serializableFields = mapAdapter.deserialize(
-            jsonObject.get("serializableFields"),
-            object : TypeToken<Map<String, Any>>() {}.type,
-            ctx
-        )
+        val serializableFields = if (jsonObject.has("serializableFields")) {
+            mapAdapter.deserialize(
+                jsonObject.get("serializableFields"),
+                object : TypeToken<Map<String, Any>>() {}.type,
+                ctx
+            )
+        } else emptyMap()
 
         return PipelineShaderNode(
             shaderClassName = shaderClassName,
