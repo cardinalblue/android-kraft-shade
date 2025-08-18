@@ -2,22 +2,27 @@ package com.cardinalblue.kraftshade.demo.ui.view
 
 import android.content.Context
 import android.net.Uri
-import android.provider.MediaStore
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.cardinalblue.kraftshade.demo.R
 
-class VideoShaderView: TraditionViewContent {
-
-    private var videoPathText: TextView? = null
+class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
+    private var videoView: VideoView? = null
+    private var placeholderText: TextView? = null
     private var photoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>? = null
+    private var currentVideoPosition: Int = 0
+    private var wasPlayingWhenPaused: Boolean = false
 
     override fun addContentTo(context: Context, container: FrameLayout) {
         val layoutInflater = LayoutInflater.from(context)
@@ -26,11 +31,13 @@ class VideoShaderView: TraditionViewContent {
 
         // Get UI components
         val selectVideoButton = contentView.findViewById<Button>(R.id.selectVideoButton)
-        videoPathText = contentView.findViewById(R.id.videoPathText)
+        this.videoView = contentView.findViewById(R.id.videoView)
+        this.placeholderText = contentView.findViewById(R.id.placeholderText)
 
-        // Setup photo picker launcher if context is ComponentActivity
+        // Setup photo picker launcher and lifecycle observer if context is ComponentActivity
         if (context is ComponentActivity) {
             setupPhotoPickerLauncher(context)
+            context.lifecycle.addObserver(this)
         }
 
         // Set button click listener
@@ -52,7 +59,7 @@ class VideoShaderView: TraditionViewContent {
             ActivityResultContracts.PickVisualMedia()
         ) { uri ->
             if (uri != null) {
-                handleVideoSelected(activity, uri)
+                handleVideoSelected(uri)
             } else {
                 Toast.makeText(activity, "No video selected", Toast.LENGTH_SHORT).show()
             }
@@ -64,34 +71,78 @@ class VideoShaderView: TraditionViewContent {
             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
         )
     }
-
-    @Suppress("SetTextI18n")
-    private fun handleVideoSelected(context: Context, uri: Uri) {
-        // Display the video URI path
-        videoPathText?.text = "Selected video: $uri"
-        
-        // You can also get the actual file path if needed
-        val realPath = getRealPathFromURI(context, uri)
-        if (realPath != null) {
-            videoPathText?.text = "Selected video path:\n$realPath"
-        }
-        
-        Toast.makeText(context, "Video selected successfully", Toast.LENGTH_SHORT).show()
+    private fun handleVideoSelected(uri: Uri) {
+        // Start playing the video automatically
+        playVideo(uri)
     }
 
-    private fun getRealPathFromURI(context: Context, uri: Uri): String? {
-        return try {
-            val cursor = context.contentResolver.query(uri, null, null, null, null)
-            cursor?.use {
-                val columnIndex = it.getColumnIndex(MediaStore.Video.Media.DATA)
-                if (columnIndex >= 0 && it.moveToFirst()) {
-                    it.getString(columnIndex)
-                } else {
-                    uri.toString()
-                }
+    // Lifecycle methods
+    override fun onStart(owner: LifecycleOwner) {
+        super.onStart(owner)
+        // Resume video if it was playing
+        videoView?.let { vv ->
+            if (wasPlayingWhenPaused && currentVideoPosition > 0) {
+                vv.seekTo(currentVideoPosition)
+                vv.start()
             }
-        } catch (_: Exception) {
-            uri.toString()
+        }
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        super.onStop(owner)
+        // Save video state
+        videoView?.let { vv ->
+            wasPlayingWhenPaused = vv.isPlaying
+            currentVideoPosition = vv.currentPosition
+            if (vv.isPlaying) {
+                vv.pause()
+            }
+        }
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        // Clean up resources
+        videoView?.stopPlayback()
+        videoView = null
+        placeholderText = null
+        photoPickerLauncher = null
+    }
+
+    private fun playVideo(uri: Uri) {
+        val videoView = videoView ?: return
+
+        // Hide placeholder and show video view
+        placeholderText?.visibility = View.GONE
+        videoView.visibility = View.VISIBLE
+
+        // Set video URI and prepare
+        videoView.setVideoURI(uri)
+
+        // Set completion listener to loop the video
+        videoView.setOnCompletionListener {
+            it.seekTo(0)
+            it.start()
+        }
+
+        // Set prepared listener to start playback
+        videoView.setOnPreparedListener { mediaPlayer ->
+            videoView.start()
+            // Optional: Set looping
+            mediaPlayer.isLooping = true
+        }
+
+        // Set error listener
+        videoView.setOnErrorListener { _, what, extra ->
+            Toast.makeText(
+                videoView.context,
+                "Video playback error: $what, $extra",
+                Toast.LENGTH_SHORT
+            ).show()
+            // Show placeholder again on error
+            videoView.visibility = View.GONE
+            placeholderText?.visibility = View.VISIBLE
+            true
         }
     }
 }

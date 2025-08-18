@@ -18,18 +18,7 @@
             android:text="Select Video"
             android:layout_marginBottom="16dp" />
 
-        <!-- Video path display -->
-        <TextView
-            android:id="@+id/videoPathText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="No video selected"
-            android:textSize="14sp"
-            android:padding="16dp"
-            android:background="#F5F5F5"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Placeholder for Video Shader View -->
+        <!-- Video View -->
         <FrameLayout
             android:id="@+id/kraftShadeContainer"
             android:layout_width="match_parent"
@@ -37,10 +26,18 @@
             android:background="#E0E0E0"
             android:layout_marginBottom="16dp">
 
+            <VideoView
+                android:id="@+id/videoView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
             <TextView
+                android:id="@+id/placeholderText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="KraftShade Video View\n(Video will be processed here)"
+                android:text="KraftShade Video View\n(Select a video to start playback)"
                 android:textAlignment="center"
                 android:layout_gravity="center"
                 android:textSize="16sp"
