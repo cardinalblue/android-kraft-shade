@@ -21,9 +21,11 @@ class BrightnessKraftShader(
 
 @Language("GLSL")
 private const val BRIGHTNESS_FRAGMENT_SHADER = """
+#extension GL_OES_EGL_image_external : require
+
 varying highp vec2 textureCoordinate;
 
-uniform sampler2D inputImageTexture;
+uniform samplerExternalOES inputImageTexture;
 uniform lowp float brightness;
 
 void main()

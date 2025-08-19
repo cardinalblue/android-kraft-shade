@@ -20,7 +20,7 @@ open class KraftEffectTextureView : KraftTextureView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private val logger = KraftLogger("KraftEffectTextureView")
-    private var attachScope: CoroutineScope? = null
+    protected var attachScope: CoroutineScope? = null
 
     @DangerousKraftShadeApi
     var effectExecution: EffectExecution? = null

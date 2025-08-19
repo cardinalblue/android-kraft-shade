@@ -3,9 +3,9 @@ package com.cardinalblue.kraftshade.demo.ui.view
 import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -15,11 +15,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.cardinalblue.kraftshade.demo.R
+import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
 
 class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
-    private var mediaPlayerTextureView: MediaPlayerTextureView? = null
-    private var placeholderText: TextView? = null
+    private var kraftVideoEffectTextureView: KraftVideoEffectTextureView? = null
     private var photoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>? = null
+    private var brightnessLabel: TextView? = null
+    private var brightnessSlider: SeekBar? = null
+
+    var brightness: Float = 0.3f
 
     override fun addContentTo(context: Context, container: FrameLayout) {
         val layoutInflater = LayoutInflater.from(context)
@@ -28,8 +32,12 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
 
         // Get UI components
         val selectVideoButton = contentView.findViewById<Button>(R.id.selectVideoButton)
-        mediaPlayerTextureView = contentView.findViewById(R.id.mediaPlayerTextureView)
-        placeholderText = contentView.findViewById(R.id.placeholderText)
+        kraftVideoEffectTextureView = contentView.findViewById(R.id.kraftVideoEffectTextureView)
+        brightnessLabel = contentView.findViewById(R.id.brightnessLabel)
+        brightnessSlider = contentView.findViewById(R.id.brightnessSlider)
+
+        // Setup brightness slider
+        setupBrightnessSlider()
 
         // Setup photo picker launcher and lifecycle observer if context is ComponentActivity
         if (context is ComponentActivity) {
@@ -45,6 +53,24 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
                 Toast.makeText(context, "Cannot access picker from this context", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setupBrightnessSlider() {
+        brightnessSlider?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    // Convert progress (0-200) to brightness value (-1.0~1.0)
+                    brightness = (progress / 100.0f) - 1
+                    
+                    // Update label
+                    brightnessLabel?.text = "Brightness: %.2f".format(brightness)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
     }
 
     private fun setupPhotoPickerLauncher(activity: ComponentActivity) {
@@ -66,32 +92,44 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         )
     }
     private fun handleVideoSelected(uri: Uri) {
-        // Hide placeholder and show video view
-        placeholderText?.visibility = View.GONE
-        mediaPlayerTextureView?.visibility = View.VISIBLE
-        
         // Start playing the video automatically
-        mediaPlayerTextureView?.startPlayback(uri)
+        kraftVideoEffectTextureView?.startPlayback(uri)
+        applySaturationEffect()
         
-        Toast.makeText(mediaPlayerTextureView?.context, "Video selected successfully", Toast.LENGTH_SHORT).show()
+        Toast.makeText(kraftVideoEffectTextureView?.context, "Video selected successfully", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun applySaturationEffect() {
+        val kraftVideoEffectTextureView = kraftVideoEffectTextureView ?: return
+        val videoTexture = kraftVideoEffectTextureView.videoTexture ?: return
+        kraftVideoEffectTextureView.setEffect { targetBuffer ->
+            pipeline(targetBuffer) {
+                serialSteps(videoTexture, targetBuffer) {
+                    val brightnessShader = BrightnessKraftShader(brightness)
+                    step(brightnessShader) {
+                        kraftVideoEffectTextureView.videoSurfaceTexture?.updateTexImage()
+                        it.brightness = this@VideoShaderView.brightness
+                    }
+                }
+            }
+        }
     }
 
     // Lifecycle methods
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
-        mediaPlayerTextureView?.resumePlayback()
+        kraftVideoEffectTextureView?.resumePlayback()
     }
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
-        mediaPlayerTextureView?.pausePlayback()
+        kraftVideoEffectTextureView?.pausePlayback()
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        mediaPlayerTextureView?.stopAndRelease()
-        mediaPlayerTextureView = null
-        placeholderText = null
+        kraftVideoEffectTextureView?.stopAndRelease()
+        kraftVideoEffectTextureView = null
         photoPickerLauncher = null
     }
 }
