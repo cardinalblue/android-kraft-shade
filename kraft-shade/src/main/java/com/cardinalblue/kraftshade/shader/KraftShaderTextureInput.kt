@@ -22,7 +22,7 @@ class KraftShaderTextureInput(
         // we won't be able to get the real property, so just pass fake ones here.
         // They shouldn't be needed anyway.
         val texture = textureDelegate.getValue(shader, this::textureDelegate)
-        GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture.textureId)
+        GLES30.glBindTexture(texture.glTextureTarget, texture.textureId)
         textureSamplerDelegate.setValue(shader, this::textureSamplerDelegate, textureIndex)
         textureSizeDelegate.setValue(shader, this::textureSizeDelegate, texture.size)
     }

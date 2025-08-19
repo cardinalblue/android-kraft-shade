@@ -1,7 +1,6 @@
 package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.Bitmap
-import android.opengl.GLES11Ext
 import android.opengl.GLES30
 import com.cardinalblue.kraftshade.IncompleteFrameBufferAccess
 import com.cardinalblue.kraftshade.OpenGlUtils
@@ -11,33 +10,35 @@ import com.cardinalblue.kraftshade.withFrameBufferRestored
 import com.cardinalblue.kraftshade.withViewPortRestored
 import java.nio.IntBuffer
 
-abstract class Texture private constructor(create: Boolean = true) : SuspendAutoCloseable,
+abstract class Texture protected constructor(create: Boolean = true) : SuspendAutoCloseable,
     TextureProvider {
     var textureId: Int
         private set
 
     abstract val size: GlSize
 
+    open val glTextureTarget = GLES30.GL_TEXTURE_2D
+
     init {
         if (create) {
             val textures = intArrayOf(0)
             GLES30.glGenTextures(1, textures, 0)
             textureId = textures[0]
-            GLES30.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
+            GLES30.glBindTexture(glTextureTarget, textureId)
             GLES30.glTexParameterf(
-                GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                glTextureTarget,
                 GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR.toFloat()
             )
             GLES30.glTexParameterf(
-                GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                glTextureTarget,
                 GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR.toFloat()
             )
             GLES30.glTexParameterf(
-                GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                glTextureTarget,
                 GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE.toFloat()
             )
             GLES30.glTexParameterf(
-                GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                glTextureTarget,
                 GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE.toFloat()
             )
         } else {
