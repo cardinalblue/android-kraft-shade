@@ -80,17 +80,24 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                         listener = this@KraftTextureView,
                     ).also { windowSurface ->
                         surfaceTextureListener = windowSurface.surfaceTextureListener
-                        // if the onSurfaceTextureAvailable is already emitted, we have to emit it
-                        // on our own.
-                        val surfaceTexture = surfaceTexture
-                        if (isAvailable && surfaceTexture != null) {
-                            windowSurface.surfaceTextureListener.onSurfaceTextureAvailable(
-                                surfaceTexture, width, height)
-                        }
                     }
                     windowSurface = surface
                 }
             }
+            // if the onSurfaceTextureAvailable is already emitted, we have to emit it
+            // on our own.
+            notifySurfaceTextureAvailable()
+        }
+    }
+
+    private fun notifySurfaceTextureAvailable() {
+        glEnv ?: return // ensure glEnv is ready
+        val windowSurface = windowSurface ?: return
+        val surfaceTexture = surfaceTexture ?: return
+
+        if (isAvailable) {
+            windowSurface.surfaceTextureListener.onSurfaceTextureAvailable(
+                surfaceTexture, width, height)
         }
     }
 

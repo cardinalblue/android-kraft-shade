@@ -24,6 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".TraditionalViewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KraftShade" />
     </application>
 
 </manifest>
