@@ -29,11 +29,6 @@ uniform lowp float brightness;
 void main()
 {
     lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-    if (textureCoordinate.x > 0.5) {
-        gl_FragColor = vec4((textureColor.rgb + vec3(brightness)), textureColor.w);
-    } else {
-        gl_FragColor = vec4(textureColor.rgb, textureColor.w);
-    }
-    
+    gl_FragColor = vec4((textureColor.rgb + vec3(brightness)), textureColor.w);
 }
 """
