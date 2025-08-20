@@ -73,6 +73,31 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Sets up a video effect pipeline that automatically handles video-specific operations.
+     * 
+     * This function provides convenience for video processing by automatically handling:
+     * - **Video texture updates**: Calls `SurfaceTexture.updateTexImage()` to get the latest video frame
+     * - **Video rotation**: Applies the correct rotation transformation based on video metadata
+     * - **Vertical flip**: Applies necessary coordinate system transformation for video rendering
+     * 
+     * ## Important Memory Management Warning
+     * 
+     * **⚠️ CRITICAL**: This function sets `automaticTextureRecycle = false` to prevent the video texture
+     * from being automatically deleted, as it needs to be reused across multiple frames during video playback.
+     * 
+     * **This means that any textures created within the [effectExecution] block are NOT automatically cleaned up.**
+     * 
+     * ### Memory Leak Prevention
+     * If you create textures within [effectExecution], you must:
+     * 1. **Reuse textures** when possible instead of creating new ones every frame
+     * 2. **Manually manage texture lifecycle** by calling `texture.delete()` when no longer needed
+     * 3. **Avoid creating textures in render loops** - create them once and reuse
+     * 
+     * @param afterSet Callback executed after the effect is set, defaults to `requestRender()`
+     * @param effectExecution The effect pipeline execution block. Receives the video input texture
+     *                       and target buffer. Must handle texture memory management carefully.
+     */
     fun setEffectWithPipeline(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
         effectExecution: suspend GraphPipelineSetupScope.(inputTexture: TextureProvider, targetBuffer: GlBufferProvider,) -> Unit
@@ -85,6 +110,16 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
                     setupVideoTextureUpdate(videoRotation)
                     graphStep { inputTexture -> effectExecution(inputTexture, targetBuffer) }
                 }
+            }
+        }
+    }
+
+    suspend fun SerialTextureInputPipelineScope.setupVideoTextureUpdate(videoRotation: Float) {
+        step(DoNothingKraftShader()) {
+            videoSurfaceTexture?.updateTexImage()
+            it.withTransform {
+                rotate2D(videoRotation, pivotX = 0.5f, pivotY = 0.5f)
+                verticalFlip()
             }
         }
     }
@@ -244,17 +279,6 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
         } catch (e: Exception) {
             logger.e("Error setting up MediaPlayer", e)
             stopAndRelease()
-        }
-    }
-
-
-    private suspend fun SerialTextureInputPipelineScope.setupVideoTextureUpdate(videoRotation: Float) {
-        step(DoNothingKraftShader()) {
-            videoSurfaceTexture?.updateTexImage()
-            it.withTransform {
-                rotate2D(videoRotation, pivotX = 0.5f, pivotY = 0.5f)
-                verticalFlip()
-            }
         }
     }
 
