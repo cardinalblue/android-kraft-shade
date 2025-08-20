@@ -59,6 +59,8 @@ abstract class KraftShader : SuspendAutoCloseable {
         return fragmentShader
     }
 
+    // TODO Use reflection to collect them, instead [serializedField] and [properties]
+    internal val serializableFields = mutableMapOf<String, Any>()
     internal val properties = mutableMapOf<String, Any>()
     fun updateProperty(name: String, value: Any) {
         properties[name] = when (value) {

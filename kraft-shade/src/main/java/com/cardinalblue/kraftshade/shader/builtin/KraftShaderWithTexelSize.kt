@@ -11,6 +11,8 @@ import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
  * not meaningful since it's calculated in the rendering cycle.
  *
  * @property texelSizeRatio You can override it as var, so that it's configurable in your shader.
+ * If you'd like to make it serializable, you can use
+ * [com.cardinalblue.kraftshade.shader.util.SerializableField] to delegate it.
  */
 interface KraftShaderWithTexelSize {
     var texelSize: GlSizeF

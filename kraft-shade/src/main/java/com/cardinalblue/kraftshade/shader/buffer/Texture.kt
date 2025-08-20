@@ -1,7 +1,9 @@
 package com.cardinalblue.kraftshade.shader.buffer
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.opengl.GLES30
+import androidx.core.graphics.createBitmap
 import com.cardinalblue.kraftshade.IncompleteFrameBufferAccess
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlSize
@@ -134,6 +136,25 @@ abstract class Texture protected constructor(create: Boolean = true) : SuspendAu
             }
         }
 
+        /**
+         * A special texture that represents an empty texture.
+         * It is a 1x1 transparent texture, which is used to indicate that no texture is available.
+         * This is useful in cases where a texture is required but no valid texture is provided.
+         */
+        val Empty = object : Texture(true) {
+            override val size: GlSize get() = GlSize(1, 1)
+
+            override suspend fun delete() {
+                // Do nothing
+            }
+
+            override fun getBitmap(): Bitmap {
+                // Create a 1x1 magenta bitmap
+                return createBitmap(1, 1).apply {
+                    eraseColor(Color.MAGENTA) // use magenta to indicate empty texture
+                }
+            }
+        }
     }
 }
 
