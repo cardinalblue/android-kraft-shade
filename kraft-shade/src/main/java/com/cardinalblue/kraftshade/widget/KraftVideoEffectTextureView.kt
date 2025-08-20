@@ -2,6 +2,7 @@ package com.cardinalblue.kraftshade.widget
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.AttributeSet
@@ -18,6 +19,7 @@ import com.cardinalblue.kraftshade.shader.builtin.DoNothingKraftShader
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class KraftVideoEffectTextureView @JvmOverloads constructor(
     context: Context,
@@ -32,6 +34,7 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
     private var currentVideoPosition: Int = 0
     private var wasPlayingWhenPaused: Boolean = false
     private var videoUri: Uri? = null
+    private var videoRotation: Float = 0f
     private var videoWidth: Int = 0
     private var videoHeight: Int = 0
 
@@ -43,45 +46,12 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
 
     private var isTextureReady = false
 
-    fun setEffectWithPipeline(
-        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
-        videoRotation: () -> Float = { 0f },
-        effectExecution: suspend GraphPipelineSetupScope.(inputTexture: TextureProvider, targetBuffer: GlBufferProvider,) -> Unit
-    ) {
-        val videoTexture = videoTexture ?: return
-        super.setEffect(afterSet) { targetBuffer ->
-            pipeline(targetBuffer) {
-                serialSteps(videoTexture, targetBuffer) {
-                    setupVideoTextureUpdate(videoRotation())
-                    graphStep { inputTexture -> effectExecution(inputTexture, targetBuffer) }
-                }
-            }
-        }
-    }
-
-    suspend fun createVideoTexture() {
-        val job = runGlTask {
-            val texture = ExternalOESTexture()
-            this@KraftVideoEffectTextureView.videoTexture = texture
-            this@KraftVideoEffectTextureView.isTextureReady = true
-            logger.i("videoTexture created with ID: ${texture.textureId}")
-        }
-        job.join()
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        attachScope?.launch {
-            createVideoTexture()
-        }
-        choreographer.postFrameCallback(callback)
-    }
-
     fun startPlayback(uri: Uri) {
         if (isPrepareCalled) {
             stopAndRelease()
         }
 
+        videoRotation = getVideoRotation(uri)
         videoUri = uri
 
         // Wait for texture to be ready before setting up MediaPlayer
@@ -98,6 +68,81 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
                 setupMediaPlayer(uri)
             }
         }
+    }
+
+    fun setEffectWithPipeline(
+        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
+        effectExecution: suspend GraphPipelineSetupScope.(inputTexture: TextureProvider, targetBuffer: GlBufferProvider,) -> Unit
+    ) {
+        val videoTexture = videoTexture ?: return
+        super.setEffect(afterSet) { targetBuffer ->
+            // Do not recycle texture automatically, it might be reused across different videos
+            pipeline(targetBuffer, automaticTextureRecycle = false) {
+                serialSteps(videoTexture, targetBuffer) {
+                    setupVideoTextureUpdate(videoRotation)
+                    graphStep { inputTexture -> effectExecution(inputTexture, targetBuffer) }
+                }
+            }
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        attachScope?.launch {
+            createVideoTexture()
+        }
+        choreographer.postFrameCallback(callback)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        videoSurfaceTexture?.release()
+        runBlocking { videoTexture?.delete() }
+        choreographer.removeFrameCallback(callback)
+    }
+
+    fun pausePlayback() {
+        mediaPlayer?.let { mp ->
+            if (mp.isPlaying) {
+                wasPlayingWhenPaused = true
+                currentVideoPosition = mp.currentPosition
+                mp.pause()
+                logger.d("Video paused at position: $currentVideoPosition")
+            }
+        }
+    }
+
+    fun resumePlayback() {
+        mediaPlayer?.let { mp ->
+            if (wasPlayingWhenPaused && currentVideoPosition > 0) {
+                mp.seekTo(currentVideoPosition)
+                mp.start()
+                wasPlayingWhenPaused = false
+                logger.d("Video resumed from position: $currentVideoPosition")
+            }
+        }
+    }
+
+    fun stopAndRelease() {
+        mediaPlayer?.let { mp ->
+            try {
+                if (mp.isPlaying) {
+                    mp.stop()
+                }
+                mp.release()
+                logger.d("MediaPlayer released")
+            } catch (e: Exception) {
+                logger.e("Error releasing MediaPlayer", e)
+            }
+        }
+        mediaPlayer = null
+        isPrepareCalled = false
+        currentVideoPosition = 0
+        wasPlayingWhenPaused = false
+    }
+
+    fun isPlaying(): Boolean {
+        return mediaPlayer?.isPlaying ?: false
     }
 
     private fun setupMediaPlayer(uri: Uri) {
@@ -147,49 +192,6 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
         }
     }
 
-    fun pausePlayback() {
-        mediaPlayer?.let { mp ->
-            if (mp.isPlaying) {
-                wasPlayingWhenPaused = true
-                currentVideoPosition = mp.currentPosition
-                mp.pause()
-                logger.d("Video paused at position: $currentVideoPosition")
-            }
-        }
-    }
-
-    fun resumePlayback() {
-        mediaPlayer?.let { mp ->
-            if (wasPlayingWhenPaused && currentVideoPosition > 0) {
-                mp.seekTo(currentVideoPosition)
-                mp.start()
-                wasPlayingWhenPaused = false
-                logger.d("Video resumed from position: $currentVideoPosition")
-            }
-        }
-    }
-
-    fun stopAndRelease() {
-        mediaPlayer?.let { mp ->
-            try {
-                if (mp.isPlaying) {
-                    mp.stop()
-                }
-                mp.release()
-                logger.d("MediaPlayer released")
-            } catch (e: Exception) {
-                logger.e("Error releasing MediaPlayer", e)
-            }
-        }
-        mediaPlayer = null
-        isPrepareCalled = false
-        currentVideoPosition = 0
-        wasPlayingWhenPaused = false
-    }
-
-    fun isPlaying(): Boolean {
-        return mediaPlayer?.isPlaying ?: false
-    }
 
     private suspend fun SerialTextureInputPipelineScope.setupVideoTextureUpdate(videoRotation: Float) {
         step(DoNothingKraftShader()) {
@@ -201,10 +203,31 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
         }
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        videoSurfaceTexture?.release()
-        choreographer.removeFrameCallback(callback)
+    private fun createVideoTexture() {
+        runGlTask {
+            val texture = ExternalOESTexture()
+            videoTexture = texture
+            isTextureReady = true
+            logger.i("videoTexture created with ID: ${texture.textureId}")
+        }
+    }
+
+    private fun getVideoRotation(uri: Uri): Float {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(context, uri)
+            val rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+            rotation?.toFloatOrNull() ?: 0f
+        } catch (e: Exception) {
+            logger.e("Error retrieving video rotation", e)
+            0f
+        } finally {
+            try {
+                retriever.release()
+            } catch (_: Exception) {
+                // Ignore release errors
+            }
+        }
     }
 
     private inner class Callback : Choreographer.FrameCallback {

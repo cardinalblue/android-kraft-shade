@@ -1,7 +1,6 @@
 package com.cardinalblue.kraftshade.demo.ui.view
 
 import android.content.Context
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.view.LayoutInflater
 import android.widget.Button
@@ -27,7 +26,6 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     private var brightnessSlider: SeekBar? = null
 
     var brightness: Float = 0.3f
-    private var videoRotation: Float = 0f
 
     override fun addContentTo(context: Context, container: FrameLayout) {
         val layoutInflater = LayoutInflater.from(context)
@@ -95,39 +93,14 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         )
     }
     private fun handleVideoSelected(uri: Uri) {
-        // Get video orientation from metadata
-        videoRotation = getVideoRotation(uri)
-        
-        // Start playing the video automatically
         kraftVideoEffectTextureView?.startPlayback(uri)
         applyEffect()
-        
-        Toast.makeText(kraftVideoEffectTextureView?.context, "Video selected successfully (rotation: ${videoRotation}°)", Toast.LENGTH_SHORT).show()
-    }
-    
-    private fun getVideoRotation(uri: Uri): Float {
-        val retriever = MediaMetadataRetriever()
-        return try {
-            retriever.setDataSource(kraftVideoEffectTextureView?.context, uri)
-            val rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
-            rotation?.toFloatOrNull() ?: 0f
-        } catch (e: Exception) {
-            0f
-        } finally {
-            try {
-                retriever.release()
-            } catch (e: Exception) {
-                // Ignore cleanup errors
-            }
-        }
     }
 
     private fun applyEffect() {
         val kraftVideoEffectTextureView = kraftVideoEffectTextureView ?: return
 
-        kraftVideoEffectTextureView.setEffectWithPipeline(
-            videoRotation = { videoRotation },
-        ) { inputTexture, targetBuffer ->
+        kraftVideoEffectTextureView.setEffectWithPipeline { inputTexture, targetBuffer ->
             serialSteps(inputTexture, targetBuffer) {
                 step(RGBKraftShader(brightness, 0.5f, 0f))
                 step(BrightnessKraftShader(brightness)) {
