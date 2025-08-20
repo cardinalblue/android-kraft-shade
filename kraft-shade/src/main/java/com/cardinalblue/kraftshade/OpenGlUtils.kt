@@ -26,52 +26,6 @@ object OpenGlUtils {
         1.0f, -1.0f,
     )
 
-    val TEXTURE_NO_ROTATION: FloatArray = floatArrayOf(
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-    )
-
-    val TEXTURE_VERT_FLIP: FloatArray = floatArrayOf(
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-    )
-
-    // Texture coordinates for 90 degrees clockwise rotation
-    val TEXTURE_ROTATE_90: FloatArray = floatArrayOf(
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-    )
-
-    // Texture coordinates for 180 degrees rotation
-    val TEXTURE_ROTATE_180: FloatArray = floatArrayOf(
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-    )
-
-    // Texture coordinates for 270 degrees clockwise rotation (90 CCW)
-    val TEXTURE_ROTATE_270: FloatArray = floatArrayOf(
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-    )
-
-    // Texture coordinates for horizontal flip
-    val TEXTURE_FLIP_HORIZONTAL: FloatArray = floatArrayOf(
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-    )
-
     /**
      * For frame buffer objects or PixelBuffer
      */
@@ -90,11 +44,21 @@ object OpenGlUtils {
             return field
         }
 
+    val TEXTURE_NO_ROTATION: FloatArray = floatArrayOf(
+        0.0f, 1.0f,
+        1.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+    )
 
-    // Texture coordinates for vertical flip (same as TEXTURE_VERT_FLIP but more explicit naming)
-    val TEXTURE_FLIP_VERTICAL: FloatArray = TEXTURE_VERT_FLIP
+    val TEXTURE_VERT_FLIP: FloatArray = floatArrayOf(
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        0.0f, 1.0f,
+        1.0f, 1.0f,
+    )
 
-    val glTextureBuffer = TEXTURE_ROTATE_270.asFloatBuffer()
+    val glTextureBuffer = TEXTURE_VERT_FLIP.asFloatBuffer()
         get() {
             field.position(0)
             return field

@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.shader
 import android.opengl.GLES30
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.shader.buffer.ExternalOESTexture
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
@@ -18,6 +19,25 @@ abstract class TextureInputKraftShader(
     )
 
     protected var _inputTexture: Texture by input.textureDelegate
+
+    override fun interceptFragmentShader(fragmentShader: String): String {
+        return if (_inputTexture is ExternalOESTexture) {
+            addOESExtensionToFragmentShader(fragmentShader)
+        } else {
+            super.interceptFragmentShader(fragmentShader)
+        }
+    }
+
+    protected fun addOESExtensionToFragmentShader(fragmentShader: String): String {
+        // Add OES extension and replace sampler2D with samplerExternalOES
+        return if (!fragmentShader.contains("#extension GL_OES_EGL_image_external")) {
+            "#extension GL_OES_EGL_image_external : require\n" +
+                    fragmentShader.replace("sampler2D", "samplerExternalOES")
+        } else {
+            fragmentShader
+        }
+    }
+
 
     fun getInputTexture(): Texture {
         return _inputTexture

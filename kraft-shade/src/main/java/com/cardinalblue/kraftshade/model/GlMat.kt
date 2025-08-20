@@ -58,8 +58,19 @@ class GlMat4 : GlMat {
         translate2D(-pivotX, -pivotY)
     }
 
-    fun rotate2D(rotation: Float) {
+    fun rotate2D(rotation: Float, pivotX: Float = 0f, pivotY: Float = 0f) {
+        Matrix.translateM(arr, 0, pivotX, pivotY, 0f)
         Matrix.rotateM(arr, 0, rotation, 0f, 0f, 1f)
+        Matrix.translateM(arr, 0, -pivotX, -pivotY, 0f)
+    }
+
+    fun verticalFlip() {
+        val pivotX = 0.0f
+        val pivotY = 0.5f
+        // Flip upside down
+        Matrix.translateM(arr, 0, pivotX, pivotY, 0f)
+        Matrix.rotateM(arr, 0, 180f, 1f, 0f, 0f)
+        Matrix.translateM(arr, 0, -pivotX, -pivotY, 0f)
     }
 }
 

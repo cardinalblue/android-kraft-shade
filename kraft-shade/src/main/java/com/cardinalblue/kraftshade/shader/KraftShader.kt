@@ -4,6 +4,7 @@ import android.opengl.GLES30
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.OpenGlUtils
 import com.cardinalblue.kraftshade.model.GlMat
+import com.cardinalblue.kraftshade.model.GlMat4
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.model.GlSizeF
 import com.cardinalblue.kraftshade.model.GlVec2
@@ -33,6 +34,7 @@ abstract class KraftShader : SuspendAutoCloseable {
     protected var glAttribTextureCoordinate = 0
 
     protected open var resolution: GlSize by GlUniformDelegate("resolution", required = false)
+    private var transformMatrix: GlMat4 by GlUniformDelegate("transformMatrix", required = false)
 
     private val uniformLocationCache = mutableMapOf<String, Int>()
 
@@ -47,6 +49,15 @@ abstract class KraftShader : SuspendAutoCloseable {
     }
 
     abstract fun loadFragmentShader(): String
+
+    /**
+     *  This method is used to intercept the fragment shader source code before it is compiled.
+     *  For example, you can add OES extension to the fragment shader if the input texture is an
+     *  [ExternalOESTexture].
+     */
+    open fun interceptFragmentShader(fragmentShader: String): String {
+        return fragmentShader
+    }
 
     internal val properties = mutableMapOf<String, Any>()
     fun updateProperty(name: String, value: Any) {
@@ -101,9 +112,13 @@ abstract class KraftShader : SuspendAutoCloseable {
     open fun init(): Boolean {
         if (initialized) return false
         logger.i("Initializing shader program for ${this::class.simpleName}")
-        glProgId = loadProgram(loadVertexShader(), loadFragmentShader())
+        glProgId = loadProgram(
+            loadVertexShader(),
+            interceptFragmentShader(loadFragmentShader())
+        )
         glAttribPosition = GLES30.glGetAttribLocation(glProgId, "position")
         glAttribTextureCoordinate = GLES30.glGetAttribLocation(glProgId, "inputTextureCoordinate")
+        transformMatrix = GlMat4().apply { setIdentity() }
         initialized = true
         return true
     }
@@ -293,6 +308,13 @@ abstract class KraftShader : SuspendAutoCloseable {
         this.activate(this@KraftShader)
     }
 
+    fun withTransform(transform: GlMat4.() -> Unit) {
+        transformMatrix = GlMat4().apply {
+            setIdentity()
+            transform()
+        }
+    }
+
     override fun toString(): String {
         return this::class.simpleName ?: "Unknown KraftShader"
     }
@@ -312,11 +334,12 @@ private const val DEFAULT_VERTEX_SHADER_INTERNAL = """
     varying vec2 textureCoordinate;
 
     uniform highp vec2 resolution;
+    uniform highp mat4 transformMatrix;
 
     void main()
     {
         gl_Position = position;
-        textureCoordinate = inputTextureCoordinate.xy;
+        textureCoordinate = (transformMatrix * inputTextureCoordinate).xy;
     }
 """
 
@@ -336,11 +359,12 @@ private const val DEFAULT_VERTEX_SHADER_INTERNAL_30 = """#version 300 es
     out vec2 textureCoordinate;
 
     uniform highp vec2 resolution;
+    uniform highp mat4 transformMatrix;
 
     void main()
     {
         gl_Position = position;
-        textureCoordinate = inputTextureCoordinate.xy;
+        textureCoordinate = (transformMatrix * inputTextureCoordinate).xy;
     }
 """
 

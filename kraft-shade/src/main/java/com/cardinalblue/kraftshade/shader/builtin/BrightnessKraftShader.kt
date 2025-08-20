@@ -21,16 +21,19 @@ class BrightnessKraftShader(
 
 @Language("GLSL")
 private const val BRIGHTNESS_FRAGMENT_SHADER = """
-#extension GL_OES_EGL_image_external : require
-
 varying highp vec2 textureCoordinate;
 
-uniform samplerExternalOES inputImageTexture;
+uniform sampler2D inputImageTexture;
 uniform lowp float brightness;
 
 void main()
 {
     lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-    gl_FragColor = vec4((textureColor.rgb + vec3(brightness)), textureColor.w);
+    if (textureCoordinate.x > 0.5) {
+        gl_FragColor = vec4((textureColor.rgb + vec3(brightness)), textureColor.w);
+    } else {
+        gl_FragColor = vec4(textureColor.rgb, textureColor.w);
+    }
+    
 }
 """
