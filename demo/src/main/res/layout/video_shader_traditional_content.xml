@@ -16,7 +16,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="Select Video"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="8dp" />
+
+        <!-- Play/Pause button -->
+        <Button
+            android:id="@+id/playPauseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Play"
+            android:layout_marginBottom="16dp"
+            android:enabled="false" />
 
         <!-- Video TextureView for KraftShade Effects -->
         <FrameLayout

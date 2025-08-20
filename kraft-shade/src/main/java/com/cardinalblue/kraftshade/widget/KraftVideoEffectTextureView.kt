@@ -107,6 +107,7 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
                 wasPlayingWhenPaused = true
                 currentVideoPosition = mp.currentPosition
                 mp.pause()
+                choreographer.removeFrameCallback(callback)
                 logger.d("Video paused at position: $currentVideoPosition")
             }
         }
@@ -115,8 +116,8 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
     fun resumePlayback() {
         mediaPlayer?.let { mp ->
             if (wasPlayingWhenPaused && currentVideoPosition > 0) {
-                mp.seekTo(currentVideoPosition)
                 mp.start()
+                choreographer.postFrameCallback(callback)
                 wasPlayingWhenPaused = false
                 logger.d("Video resumed from position: $currentVideoPosition")
             }

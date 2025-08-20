@@ -24,6 +24,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     private var photoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>? = null
     private var brightnessLabel: TextView? = null
     private var brightnessSlider: SeekBar? = null
+    private var playPauseButton: Button? = null
 
     var brightness: Float = 0.3f
 
@@ -34,6 +35,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
 
         // Get UI components
         val selectVideoButton = contentView.findViewById<Button>(R.id.selectVideoButton)
+        playPauseButton = contentView.findViewById(R.id.playPauseButton)
         kraftVideoEffectTextureView = contentView.findViewById(R.id.kraftVideoEffectTextureView)
         brightnessLabel = contentView.findViewById(R.id.brightnessLabel)
         brightnessSlider = contentView.findViewById(R.id.brightnessSlider)
@@ -47,13 +49,17 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
             context.lifecycle.addObserver(this)
         }
 
-        // Set button click listener
+        // Set button click listeners
         selectVideoButton.setOnClickListener {
             if (context is ComponentActivity) {
                 openPhotoPicker()
             } else {
                 Toast.makeText(context, "Cannot access picker from this context", Toast.LENGTH_SHORT).show()
             }
+        }
+        
+        playPauseButton?.setOnClickListener {
+            togglePlayPause()
         }
     }
 
@@ -95,6 +101,12 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     private fun handleVideoSelected(uri: Uri) {
         kraftVideoEffectTextureView?.startPlayback(uri)
         applyEffect()
+        
+        // Enable play/pause button and update text
+        playPauseButton?.let { button ->
+            button.isEnabled = true
+            button.text = "Pause"
+        }
     }
 
     private fun applyEffect() {
@@ -110,15 +122,30 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         }
     }
 
+    private fun togglePlayPause() {
+        val kraftVideoEffectTextureView = kraftVideoEffectTextureView ?: return
+        val button = playPauseButton ?: return
+        
+        if (kraftVideoEffectTextureView.isPlaying()) {
+            kraftVideoEffectTextureView.pausePlayback()
+            button.text = "Play"
+        } else {
+            kraftVideoEffectTextureView.resumePlayback()
+            button.text = "Pause"
+        }
+    }
+
     // Lifecycle methods
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
         kraftVideoEffectTextureView?.resumePlayback()
+        playPauseButton?.text = "Pause"
     }
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
         kraftVideoEffectTextureView?.pausePlayback()
+        playPauseButton?.text = "Play"
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
