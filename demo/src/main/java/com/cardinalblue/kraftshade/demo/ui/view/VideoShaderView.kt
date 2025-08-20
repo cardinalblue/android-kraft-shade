@@ -1,6 +1,7 @@
 package com.cardinalblue.kraftshade.demo.ui.view
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.view.LayoutInflater
 import android.widget.Button
@@ -16,6 +17,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.cardinalblue.kraftshade.demo.R
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.RGBKraftShader
+import com.cardinalblue.kraftshade.widget.KraftVideoEffectTextureView
 
 class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     private var kraftVideoEffectTextureView: KraftVideoEffectTextureView? = null
@@ -24,6 +27,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     private var brightnessSlider: SeekBar? = null
 
     var brightness: Float = 0.3f
+    private var videoRotation: Float = 0f
 
     override fun addContentTo(context: Context, container: FrameLayout) {
         val layoutInflater = LayoutInflater.from(context)
@@ -59,7 +63,6 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         brightnessSlider?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    // Convert progress (0-200) to brightness value (-1.0~1.0)
                     brightness = (progress / 100.0f) - 1
                     
                     // Update label
@@ -92,24 +95,43 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         )
     }
     private fun handleVideoSelected(uri: Uri) {
+        // Get video orientation from metadata
+        videoRotation = getVideoRotation(uri)
+        
         // Start playing the video automatically
         kraftVideoEffectTextureView?.startPlayback(uri)
-        applySaturationEffect()
+        applyEffect()
         
-        Toast.makeText(kraftVideoEffectTextureView?.context, "Video selected successfully", Toast.LENGTH_SHORT).show()
+        Toast.makeText(kraftVideoEffectTextureView?.context, "Video selected successfully (rotation: ${videoRotation}°)", Toast.LENGTH_SHORT).show()
+    }
+    
+    private fun getVideoRotation(uri: Uri): Float {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(kraftVideoEffectTextureView?.context, uri)
+            val rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+            rotation?.toFloatOrNull() ?: 0f
+        } catch (e: Exception) {
+            0f
+        } finally {
+            try {
+                retriever.release()
+            } catch (e: Exception) {
+                // Ignore cleanup errors
+            }
+        }
     }
 
-    private fun applySaturationEffect() {
+    private fun applyEffect() {
         val kraftVideoEffectTextureView = kraftVideoEffectTextureView ?: return
-        val videoTexture = kraftVideoEffectTextureView.videoTexture ?: return
-        kraftVideoEffectTextureView.setEffect { targetBuffer ->
-            pipeline(targetBuffer) {
-                serialSteps(videoTexture, targetBuffer) {
-                    val brightnessShader = BrightnessKraftShader(brightness)
-                    step(brightnessShader) {
-                        kraftVideoEffectTextureView.videoSurfaceTexture?.updateTexImage()
-                        it.brightness = this@VideoShaderView.brightness
-                    }
+
+        kraftVideoEffectTextureView.setEffectWithPipeline(
+            videoRotation = { videoRotation },
+        ) { inputTexture, targetBuffer ->
+            serialSteps(inputTexture, targetBuffer) {
+                step(RGBKraftShader(brightness, 0.5f, 0f))
+                step(BrightnessKraftShader(brightness)) {
+                    it.brightness = this@VideoShaderView.brightness
                 }
             }
         }
