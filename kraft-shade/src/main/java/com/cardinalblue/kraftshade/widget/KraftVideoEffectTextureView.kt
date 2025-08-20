@@ -2,7 +2,6 @@ package com.cardinalblue.kraftshade.widget
 
 import android.content.Context
 import android.graphics.SurfaceTexture
-import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.AttributeSet
@@ -33,7 +32,6 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
     private var isPrepareCalled = false
     private var wasPlayingWhenPaused: Boolean = false
     private var videoUri: Uri? = null
-    private var videoRotation: Float = 0f
     private var videoWidth: Int = 0
     private var videoHeight: Int = 0
 
@@ -53,8 +51,7 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
                 mp.stop()
             }
         }
-        
-        videoRotation = getVideoRotation(uri)
+
         videoUri = uri
 
         // Wait for texture to be ready before setting up MediaPlayer
@@ -107,18 +104,24 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
             // Do not recycle texture automatically, it might be reused across different videos
             pipeline(targetBuffer, automaticTextureRecycle = false) {
                 serialSteps(videoTexture, targetBuffer) {
-                    setupVideoTextureUpdate(videoRotation)
+                    setupVideoTextureUpdate()
                     graphStep { inputTexture -> effectExecution(inputTexture, targetBuffer) }
                 }
             }
         }
     }
 
-    suspend fun SerialTextureInputPipelineScope.setupVideoTextureUpdate(videoRotation: Float) {
+    suspend fun SerialTextureInputPipelineScope.setupVideoTextureUpdate() {
         step(DoNothingKraftShader()) {
             videoSurfaceTexture?.updateTexImage()
+            
+            // Get the correct transformation matrix from SurfaceTexture
+            val transformMatrix = FloatArray(16)
+            videoSurfaceTexture?.getTransformMatrix(transformMatrix)
+
             it.withTransform {
-                rotate2D(videoRotation, pivotX = 0.5f, pivotY = 0.5f)
+                transformMatrix.copyInto(arr)
+                // Video textures need to be flipped vertically
                 verticalFlip()
             }
         }
@@ -288,24 +291,6 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
             videoTexture = texture
             isTextureReady = true
             logger.i("videoTexture created with ID: ${texture.textureId}")
-        }
-    }
-
-    private fun getVideoRotation(uri: Uri): Float {
-        val retriever = MediaMetadataRetriever()
-        return try {
-            retriever.setDataSource(context, uri)
-            val rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
-            rotation?.toFloatOrNull() ?: 0f
-        } catch (e: Exception) {
-            logger.e("Error retrieving video rotation", e)
-            0f
-        } finally {
-            try {
-                retriever.release()
-            } catch (_: Exception) {
-                // Ignore release errors
-            }
         }
     }
 
