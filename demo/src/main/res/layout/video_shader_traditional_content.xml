@@ -44,12 +44,21 @@
 
         </FrameLayout>
 
-        <!-- Brightness slider -->
+        <!-- Effect controls -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="16dp">
+
+            <!-- Brightness controls -->
+            <CheckBox
+                android:id="@+id/brightnessCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Brightness Effect"
+                android:checked="true"
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/brightnessLabel"
@@ -64,7 +73,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:max="200"
-                android:progress="60"
+                android:progress="100"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Saturation controls -->
+            <CheckBox
+                android:id="@+id/saturationCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saturation Effect"
+                android:checked="true"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/saturationLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saturation: 1.0"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <SeekBar
+                android:id="@+id/saturationSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="100"
                 android:layout_marginBottom="16dp" />
 
         </LinearLayout>

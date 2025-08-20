@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.SeekBar
 import android.widget.TextView
@@ -16,7 +17,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.cardinalblue.kraftshade.demo.R
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
-import com.cardinalblue.kraftshade.shader.builtin.RGBKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.DoNothingKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.widget.KraftVideoEffectTextureView
 
 class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
@@ -24,9 +26,14 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     private var photoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>? = null
     private var brightnessLabel: TextView? = null
     private var brightnessSlider: SeekBar? = null
+    private var brightnessCheckBox: CheckBox? = null
+    private var saturationLabel: TextView? = null
+    private var saturationSlider: SeekBar? = null
+    private var saturationCheckBox: CheckBox? = null
     private var playPauseButton: Button? = null
 
-    var brightness: Float = 0.3f
+    var brightness: Float = 0.0f
+    var saturation: Float = 1.0f
 
     override fun addContentTo(context: Context, container: FrameLayout) {
         val layoutInflater = LayoutInflater.from(context)
@@ -39,9 +46,15 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         kraftVideoEffectTextureView = contentView.findViewById(R.id.kraftVideoEffectTextureView)
         brightnessLabel = contentView.findViewById(R.id.brightnessLabel)
         brightnessSlider = contentView.findViewById(R.id.brightnessSlider)
+        brightnessCheckBox = contentView.findViewById(R.id.brightnessCheckBox)
+        saturationLabel = contentView.findViewById(R.id.saturationLabel)
+        saturationSlider = contentView.findViewById(R.id.saturationSlider)
+        saturationCheckBox = contentView.findViewById(R.id.saturationCheckBox)
 
-        // Setup brightness slider
+        // Setup controls
         setupBrightnessSlider()
+        setupSaturationSlider()
+        setupCheckBoxes()
 
         // Setup photo picker launcher and lifecycle observer if context is ComponentActivity
         if (context is ComponentActivity) {
@@ -69,8 +82,9 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
                 if (fromUser) {
                     brightness = (progress / 100.0f) - 1
                     
-                    // Update label
+                    // Update label and apply effect
                     brightnessLabel?.text = "Brightness: %.2f".format(brightness)
+                    kraftVideoEffectTextureView?.requestRender()
                 }
             }
 
@@ -78,6 +92,34 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
             
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+    }
+
+    private fun setupSaturationSlider() {
+        saturationSlider?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    saturation = progress / 100.0f
+                    
+                    // Update label and apply effect
+                    saturationLabel?.text = "Saturation: %.2f".format(saturation)
+                    kraftVideoEffectTextureView?.requestRender()
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
+    private fun setupCheckBoxes() {
+        brightnessCheckBox?.setOnCheckedChangeListener { _, _ ->
+            applyEffect()
+        }
+        
+        saturationCheckBox?.setOnCheckedChangeListener { _, _ ->
+            applyEffect()
+        }
     }
 
     private fun setupPhotoPickerLauncher(activity: ComponentActivity) {
@@ -114,9 +156,23 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
 
         kraftVideoEffectTextureView.setEffectWithPipeline { inputTexture, targetBuffer ->
             serialSteps(inputTexture, targetBuffer) {
-                step(RGBKraftShader(brightness, 0.5f, 0f))
-                step(BrightnessKraftShader(brightness)) {
-                    it.brightness = this@VideoShaderView.brightness
+                val hasSaturationEffect = saturationCheckBox?.isChecked == true
+                val hasBrightnessEffect = brightnessCheckBox?.isChecked == true
+                if (hasSaturationEffect) {
+                    step(SaturationKraftShader(saturation)) {
+                        it.saturation = this@VideoShaderView.saturation
+                    }
+                }
+
+                if (hasBrightnessEffect) {
+                    step(BrightnessKraftShader(brightness)) {
+                        it.brightness = this@VideoShaderView.brightness
+                    }
+                }
+
+                if (!hasSaturationEffect && !hasBrightnessEffect) {
+                    // If no effects are selected, just use the DoNothingKraftShader
+                    step(DoNothingKraftShader())
                 }
             }
         }
