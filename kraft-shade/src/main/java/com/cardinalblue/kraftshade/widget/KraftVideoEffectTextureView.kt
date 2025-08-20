@@ -31,7 +31,6 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
 
     private var mediaPlayer: MediaPlayer? = null
     private var isPrepareCalled = false
-    private var currentVideoPosition: Int = 0
     private var wasPlayingWhenPaused: Boolean = false
     private var videoUri: Uri? = null
     private var videoRotation: Float = 0f
@@ -40,17 +39,21 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
 
     private var videoTexture: ExternalOESTexture? = null
     private var videoSurfaceTexture: SurfaceTexture? = null
+    private var isWaitingForFirstFrame = false
 
     private val choreographer: Choreographer = Choreographer.getInstance()
     private val callback: Callback = Callback()
 
     private var isTextureReady = false
 
-    fun startPlayback(uri: Uri) {
-        if (isPrepareCalled) {
-            stopAndRelease()
+    fun setVideoUri(uri: Uri, autoPlay: Boolean) {
+        // Stop current playback but don't release MediaPlayer for reuse
+        mediaPlayer?.let { mp ->
+            if (mp.isPlaying) {
+                mp.stop()
+            }
         }
-
+        
         videoRotation = getVideoRotation(uri)
         videoUri = uri
 
@@ -61,11 +64,11 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
                 while (!isTextureReady) {
                     delay(10)
                 }
-                setupMediaPlayer(uri)
+                setupMediaPlayer(uri, autoPlay)
             }
         } else {
             attachScope?.launch {
-                setupMediaPlayer(uri)
+                setupMediaPlayer(uri, autoPlay)
             }
         }
     }
@@ -91,7 +94,6 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
         attachScope?.launch {
             createVideoTexture()
         }
-        choreographer.postFrameCallback(callback)
     }
 
     override fun onDetachedFromWindow() {
@@ -101,30 +103,64 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
         choreographer.removeFrameCallback(callback)
     }
 
-    fun pausePlayback() {
+    /**
+     *  lifecycle method to pause the video playback,
+     *  might automatically play the video when onResume() is called if it was playing before.
+     */
+    fun onPause() {
         mediaPlayer?.let { mp ->
             if (mp.isPlaying) {
                 wasPlayingWhenPaused = true
-                currentVideoPosition = mp.currentPosition
                 mp.pause()
                 choreographer.removeFrameCallback(callback)
-                logger.d("Video paused at position: $currentVideoPosition")
             }
         }
     }
 
-    fun resumePlayback() {
+    /**
+     *  lifecycle method to resume the video playback,
+     */
+    fun onResume() {
         mediaPlayer?.let { mp ->
-            if (wasPlayingWhenPaused && currentVideoPosition > 0) {
+            if (wasPlayingWhenPaused && !mp.isPlaying) {
                 mp.start()
                 choreographer.postFrameCallback(callback)
                 wasPlayingWhenPaused = false
-                logger.d("Video resumed from position: $currentVideoPosition")
+            }
+        }
+    }
+
+    /**
+     *  pause event to pause the video playback.
+     */
+    fun pausePlayback() {
+        mediaPlayer?.let { mp ->
+            if (mp.isPlaying) {
+                mp.pause()
+                choreographer.removeFrameCallback(callback)
+            }
+        }
+    }
+
+    /**
+     *  resume event to resume the video playback.
+     */
+    fun resumePlayback() {
+        mediaPlayer?.let { mp ->
+            if (!mp.isPlaying) {
+                mp.start()
+                choreographer.postFrameCallback(callback)
             }
         }
     }
 
     fun stopAndRelease() {
+        releaseMediaPlayer()
+        isPrepareCalled = false
+        wasPlayingWhenPaused = false
+    }
+
+    private fun releaseMediaPlayer() {
         mediaPlayer?.let { mp ->
             try {
                 if (mp.isPlaying) {
@@ -137,59 +173,77 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
             }
         }
         mediaPlayer = null
-        isPrepareCalled = false
-        currentVideoPosition = 0
-        wasPlayingWhenPaused = false
     }
 
     fun isPlaying(): Boolean {
         return mediaPlayer?.isPlaying ?: false
     }
 
-    private fun setupMediaPlayer(uri: Uri) {
-        mediaPlayer = MediaPlayer().apply {
-            try {
-                isPrepareCalled = true
-                setDataSource(context, uri)
+    private fun setupMediaPlayer(uri: Uri, autoPlay: Boolean) {
+        // Reuse existing MediaPlayer if possible, or create a new one
+        val mp = mediaPlayer ?: MediaPlayer().also { mediaPlayer = it }
+        
+        try {
+            mp.reset()
+            
+            isPrepareCalled = true
+            mp.setDataSource(context, uri)
 
+            // Only create new SurfaceTexture if we don't have one or if texture changed
+            if (videoSurfaceTexture == null) {
                 val surfaceTexture = SurfaceTexture(videoTexture!!.textureId)
-                this@KraftVideoEffectTextureView.videoSurfaceTexture = surfaceTexture
+                this.videoSurfaceTexture = surfaceTexture
                 val surface = Surface(surfaceTexture)
-                setSurface(surface)
+                mp.setSurface(surface)
                 logger.i("media set surface with texture ID: ${videoTexture?.textureId}")
-
-                setOnPreparedListener { mp ->
-                    logger.d("Media prepared, starting playback")
-
-                    // Get video dimensions
-                    this@KraftVideoEffectTextureView.videoWidth = mp.videoWidth
-                    this@KraftVideoEffectTextureView.videoHeight = mp.videoHeight
-
-                    // Set aspect ratio for proper sizing
-                    ratio = videoWidth.toFloat() / videoHeight.toFloat()
-                    logger.i("media prepared, video size: $videoWidth x $videoHeight")
-
-                    mp.start()
-                    mp.isLooping = true
-                }
-
-                setOnErrorListener { _, what, extra ->
-                    logger.e("MediaPlayer error - what: $what, extra: $extra")
-                    false
-                }
-
-                setOnCompletionListener { mp ->
-                    logger.d("Media playback completed")
-                    mp.seekTo(0)
-                    mp.start()
-                }
-
-                prepareAsync()
-
-            } catch (e: Exception) {
-                logger.e("Error setting up MediaPlayer", e)
-                stopAndRelease()
+            } else {
+                // Reuse existing surface
+                val surface = Surface(videoSurfaceTexture)
+                mp.setSurface(surface)
+                logger.i("media reusing existing surface")
             }
+
+            // Set up frame available listener for first frame detection
+            videoSurfaceTexture?.setOnFrameAvailableListener { surfaceTexture ->
+                if (isWaitingForFirstFrame) {
+                    logger.i("First frame available, requesting render")
+                    isWaitingForFirstFrame = false
+                    // Remove the listener to avoid unnecessary calls
+                    surfaceTexture.setOnFrameAvailableListener(null)
+                    requestRender()
+                }
+            }
+
+            mp.setOnPreparedListener { player ->
+                // Get video dimensions
+                this.videoWidth = player.videoWidth
+                this.videoHeight = player.videoHeight
+
+                // Set aspect ratio for proper sizing
+                ratio = videoWidth.toFloat() / videoHeight.toFloat()
+                logger.i("media prepared, video size: $videoWidth x $videoHeight")
+
+                if (autoPlay) {
+                    player.start()
+                    choreographer.postFrameCallback(callback)
+                } else {
+                    // To show the first frame, we need to start and immediately pause
+                    isWaitingForFirstFrame = true
+                    player.seekTo(0)
+                }
+                player.isLooping = true
+            }
+
+            mp.setOnErrorListener { _, what, extra ->
+                logger.e("MediaPlayer error - what: $what, extra: $extra")
+                false
+            }
+
+            mp.prepareAsync()
+
+        } catch (e: Exception) {
+            logger.e("Error setting up MediaPlayer", e)
+            stopAndRelease()
         }
     }
 

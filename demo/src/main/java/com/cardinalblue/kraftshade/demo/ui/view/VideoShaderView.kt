@@ -99,13 +99,13 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         )
     }
     private fun handleVideoSelected(uri: Uri) {
-        kraftVideoEffectTextureView?.startPlayback(uri)
+        kraftVideoEffectTextureView?.setVideoUri(uri, autoPlay = false)
         applyEffect()
         
         // Enable play/pause button and update text
         playPauseButton?.let { button ->
             button.isEnabled = true
-            button.text = "Pause"
+            button.text = "Play"
         }
     }
 
@@ -138,13 +138,13 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     // Lifecycle methods
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
-        kraftVideoEffectTextureView?.resumePlayback()
+        kraftVideoEffectTextureView?.onResume()
         playPauseButton?.text = "Pause"
     }
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
-        kraftVideoEffectTextureView?.pausePlayback()
+        kraftVideoEffectTextureView?.onPause()
         playPauseButton?.text = "Play"
     }
 
