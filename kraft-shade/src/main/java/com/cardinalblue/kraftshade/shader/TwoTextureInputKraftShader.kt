@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.shader
 import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.model.GlMat4
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.shader.buffer.ExternalOESTexture
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.builtin.bypass.BypassableTwoTextureInputKraftShader
@@ -11,7 +12,7 @@ import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
 abstract class TwoTextureInputKraftShader(
     samplerUniformName: String = "inputImageTexture",
     sizeUniformName: String = "textureSize",
-    secondTextureSampleName: String = "inputImageTexture2",
+    private val secondTextureSampleName: String = "inputImageTexture2",
     secondTextureSizeUniformName: String = "textureSize2",
 ) : TextureInputKraftShader(samplerUniformName, sizeUniformName) {
     /**
@@ -27,6 +28,18 @@ abstract class TwoTextureInputKraftShader(
     protected var _secondInputTexture: Texture by secondInput.textureDelegate
 
     var texture2TransformMatrix: GlMat4 by GlUniformDelegate("texture2TransformMatrix", required = false)
+    
+    override fun interceptFragmentShader(fragmentShader: String): String {
+        // Let super handle the first texture
+        val superResult = super.interceptFragmentShader(fragmentShader)
+        
+        // Handle second texture if it's OES
+        return if (_secondInputTexture is ExternalOESTexture) {
+            addOESExtensionToFragmentShader(superResult, secondTextureSampleName)
+        } else {
+            superResult
+        }
+    }
 
     init {
         texture2TransformMatrix = GlMat4().apply {

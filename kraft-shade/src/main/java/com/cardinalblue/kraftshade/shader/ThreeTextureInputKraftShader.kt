@@ -3,6 +3,7 @@ package com.cardinalblue.kraftshade.shader
 import org.intellij.lang.annotations.Language
 import com.cardinalblue.kraftshade.model.GlMat4
 import com.cardinalblue.kraftshade.model.GlSize
+import com.cardinalblue.kraftshade.shader.buffer.ExternalOESTexture
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.util.GlUniformDelegate
@@ -12,7 +13,7 @@ abstract class ThreeTextureInputKraftShader(
     sizeUniformName: String = "textureSize",
     secondTextureSampleName: String = "inputImageTexture2",
     secondTextureSizeUniformName: String = "textureSize2",
-    thirdTextureSampleName: String = "inputImageTexture3",
+    private val thirdTextureSampleName: String = "inputImageTexture3",
     thirdTextureSizeUniformName: String = "textureSize3",
 ) : TwoTextureInputKraftShader(
     samplerUniformName = samplerUniformName,
@@ -29,6 +30,18 @@ abstract class ThreeTextureInputKraftShader(
     protected var _thirdInputTexture: Texture by thirdInput.textureDelegate
 
     var texture3TransformMatrix: GlMat4 by GlUniformDelegate("texture3TransformMatrix", required = false)
+    
+    override fun interceptFragmentShader(fragmentShader: String): String {
+        // Let super handle the first and second textures
+        val superResult = super.interceptFragmentShader(fragmentShader)
+        
+        // Handle third texture if it's OES
+        return if (_thirdInputTexture is ExternalOESTexture) {
+            addOESExtensionToFragmentShader(superResult, thirdTextureSampleName)
+        } else {
+            superResult
+        }
+    }
 
     init {
         texture3TransformMatrix = GlMat4().apply {

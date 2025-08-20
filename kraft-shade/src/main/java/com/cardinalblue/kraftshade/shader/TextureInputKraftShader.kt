@@ -8,7 +8,7 @@ import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
 abstract class TextureInputKraftShader(
-    samplerUniformName: String = "inputImageTexture",
+    private val samplerUniformName: String = "inputImageTexture",
     sizeUniformName: String = "textureSize",
 ) : KraftShader() {
     protected val input = KraftShaderTextureInput(
@@ -22,19 +22,19 @@ abstract class TextureInputKraftShader(
 
     override fun interceptFragmentShader(fragmentShader: String): String {
         return if (_inputTexture is ExternalOESTexture) {
-            addOESExtensionToFragmentShader(fragmentShader)
+            addOESExtensionToFragmentShader(fragmentShader, samplerUniformName)
         } else {
             super.interceptFragmentShader(fragmentShader)
         }
     }
 
-    protected fun addOESExtensionToFragmentShader(fragmentShader: String): String {
-        // Add OES extension and replace sampler2D with samplerExternalOES
+    protected fun addOESExtensionToFragmentShader(fragmentShader: String, samplerName: String): String {
+        // Add OES extension and replace sampler2D with samplerExternalOES only for the specific uniform
         return if (!fragmentShader.contains("#extension GL_OES_EGL_image_external")) {
             "#extension GL_OES_EGL_image_external : require\n" +
-                    fragmentShader.replace("sampler2D", "samplerExternalOES")
+                    fragmentShader.replace("sampler2D $samplerName", "samplerExternalOES $samplerName")
         } else {
-            fragmentShader
+            fragmentShader.replace("sampler2D $samplerName", "samplerExternalOES $samplerName")
         }
     }
 
