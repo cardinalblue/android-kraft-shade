@@ -61,8 +61,10 @@ class GlEnv(
         ).also { context ->
             if (context == EGL14.EGL_NO_CONTEXT) {
                 val error = EGL14.eglGetError()
-                logger.e("Failed to create EGL context, error: 0x${Integer.toHexString(error)}")
-                throw RuntimeException("Failed to create EGL context")
+                val errorCode = "0x${Integer.toHexString(error)}"
+                val errorMessage = "Failed to create EGL context, error: $errorCode"
+                logger.e(errorMessage)
+                throw RuntimeException(errorMessage)
             }
             logger.i("EGL context created")
         }
