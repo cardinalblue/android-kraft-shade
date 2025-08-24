@@ -9,12 +9,10 @@ import android.view.Choreographer
 import android.view.Surface
 import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
-import com.cardinalblue.kraftshade.dsl.SerialTextureInputPipelineScope
 import com.cardinalblue.kraftshade.shader.buffer.ExternalOESTexture
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
-import com.cardinalblue.kraftshade.shader.builtin.DoNothingKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.OESTextureInputKraftShader
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.delay
@@ -183,13 +181,7 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
         }
     }
 
-    fun stopAndRelease() {
-        releaseMediaPlayer()
-        isPrepareCalled = false
-        wasPlayingWhenPaused = false
-    }
-
-    private fun releaseMediaPlayer() {
+    fun releaseMediaPlayer() {
         mediaPlayer?.let { mp ->
             try {
                 if (mp.isPlaying) {
@@ -202,6 +194,8 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
             }
         }
         mediaPlayer = null
+        isPrepareCalled = false
+        wasPlayingWhenPaused = false
     }
 
     fun isPlaying(): Boolean {
@@ -258,6 +252,8 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
                 } else {
                     // To show the first frame, we need to start and immediately pause
                     isWaitingForFirstFrame = true
+                    player.start()
+                    player.pause()
                     player.seekTo(0)
                 }
                 player.isLooping = true
@@ -272,7 +268,7 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
 
         } catch (e: Exception) {
             logger.e("Error setting up MediaPlayer", e)
-            stopAndRelease()
+            releaseMediaPlayer()
         }
     }
 

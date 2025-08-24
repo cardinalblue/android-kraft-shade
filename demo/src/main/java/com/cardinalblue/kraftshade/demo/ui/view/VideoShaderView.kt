@@ -206,7 +206,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        kraftVideoEffectTextureView?.stopAndRelease()
+        kraftVideoEffectTextureView?.releaseMediaPlayer()
         kraftVideoEffectTextureView = null
         photoPickerLauncher = null
     }

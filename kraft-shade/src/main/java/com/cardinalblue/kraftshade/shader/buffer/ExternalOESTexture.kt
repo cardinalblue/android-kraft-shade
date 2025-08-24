@@ -19,6 +19,6 @@ class ExternalOESTexture(
         get() = GlSize(0, 0)
 
     override fun getBitmap(): Bitmap {
-        throw IllegalStateException("Invalid texture")
+        throw IllegalStateException("getBitmap() is not supported for ExternalOESTexture")
     }
 }
