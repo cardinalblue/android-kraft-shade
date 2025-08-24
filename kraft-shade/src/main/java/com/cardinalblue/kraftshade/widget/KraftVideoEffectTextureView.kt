@@ -15,6 +15,7 @@ import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.shader.builtin.DoNothingKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.OESTextureInputKraftShader
 import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -103,23 +104,27 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
         super.setEffect(afterSet) { targetBuffer ->
             // Do not recycle texture automatically, it might be reused across different videos
             pipeline(targetBuffer, automaticTextureRecycle = false) {
-                serialSteps(videoTexture, targetBuffer) {
-                    setupVideoTextureUpdate()
-                    graphStep { inputTexture -> effectExecution(inputTexture, targetBuffer) }
+                graphSteps(targetBuffer) {
+                    val (buffer) = createBufferReferences("videoInput")
+                    setupVideoTextureUpdate(videoTexture, buffer)
+                    effectExecution(buffer, targetBuffer)
                 }
             }
         }
     }
 
-    suspend fun SerialTextureInputPipelineScope.setupVideoTextureUpdate() {
-        step(DoNothingKraftShader()) {
+    suspend fun GraphPipelineSetupScope.setupVideoTextureUpdate(videoTexture: ExternalOESTexture, targetBuffer: GlBufferProvider) {
+        step(
+            OESTextureInputKraftShader().also { it.setInputTexture(videoTexture) },
+            targetBuffer
+        ) { shader ->
             videoSurfaceTexture?.updateTexImage()
             
             // Get the correct transformation matrix from SurfaceTexture
             val transformMatrix = FloatArray(16)
             videoSurfaceTexture?.getTransformMatrix(transformMatrix)
 
-            it.withTransform {
+            shader.withTransform {
                 transformMatrix.copyInto(arr)
                 // Video textures need to be flipped vertically
                 verticalFlip()

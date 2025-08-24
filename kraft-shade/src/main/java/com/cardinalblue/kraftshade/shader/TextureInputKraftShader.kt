@@ -3,12 +3,11 @@ package com.cardinalblue.kraftshade.shader
 import android.opengl.GLES30
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.model.GlSize
-import com.cardinalblue.kraftshade.shader.buffer.ExternalOESTexture
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
 abstract class TextureInputKraftShader(
-    private val samplerUniformName: String = "inputImageTexture",
+    samplerUniformName: String = "inputImageTexture",
     sizeUniformName: String = "textureSize",
 ) : KraftShader() {
     protected val input = KraftShaderTextureInput(
@@ -19,25 +18,6 @@ abstract class TextureInputKraftShader(
     )
 
     protected var _inputTexture: Texture by input.textureDelegate
-
-    override fun interceptFragmentShader(fragmentShader: String): String {
-        return if (_inputTexture is ExternalOESTexture) {
-            addOESExtensionToFragmentShader(fragmentShader, samplerUniformName)
-        } else {
-            super.interceptFragmentShader(fragmentShader)
-        }
-    }
-
-    protected fun addOESExtensionToFragmentShader(fragmentShader: String, samplerName: String): String {
-        // Add OES extension and replace sampler2D with samplerExternalOES only for the specific uniform
-        return if (!fragmentShader.contains("#extension GL_OES_EGL_image_external")) {
-            "#extension GL_OES_EGL_image_external : require\n" +
-                    fragmentShader.replace("sampler2D $samplerName", "samplerExternalOES $samplerName")
-        } else {
-            fragmentShader.replace("sampler2D $samplerName", "samplerExternalOES $samplerName")
-        }
-    }
-
 
     fun getInputTexture(): Texture {
         return _inputTexture
