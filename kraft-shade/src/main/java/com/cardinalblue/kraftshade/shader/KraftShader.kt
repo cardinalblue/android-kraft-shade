@@ -38,7 +38,7 @@ abstract class KraftShader : SuspendAutoCloseable {
 
     private val uniformLocationCache = mutableMapOf<String, Int>()
 
-    private val autoCloseables = mutableSetOf<SuspendAutoCloseable>()
+    private val trackedTextures = mutableSetOf<Texture>()
 
     open val debugName: String = this::class.simpleName ?: "Unknown"
 
@@ -267,8 +267,8 @@ abstract class KraftShader : SuspendAutoCloseable {
     }
     
     fun trackTexture(texture: Texture) {
-        autoCloseables.add(texture)
-        logger.d("tracking texture: ${texture::class.simpleName} (total: ${autoCloseables.size})")
+        trackedTextures.add(texture)
+        logger.d("tracking texture: ${texture::class.simpleName} (total: ${trackedTextures.size})")
     }
 
     suspend fun destroy(deleteRecursively: Boolean) {
@@ -284,10 +284,10 @@ abstract class KraftShader : SuspendAutoCloseable {
             // Clear uniform cache
             uniformLocationCache.clear()
 
-            // Clean up owned autoCloseables, currently only textures
+            // Clean up owned trackedTextures
             if (deleteRecursively) {
-                autoCloseables.forEach { texture -> texture.close() }
-                autoCloseables.clear()
+                trackedTextures.forEach { texture -> if (texture.autoDelete) texture.close() }
+                trackedTextures.clear()
             }
             
             // Delete OpenGL program

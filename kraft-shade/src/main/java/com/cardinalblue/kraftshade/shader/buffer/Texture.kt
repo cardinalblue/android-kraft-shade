@@ -19,6 +19,8 @@ abstract class Texture protected constructor(create: Boolean = true) : SuspendAu
 
     abstract val size: GlSize
 
+    open val autoDelete: Boolean = true
+
     open val glTextureTarget = GLES30.GL_TEXTURE_2D
 
     init {

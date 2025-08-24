@@ -79,19 +79,6 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
      * - **Video rotation**: Applies the correct rotation transformation based on video metadata
      * - **Vertical flip**: Applies necessary coordinate system transformation for video rendering
      * 
-     * ## Important Memory Management Warning
-     * 
-     * **⚠️ CRITICAL**: This function sets `automaticTextureRecycle = false` to prevent the video texture
-     * from being automatically deleted, as it needs to be reused across multiple frames during video playback.
-     * 
-     * **This means that any textures created within the [effectExecution] block are NOT automatically cleaned up.**
-     * 
-     * ### Memory Leak Prevention
-     * If you create textures within [effectExecution], you must:
-     * 1. **Reuse textures** when possible instead of creating new ones every frame
-     * 2. **Manually manage texture lifecycle** by calling `texture.delete()` when no longer needed
-     * 3. **Avoid creating textures in render loops** - create them once and reuse
-     * 
      * @param afterSet Callback executed after the effect is set, defaults to `requestRender()`
      * @param effectExecution The effect pipeline execution block. Receives the video input texture
      *                       and target buffer. Must handle texture memory management carefully.
@@ -102,8 +89,7 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
     ) {
         val videoTexture = videoTexture ?: return
         super.setEffect(afterSet) { targetBuffer ->
-            // Do not recycle texture automatically, it might be reused across different videos
-            pipeline(targetBuffer, automaticTextureRecycle = false) {
+            pipeline(targetBuffer) {
                 graphSteps(targetBuffer) {
                     val (buffer) = createBufferReferences("videoInput")
                     setupVideoTextureUpdate(videoTexture, buffer)
@@ -292,7 +278,8 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
 
     private fun createVideoTexture() {
         runGlTask {
-            val texture = ExternalOESTexture()
+            // Do not auto-delete, we need to reuse this texture
+            val texture = ExternalOESTexture(autoDelete = false)
             videoTexture = texture
             isTextureReady = true
             logger.i("videoTexture created with ID: ${texture.textureId}")

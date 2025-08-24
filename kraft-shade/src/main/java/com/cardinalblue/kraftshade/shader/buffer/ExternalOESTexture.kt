@@ -8,7 +8,9 @@ import com.cardinalblue.kraftshade.model.GlSize
  *  Texture that uses the external OES texture target.
  *  For example, it can be used with camera preview frames or MediaPlayer
  */
-class ExternalOESTexture: Texture(true) {
+class ExternalOESTexture(
+    override val autoDelete: Boolean = true
+): Texture(true) {
 
     override val glTextureTarget: Int = GLES11Ext.GL_TEXTURE_EXTERNAL_OES
 
