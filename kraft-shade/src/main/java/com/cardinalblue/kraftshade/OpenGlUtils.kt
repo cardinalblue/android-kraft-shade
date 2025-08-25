@@ -3,7 +3,6 @@ package com.cardinalblue.kraftshade
 import android.graphics.Bitmap
 import android.opengl.GLES30
 import android.opengl.GLUtils
-import android.util.Log
 import com.cardinalblue.kraftshade.model.GlSize
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

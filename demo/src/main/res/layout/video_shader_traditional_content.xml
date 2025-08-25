@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Video picker button -->
+        <Button
+            android:id="@+id/selectVideoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Select Video"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Play/Pause button -->
+        <Button
+            android:id="@+id/playPauseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Play"
+            android:layout_marginBottom="16dp"
+            android:enabled="false" />
+
+        <!-- Video TextureView for KraftShade Effects -->
+        <FrameLayout
+            android:id="@+id/kraftShadeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="16dp">
+
+            <com.cardinalblue.kraftshade.widget.KraftVideoEffectTextureView
+                android:id="@+id/kraftVideoEffectTextureView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+        <!-- Effect controls -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp">
+
+            <!-- Brightness controls -->
+            <CheckBox
+                android:id="@+id/brightnessCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Brightness Effect"
+                android:checked="true"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/brightnessLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Brightness: 0.3"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <SeekBar
+                android:id="@+id/brightnessSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="100"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Saturation controls -->
+            <CheckBox
+                android:id="@+id/saturationCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saturation Effect"
+                android:checked="true"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/saturationLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saturation: 1.0"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <SeekBar
+                android:id="@+id/saturationSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="200"
+                android:progress="100"
+                android:layout_marginBottom="16dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

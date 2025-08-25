@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import com.cardinalblue.kraftshade.demo.ui.view.BasicShaderView
 import com.cardinalblue.kraftshade.demo.ui.view.AnimatedShaderView
+import com.cardinalblue.kraftshade.demo.ui.view.VideoShaderView
 
 class TraditionalViewActivity : ComponentActivity() {
 
@@ -40,6 +41,7 @@ class TraditionalViewActivity : ComponentActivity() {
         when (route) {
             "basic_shader_traditional" -> BasicShaderView().addContentTo(this, contentContainer)
             "animated_shader_traditional" -> AnimatedShaderView().addContentTo(this, contentContainer)
+            "video_shader_traditional" -> VideoShaderView().addContentTo(this, contentContainer)
             else -> addPlaceholderContent(contentContainer, title)
         }
     }

@@ -26,10 +26,12 @@ open class GlEnvDslScope(
     suspend fun pipeline(
         targetBuffer: GlBuffer,
         automaticRecycle: Boolean = true,
+        automaticShaderRecycle: Boolean = true,
+        automaticTextureRecycle: Boolean = true,
         block: suspend GraphPipelineSetupScope.() -> Unit = {},
     ): Pipeline {
         return env.execute {
-            val pipeline = Pipeline(env, TextureBufferPool(targetBuffer.size), automaticRecycle)
+            val pipeline = Pipeline(env, TextureBufferPool(targetBuffer.size), automaticRecycle, automaticShaderRecycle, automaticTextureRecycle)
             val scope = GraphPipelineSetupScope(env, pipeline, targetBuffer)
             scope.block()
             pipeline
@@ -41,9 +43,11 @@ open class GlEnvDslScope(
         targetBuffer: GlBuffer,
         serializedEffect: SerializedEffect,
         automaticRecycle: Boolean = true,
+        automaticShaderRecycle: Boolean = true,
+        automaticTextureRecycle: Boolean = true,
     ): Pipeline {
         return env.execute {
-            val pipeline = Pipeline(env, TextureBufferPool(targetBuffer.size), automaticRecycle)
+            val pipeline = Pipeline(env, TextureBufferPool(targetBuffer.size), automaticRecycle, automaticShaderRecycle, automaticTextureRecycle)
             serializedEffect.applyTo(pipeline, targetBuffer)
             pipeline
         }
