@@ -230,7 +230,7 @@ class IdPassingTexture(textureId: Int = -1) : Texture(create = false) {
         this.textureId = textureId
     }
 
-    fun setTextureId(textureId: Int) {
+    fun setId(textureId: Int) {
         this.textureId = textureId
     }
 
