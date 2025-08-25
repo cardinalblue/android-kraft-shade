@@ -18,11 +18,17 @@ import java.util.concurrent.Executors
 /**
  * Manages the OpenGL ES environment and EGL context.
  * This class handles the initialization of EGL, creation of surfaces, and management of the GL context.
+ *
+ * @param useUnconfinedDispatcher If true, all the OpenGL API calls are gonna stay on the caller
+ *  thread. Just use runBlocking to execute suspend functions in KraftShade lib.
+ * @param eglContext Directly use the provided EGLContext instead of creating a new one.
+ * @param sharedContext The EGL context to share resources with.
  */
 class GlEnv(
     context: Context,
     useUnconfinedDispatcher: Boolean = false,
     private val enableEglAndroidRecordable: Boolean = false,
+    eglContext: EGLContext? = null,
     private val sharedContext: EGLContext? = null,
 ) {
     val appContext: Context = context.applicationContext
@@ -50,7 +56,7 @@ class GlEnv(
      * The EGL context created with OpenGL ES 2.0 support.
      * This context is essential for all OpenGL operations.
      */
-    val eglContext: EGLContext = EGL14.eglCreateContext(
+    val eglContext: EGLContext = eglContext ?: EGL14.eglCreateContext(
             eglDisplay,
             eglConfig,
             sharedContext ?: EGL14.EGL_NO_CONTEXT,
