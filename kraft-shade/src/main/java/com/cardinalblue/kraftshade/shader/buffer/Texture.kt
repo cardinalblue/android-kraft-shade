@@ -15,7 +15,7 @@ import java.nio.IntBuffer
 abstract class Texture protected constructor(create: Boolean = true) : SuspendAutoCloseable,
     TextureProvider {
     var textureId: Int
-        private set
+        protected set
 
     abstract val size: GlSize
 
@@ -208,4 +208,38 @@ fun sampledBitmapTextureProvider(
     provider: () -> Bitmap?
 ): TextureProvider {
     return ExternalBitmapTextureProvider(name, provider)
+}
+
+/**
+ * A texture that allows you to pass in a texture ID directly.
+ * This is useful when you have a texture ID from an external source, such as a video frame or
+ * camera frame.
+ *
+ * Note that this class does not manage the lifecycle of the texture ID. You are responsible for
+ * creating and deleting the texture ID.
+ *
+ * @param textureId The texture ID to use. Default is -1, which means no texture. In this case, you
+ *  you have to set it later using [setTextureId].
+ */
+class IdPassingTexture(textureId: Int = -1) : Texture(create = false) {
+    private var textureSize = GlSize(0, 0)
+
+    override val size: GlSize get() = textureSize
+
+    init {
+        this.textureId = textureId
+    }
+
+    fun setTextureId(textureId: Int) {
+        this.textureId = textureId
+    }
+
+    /**
+     * [textureSize] is not always used, so it's okay we give it a default value of (0, 0). However,
+     * if the size need to be used, for example, if you want to use [getBitmap], then you have to set
+     * it correctly.
+     */
+    fun setTextureSize(size: GlSize) {
+        this.textureSize = size
+    }
 }
