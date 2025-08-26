@@ -40,5 +40,6 @@ enum class Category(
     EFFECTS("Effects"),
     COLOR("Color & Levels"),
     BLUR("Blur & Morphology"),
+    MEDIA3("Media3"),
     OTHER("Other")
 }

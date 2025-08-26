@@ -15,6 +15,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.effect.CrosshatchTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.effect.EmbossShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.effect.KuwaharaTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.effect.ToonEffectTestWindow
+import com.cardinalblue.kraftshade.demo.ui.screen.media3.ExoPlayerWithKraftShaders
 import com.cardinalblue.kraftshade.demo.ui.screen.morphology.ErosionDilationTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.view.ResizeTestScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.view.TransparencyTestWindow
@@ -54,6 +55,8 @@ enum class Destination(
     ErosionDilationShaderTest("erosion_dilation_shader_test", "Erosion/Dilation Shader Test", sampleType = SampleType.Compose, category = Category.BLUR, screen = { ErosionDilationTestScreen() }),
     LevelsShader("levels_shader", "Levels Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { LevelsShaderScreen() }),
     FalseColorShader("false_color_shader", "False Color Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { FalseColorShaderScreen() }),
+    ExoPlayerWithKraftShaders("exo_player_with_kraft_shaders", "ExoPlayer with Kraft Shaders", sampleType = SampleType.Compose, category = Category.MEDIA3, screen = { ExoPlayerWithKraftShaders() }),
+    // Traditional View Samples
     BasicShaderTraditional("basic_shader_traditional", "Basic Shader (Traditional)", sampleType = SampleType.TraditionalView, category = Category.BASIC, screen = { /* Activity will handle this */ }),
     AnimatedShaderTraditional("animated_shader_traditional", "Animated Shader (Traditional)", sampleType = SampleType.TraditionalView, category = Category.BASIC, screen = { /* Activity will handle this */ }),
     VideoShaderTraditional("video_shader_traditional", "Video Shader (Traditional)", sampleType = SampleType.TraditionalView, category = Category.BASIC, screen = { /* Activity will handle this */ }),

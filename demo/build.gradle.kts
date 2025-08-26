@@ -58,6 +58,11 @@ dependencies {
     } else {
         implementation(libs.kraftshade.compose)
     }
+    if (gradleLocalProperties(rootDir, providers).getProperty("library.build_with_submodule") == "true") {
+        implementation(project(":kraft-shade-media3"))
+    } else {
+        implementation(libs.kraftshade.media3)
+    }
 
     // Jetpack
     implementation(libs.androidx.core.ktx)
@@ -72,6 +77,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material3)
     implementation(libs.jetBrains.immutableCollections)
+
+    // Media3
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.effect)
 
     // Adding GPUImage as a reference for development.
     implementation(libs.image.processing.gpuImage)
