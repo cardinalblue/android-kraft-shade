@@ -31,3 +31,4 @@ rootProject.name = "KraftShade"
 include(":demo")
 include(":kraft-shade")
 include(":kraft-shade-compose")
+include(":kraft-shade-media3")
