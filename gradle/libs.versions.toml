@@ -13,8 +13,8 @@ appcompat = "1.7.1"
 material = "1.12.0"
 
 [libraries]
-kraftshade = { group = "com.cardinalblue", name = "kraftshade", version = "1.0.37" }
-kraftshade-compose = { group = "com.cardinalblue", name = "kraftshade-compose", version = "1.0.37" }
+kraftshade = { group = "com.cardinalblue", name = "kraftshade", version = "1.0.38" }
+kraftshade-compose = { group = "com.cardinalblue", name = "kraftshade-compose", version = "1.0.38" }
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
