@@ -93,7 +93,6 @@ fun ExoPlayerWithKraftShadePipeline() {
 
             val pipelineEffect = KraftShadePipelineEffect(context) { buffer, _, videoTexture ->
                 // You can also use presentationTimeInput to animate the parameters if needed.
-                val saturationInput = sampledInput { saturation }
                 pipeline(buffer) {
                     serialSteps(videoTexture, buffer) {
                         step(SaturationKraftShader()) { shader ->
@@ -104,7 +103,6 @@ fun ExoPlayerWithKraftShadePipeline() {
                         }
                     }
                 }
-
             }
             exoPlayer.setVideoEffects(listOf(pipelineEffect))
             exoPlayer.prepare()
