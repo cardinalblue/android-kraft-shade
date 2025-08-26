@@ -16,6 +16,7 @@ kotlinxCoroutinesAndroid = "1.10.2"
 
 [libraries]
 jetBrains-coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+jetBrains-immutableCollections = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version = "0.4.0" }
 
 kraftshade = { group = "com.cardinalblue", name = "kraftshade", version = "1.0.37" }
 kraftshade-compose = { group = "com.cardinalblue", name = "kraftshade-compose", version = "1.0.37" }

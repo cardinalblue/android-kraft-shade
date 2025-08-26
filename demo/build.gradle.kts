@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material3)
+    implementation(libs.jetBrains.immutableCollections)
 
     // Adding GPUImage as a reference for development.
     implementation(libs.image.processing.gpuImage)
