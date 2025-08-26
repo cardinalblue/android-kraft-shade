@@ -19,6 +19,7 @@ jetBrains-coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 
 kraftshade = { group = "com.cardinalblue", name = "kraftshade", version = "1.0.37" }
 kraftshade-compose = { group = "com.cardinalblue", name = "kraftshade-compose", version = "1.0.37" }
+kraftshade-media3 = { group = "com.cardinalblue", name = "kraftshade-media3", version = "1.0.37" }
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
