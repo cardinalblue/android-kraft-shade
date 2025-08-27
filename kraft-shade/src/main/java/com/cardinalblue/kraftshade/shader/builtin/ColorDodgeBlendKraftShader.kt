@@ -3,6 +3,40 @@ package com.cardinalblue.kraftshade.shader.builtin
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
 import org.intellij.lang.annotations.Language
 
+/**
+ * A shader that applies color dodge blend mode to two input textures.
+ *
+ * ## Effect Description
+ * Color dodge blend mode creates a brightening effect by decreasing contrast and
+ * lightening colors. It divides the base color by the inverted overlay color,
+ * which "dodges" or avoids the darkness of the overlay. This produces intense
+ * brightening effects, especially with lighter overlay colors.
+ *
+ * ## Main Purpose
+ * - **Dramatic brightening**: Create intense highlight effects and light sources
+ * - **Glow effects**: Simulate light emission and luminous objects
+ * - **High-key imagery**: Create bright, airy, overexposed looks
+ * - **Light ray effects**: Enhance sunbeams, lens flares, and light streaks
+ *
+ * ## Usage Examples
+ * - Creating glowing light effects and halos around objects
+ * - Enhancing bright skies and clouds for ethereal looks
+ * - Simulating light leaks and vintage film exposure effects
+ * - Adding bright highlights to metallic surfaces
+ * - Creating dreamy, soft-focus portrait effects
+ * - Enhancing fire, lightning, and other light sources
+ *
+ * ## Technical Details
+ * Uses complex alpha-aware blending with conditional color mixing:
+ * - Black overlay (0.0) produces no change to the base
+ * - White overlay (1.0) produces pure white output
+ * - Mid-tones create varying degrees of brightening
+ * - Includes proper alpha channel handling and clamping to prevent overflow
+ * - Uses `step()` and `mix()` functions for smooth color transitions
+ *
+ * @see TwoTextureInputKraftShader
+ * @see ColorBurnBlendKraftShader for the opposite darkening effect
+ */
 class ColorDodgeBlendKraftShader: TwoTextureInputKraftShader() {
     override fun loadFragmentShader(): String = COLOR_DODGE_BLEND_FRAGMENT_SHADER
 }

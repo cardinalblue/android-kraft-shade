@@ -2,7 +2,35 @@ package com.cardinalblue.kraftshade.shader.builtin
 
 import com.cardinalblue.kraftshade.shader.TwoTextureInputKraftShader
 import org.intellij.lang.annotations.Language
-
+/**
+ * A shader that applies color blend mode to two input textures.
+ *
+ * ## Effect Description
+ * Color blend mode combines the hue and saturation of the overlay texture with the 
+ * luminance (brightness) of the base texture. This creates a colorization effect 
+ * that preserves the lighting and shadows of the base image while applying the 
+ * color characteristics of the overlay.
+ *
+ * ## Main Purpose
+ * - **Colorization**: Transform grayscale images into colored ones
+ * - **Color grading**: Apply color tones while maintaining original lighting
+ * - **Artistic effects**: Create stylized looks by blending color palettes
+ * - **Photo enhancement**: Add warmth or coolness to images
+ *
+ * ## Usage Examples
+ * - Converting black & white photos to sepia or other color tones
+ * - Applying color filters to maintain detail and contrast
+ * - Creating duotone effects with two contrasting colors
+ * - Color matching between different image sources
+ *
+ * ## Technical Details
+ * Uses luminance-based color blending that preserves the brightness information
+ * from the base image while applying the color information from the overlay.
+ * The algorithm uses the `setlum()` function to maintain proper luminance levels
+ * while preventing color clipping.
+ *
+ * @see TwoTextureInputKraftShader
+ */
 class ColorBlendKraftShader: TwoTextureInputKraftShader() {
     override fun loadFragmentShader(): String = COLOR_BLEND_FRAGMENT_SHADER
 }
