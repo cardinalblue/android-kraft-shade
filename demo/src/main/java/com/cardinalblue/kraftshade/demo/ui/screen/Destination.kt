@@ -12,6 +12,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.color.ColorDodgeBlendShaderScr
 import com.cardinalblue.kraftshade.demo.ui.screen.color.DarkenBlendShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.color.DifferenceBlendShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.color.DissolveBlendShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.color.DivideBlendShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.color.FalseColorShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.color.LevelsShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.color.LookUpTableShaderTestScreen
@@ -55,6 +56,7 @@ enum class Destination(
     DarkenBlendShader("darken_blend_shader", "Darken Blend Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { DarkenBlendShaderScreen() }),
     DifferenceBlendShader("difference_blend_shader", "Difference Blend Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { DifferenceBlendShaderScreen() }),
     DissolveBlendShader("dissolve_blend_shader", "Dissolve Blend Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { DissolveBlendShaderScreen() }),
+    DivideBlendShader("divide_blend_shader", "Divide Blend Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { DivideBlendShaderScreen() }),
     TransparencyTest("transparency_test", "Transparency Test", sampleType = SampleType.Compose, category = Category.OTHER, screen = { TransparencyTestWindow() }),
     KraftShadeAnimatedView("compose_animated", "Compose (animated)", sampleType = SampleType.Compose, category = Category.OTHER, screen = { KraftShadeAnimatedViewTestWindow() }),
     KraftShadeEffectView("compose_effect", "Compose (effect)", sampleType = SampleType.Compose, category = Category.OTHER, screen = { KraftShadeEffectViewTestWindow() }),
