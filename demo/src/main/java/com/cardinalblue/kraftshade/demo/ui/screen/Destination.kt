@@ -7,6 +7,7 @@ import com.cardinalblue.kraftshade.demo.ui.screen.basic.BlendingExampleScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.blur.CircularBlurPerformanceTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.blur.CircularBlurTestWindow
 import com.cardinalblue.kraftshade.demo.ui.screen.color.ColorBlendShaderScreen
+import com.cardinalblue.kraftshade.demo.ui.screen.color.ColorBurnBlendShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.color.FalseColorShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.color.LevelsShaderScreen
 import com.cardinalblue.kraftshade.demo.ui.screen.color.LookUpTableShaderTestScreen
@@ -45,6 +46,7 @@ enum class Destination(
     EmbossShader("emboss_shader", "Emboss Shader", sampleType = SampleType.Compose, category = Category.EFFECTS, screen = { EmbossShaderScreen() }),
     LookUpTableShader("look_up_table_shader", "Look Up Table Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { LookUpTableShaderTestScreen() }),
     ColorBlendShader("color_blend_shader", "Color Blend Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { ColorBlendShaderScreen() }),
+    ColorBurnBlendShader("color_burn_blend_shader", "Color Burn Blend Shader", sampleType = SampleType.Compose, category = Category.COLOR, screen = { ColorBurnBlendShaderScreen() }),
     TransparencyTest("transparency_test", "Transparency Test", sampleType = SampleType.Compose, category = Category.OTHER, screen = { TransparencyTestWindow() }),
     KraftShadeAnimatedView("compose_animated", "Compose (animated)", sampleType = SampleType.Compose, category = Category.OTHER, screen = { KraftShadeAnimatedViewTestWindow() }),
     KraftShadeEffectView("compose_effect", "Compose (effect)", sampleType = SampleType.Compose, category = Category.OTHER, screen = { KraftShadeEffectViewTestWindow() }),
