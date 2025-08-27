@@ -19,7 +19,7 @@ jetBrains-coroutinesAndroid = { module = "org.jetbrains.kotlinx:kotlinx-coroutin
 jetBrains-immutableCollections = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version = "0.4.0" }
 
 kraftshade = { group = "com.cardinalblue", name = "kraftshade", version = "1.0.38" }
-kraftshade-compose = { group = "com.cardinalblue", name = "kraftshade-compose", version = "1.0.37" }
+kraftshade-compose = { group = "com.cardinalblue", name = "kraftshade-compose", version = "1.0.38" }
 kraftshade-media3 = { group = "com.cardinalblue", name = "kraftshade-media3", version = "1.0.38" }
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
