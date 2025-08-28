@@ -1,4 +1,5 @@
 [![kraftshade](https://img.shields.io/maven-central/v/com.cardinalblue/kraftshade.svg?label=kraftshade)](https://central.sonatype.com/artifact/com.cardinalblue/kraftshade) [![kraftshade-compose](https://img.shields.io/maven-central/v/com.cardinalblue/kraftshade-compose.svg?label=kraftshade-compose)](https://central.sonatype.com/artifact/com.cardinalblue/kraftshade-compose)
+[![kraftshade](https://img.shields.io/maven-central/v/com.cardinalblue/kraftshade-media3.svg?label=kraftshade-media3)](https://central.sonatype.com/artifact/com.cardinalblue/kraftshade-media3) 
 
 📚 [Documentation](https://cardinalblue.github.io/android-kraft-shade/docs/intro)
 
