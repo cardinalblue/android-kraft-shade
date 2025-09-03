@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.effect)
+    implementation(libs.androidx.media3.transformer)
 
     // Adding GPUImage as a reference for development.
     implementation(libs.image.processing.gpuImage)
