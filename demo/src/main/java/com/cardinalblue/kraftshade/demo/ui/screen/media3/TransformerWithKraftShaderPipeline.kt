@@ -1,5 +1,6 @@
 package com.cardinalblue.kraftshade.demo.ui.screen.media3
 
+import android.content.Context
 import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
@@ -43,6 +44,7 @@ import com.cardinalblue.kraftshade.demo.ui.components.NetworkAwareScreen
 import com.cardinalblue.kraftshade.media3.KraftShadePipelineEffect
 import com.cardinalblue.kraftshade.shader.builtin.ContrastKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
+import java.io.File
 import kotlin.math.abs
 
 @OptIn(UnstableApi::class)
@@ -117,67 +119,24 @@ fun TransformerWithKraftShaderPipeline() {
             )
 
 
-            var exporting by remember { mutableStateOf(false) }
+            var isExporting by remember { mutableStateOf(false) }
             Button(
-                enabled = !exporting,
+                enabled = !isExporting,
                 onClick = {
                     exoPlayer.pause()
-                    exporting = true
-                }) {
-                Text("Export")
-            }
+                    isExporting = true
 
-            LaunchedEffect(exporting) {
-                if (exporting) {
-                    val transformer = Transformer.Builder(context)
-                        .setVideoMimeType(MimeTypes.VIDEO_H264)
-                        .setAudioMimeType(MimeTypes.AUDIO_AAC)
-                        .build()
-                    val exportItem = MediaItem.Builder()
-                        .setUri("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4".toUri())
-                        .setClippingConfiguration(
-                            MediaItem.ClippingConfiguration.Builder()
-                                .setStartPositionMs(from * 1000L)
-                                .setEndPositionMs(to * 1000L)
-                                .build()
-                        )
-                        .build()
-                    val editedMediaItem = EditedMediaItem.Builder(exportItem)
-                        .setEffects(
-                            Effects(
-                                emptyList(),
-                                listOf(
-                                    KraftShadePipelineEffect(context) { buffer, time, videoTexture ->
-                                        pipeline(buffer) {
-                                            serialSteps(videoTexture, buffer) {
-                                                step(SaturationKraftShader()) { shader ->
-                                                    shader.saturation = 2f
-                                                }
-                                                step(ContrastKraftShader()) { shader ->
-                                                    val cycle = time.get() % 4f - 2f
-                                                    val contrast = abs(cycle) / 2f * 3f
-                                                    shader.contrast = contrast
-                                                }
-                                            }
-                                        }
-                                    }
-                                )
-                            )
-                        )
-                        .build()
-                    val outputPath =
-                        context.cacheDir.absolutePath + "/transformer_w_pipeline_${System.currentTimeMillis()}.mp4"
-
-                    transformer.addListener(
+                    val output = File(context.cacheDir, "exported_${System.currentTimeMillis()}.mp4")
+                    export(
+                        context, output, from, to,
                         object : Transformer.Listener {
                             override fun onCompleted(
                                 composition: Composition,
                                 exportResult: ExportResult
                             ) {
                                 super.onCompleted(composition, exportResult)
-                                transformer.start(editedMediaItem, outputPath)
-                                exportedUri = "file://$outputPath"
-                                exporting = false
+                                exportedUri = "file://${output.absolutePath}"
+                                isExporting = false
                                 Toast.makeText(context, "Exported!", Toast.LENGTH_SHORT).show()
                             }
 
@@ -187,14 +146,54 @@ fun TransformerWithKraftShaderPipeline() {
                                 exportException: ExportException
                             ) {
                                 super.onError(composition, exportResult, exportException)
-                                exporting = false
+                                isExporting = false
                             }
-                        }
-                    )
-
-                    transformer.start(editedMediaItem, outputPath)
-                }
+                        })
+                }) {
+                Text("Export")
             }
         }
     }
+}
+
+@OptIn(UnstableApi::class)
+private fun export(context: Context, output: File, from: Int, to: Int, listener: Transformer.Listener) {
+    val transformer = Transformer.Builder(context)
+        .setVideoMimeType(MimeTypes.VIDEO_H264)
+        .setAudioMimeType(MimeTypes.AUDIO_AAC)
+        .build()
+    val exportItem = MediaItem.Builder()
+        .setUri("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4".toUri())
+        .setClippingConfiguration(
+            MediaItem.ClippingConfiguration.Builder()
+                .setStartPositionMs(from * 1000L)
+                .setEndPositionMs(to * 1000L)
+                .build()
+        )
+        .build()
+    val editedMediaItem = EditedMediaItem.Builder(exportItem)
+        .setEffects(
+            Effects(
+                emptyList(),
+                listOf(
+                    KraftShadePipelineEffect(context) { buffer, time, videoTexture ->
+                        pipeline(buffer) {
+                            serialSteps(videoTexture, buffer) {
+                                step(SaturationKraftShader()) { shader ->
+                                    shader.saturation = 2f
+                                }
+                                step(ContrastKraftShader()) { shader ->
+                                    val cycle = time.get() % 4f - 2f
+                                    val contrast = abs(cycle) / 2f * 3f
+                                    shader.contrast = contrast
+                                }
+                            }
+                        }
+                    }
+                )
+            )
+        )
+        .build()
+    transformer.addListener(listener)
+    transformer.start(editedMediaItem, output.absolutePath)
 }
