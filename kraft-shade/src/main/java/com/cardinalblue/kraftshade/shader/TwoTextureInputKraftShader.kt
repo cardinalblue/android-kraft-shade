@@ -117,7 +117,7 @@ void main()
 }
 """
 
-    const val TWO_TEXTURE_INPUT_VERTEX_SHADER_30 = """
+        const val TWO_TEXTURE_INPUT_VERTEX_SHADER_30 = """
 #version 300 es
 in vec4 position;
 in vec4 inputTextureCoordinate;
@@ -135,5 +135,5 @@ void main()
     textureCoordinate2 = (texture2TransformMatrix * vec4(inputTextureCoordinate.xy, 0.0, 1.0)).xy;
 }
 """
-}
+    }
 }
