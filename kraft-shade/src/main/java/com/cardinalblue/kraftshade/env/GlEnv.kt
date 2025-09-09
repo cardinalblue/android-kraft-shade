@@ -52,6 +52,9 @@ class GlEnv(
             logger.d("EGL config chosen")
         }
 
+    /** For deciding if we should destroy it **/
+    val isExternalContext: Boolean = eglContext != null
+
     /**
      * The EGL context created with OpenGL ES 2.0 support.
      * This context is essential for all OpenGL operations.
@@ -255,7 +258,9 @@ class GlEnv(
      * This should be called when the GL environment is no longer needed.
      */
     suspend fun terminate() = execute {
-        EGL14.eglDestroyContext(eglDisplay, eglContext)
+        if (!isExternalContext) {
+            EGL14.eglDestroyContext(eglDisplay, eglContext)
+        }
         EGL14.eglTerminate(eglDisplay)
         logger.d("EGL terminated")
         (dispatcher as? ExecutorCoroutineDispatcher)

@@ -13,6 +13,7 @@ import com.cardinalblue.kraftshade.pipeline.EffectExecution
 import com.cardinalblue.kraftshade.pipeline.input.sampledInput
 import com.cardinalblue.kraftshade.shader.buffer.ExternalFrameBuffer
 import com.cardinalblue.kraftshade.shader.buffer.IdPassingTexture
+import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.runBlocking
 
 @UnstableApi
@@ -33,6 +34,7 @@ class KraftShadePipelineShaderProgram(
     private val provider: VideoEffectExecutionProvider,
 ) : BaseGlShaderProgram(true, 1) {
     private lateinit var glEnv: GlEnv
+    private val logger = KraftLogger("Media3PipelineEffect")
     private val texture = IdPassingTexture()
     private val externalFrameBuffer = ExternalFrameBuffer(false)
     private var effectExecution: EffectExecution? = null
@@ -85,5 +87,19 @@ class KraftShadePipelineShaderProgram(
         runBlocking {
             effectExecution.run()
         }
+    }
+
+    /**
+     * Usually we don't need to terminate GlEnv on our own because the context is external. However,
+     * if the pipeline is used in a complex Composition setup including multiple sequences, some of
+     * the pipeline can be terminated while others are still running. In that case, we should do the
+     * resource cleanup on our own to avoid unnecessary memory usage.
+     */
+    override fun release() {
+        super.release()
+        runBlocking {
+            glEnv.terminate()
+        }
+        logger.d("released")
     }
 }

@@ -9,6 +9,8 @@ import androidx.media3.effect.GlShaderProgram
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.TextureInputKraftShader
 import com.cardinalblue.kraftshade.shader.buffer.IdPassingTexture
+import com.cardinalblue.kraftshade.util.KraftLogger
+import kotlinx.coroutines.runBlocking
 
 @UnstableApi
 class KraftShaderEffect(kraftShader: TextureInputKraftShader) : GlEffect {
@@ -23,6 +25,7 @@ class KraftShaderEffect(kraftShader: TextureInputKraftShader) : GlEffect {
 class KraftShaderProgram(
     private val shader: TextureInputKraftShader
 ) : BaseGlShaderProgram(true, 1) {
+    private val logger = KraftLogger("Media3KraftShaderProgram")
     private var configuredWidth = 0
     private var configuredHeight = 0
 
@@ -44,5 +47,13 @@ class KraftShaderProgram(
             GlSize(configuredWidth, configuredHeight),
             isScreenCoordinate = false
         )
+    }
+
+    override fun release() {
+        super.release()
+        runBlocking {
+            shader.destroy(false)
+        }
+        logger.d("released")
     }
 }
