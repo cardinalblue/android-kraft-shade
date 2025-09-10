@@ -13,21 +13,31 @@ import com.cardinalblue.kraftshade.util.KraftLogger
 import kotlinx.coroutines.runBlocking
 
 @UnstableApi
-class KraftShaderEffect(kraftShader: TextureInputKraftShader) : GlEffect {
-    private val program by lazy { KraftShaderProgram(kraftShader) }
+class KraftShaderEffect<T : TextureInputKraftShader>(
+    kraftShader: T,
+    setup: T.() -> Unit = {}
+) : GlEffect {
+    private val program by lazy { KraftShaderProgram(kraftShader, setup) }
     override fun toGlShaderProgram(
         context: Context,
         useHdr: Boolean
     ): GlShaderProgram = program
 }
 
+/**
+ * @param setup This is an one-time setup callback for setup operations that need to run on the
+ *  correct thread that is in the right GL context. It's called when the shader is used for rendering
+ *  the first frame.
+ */
 @UnstableApi
-class KraftShaderProgram(
-    private val shader: TextureInputKraftShader
+class KraftShaderProgram<T : TextureInputKraftShader>(
+    private val shader: T,
+    private val setup: T.() -> Unit = {},
 ) : BaseGlShaderProgram(true, 1) {
     private val logger = KraftLogger("Media3KraftShaderProgram")
     private var configuredWidth = 0
     private var configuredHeight = 0
+    private var isSetup = false
 
     private val texture = IdPassingTexture()
 
@@ -41,6 +51,11 @@ class KraftShaderProgram(
     }
 
     override fun drawFrame(inputTexId: Int, presentationTimeUs: Long) {
+        if (!isSetup) {
+            shader.setup()
+            isSetup = true
+        }
+
         texture.setId(inputTexId)
         shader.setInputTexture(texture)
         shader.draw(
@@ -52,7 +67,7 @@ class KraftShaderProgram(
     override fun release() {
         super.release()
         runBlocking {
-            shader.destroy(false)
+            shader.destroy(true)
         }
         logger.d("released")
     }
