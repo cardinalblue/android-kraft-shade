@@ -1,6 +1,8 @@
 @file:OptIn(DangerousKraftShadeApi::class)
 package com.cardinalblue.kraftshade.compose
 
+import android.annotation.SuppressLint
+import android.view.MotionEvent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -11,7 +13,6 @@ import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.pipeline.EffectExecutionProvider
 import com.cardinalblue.kraftshade.shader.buffer.WindowSurfaceBuffer
 import com.cardinalblue.kraftshade.util.DangerousKraftShadeApi
-import com.cardinalblue.kraftshade.util.KraftLogger
 import com.cardinalblue.kraftshade.widget.KraftEffectTextureView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,11 +48,38 @@ open class KraftShadeEffectState(
     scope: CoroutineScope,
     var skipRender: Boolean = false,
 ) : KraftShadeBaseState<KraftEffectTextureView>(scope) {
+    var effectExecutionProvider: EffectExecutionProvider? = null
+
     fun setEffect(
         afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
         effectExecutionProvider: EffectExecutionProvider,
     ) {
         launchWithLock { view ->
+            view.setEffect(afterSet, effectExecutionProvider)
+        }
+        this.effectExecutionProvider = effectExecutionProvider
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun setEffectWithBeforeAfter(
+        afterSet: suspend GlEnvDslScope.(windowSurface: WindowSurfaceBuffer) -> Unit = { requestRender() },
+        effectExecutionProvider: EffectExecutionProvider,
+        doNothingEffectExecutionProvider: EffectExecutionProvider
+    ) {
+        launchWithLock { view ->
+            view.setOnTouchListener { v, event ->
+                if (event != null && event.action == MotionEvent.ACTION_DOWN) {
+                    view.setEffect(afterSet, doNothingEffectExecutionProvider)
+                } else if (event != null && event.action == MotionEvent.ACTION_MOVE) {
+                    skipRender = true
+                } else if (event != null && event.action == MotionEvent.ACTION_UP) {
+                    skipRender = false
+                    view.setEffect(afterSet, effectExecutionProvider)
+                } else {
+                    view.setEffect(afterSet, effectExecutionProvider)
+                }
+                true
+            }
             view.setEffect(afterSet, effectExecutionProvider)
         }
     }
