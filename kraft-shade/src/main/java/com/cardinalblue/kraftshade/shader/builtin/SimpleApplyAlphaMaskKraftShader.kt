@@ -26,6 +26,6 @@ private const val APPLY_ALPHA_MASK_FRAGMENT_SHADER = """
         vec4 inputColor = texture2D(inputImageTexture, textureCoordinate);
         float inRange = step(0.0, textureCoordinate2.x) * step(textureCoordinate2.x, 1.0) * step(0.0, textureCoordinate2.y) * step(textureCoordinate2.y, 1.0);
         float maskValue = texture2D(inputImageTexture2, textureCoordinate2).a * inRange;
-        gl_FragColor = vec4(inputColor.rgb * maskValue, maskValue);
+        gl_FragColor = vec4(inputColor.rgb * maskValue, inputColor.a * maskValue);
     }
 """
