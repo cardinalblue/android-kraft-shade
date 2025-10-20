@@ -3,7 +3,6 @@ package com.cardinalblue.kraftshade.pipeline
 import com.cardinalblue.kraftshade.dsl.GraphPipelineSetupScope
 import com.cardinalblue.kraftshade.dsl.KraftShadeDsl
 import com.cardinalblue.kraftshade.dsl.SerialTextureInputPipelineScope
-import com.cardinalblue.kraftshade.pipeline.input.Input
 import com.cardinalblue.kraftshade.shader.buffer.GlBufferProvider
 import com.cardinalblue.kraftshade.shader.buffer.TextureProvider
 
