@@ -50,10 +50,4 @@ abstract class PipelineModifierWithoutInputTexture {
             }
         }
     }
-
-    open fun copySelf(): PipelineModifierWithoutInputTexture {
-        return this
-    }
-
-    open fun setTime(newTime: Input<Float>) {}
 }
