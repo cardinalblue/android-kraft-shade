@@ -17,7 +17,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.cardinalblue.kraftshade.demo.R
 import com.cardinalblue.kraftshade.shader.builtin.BrightnessKraftShader
-import com.cardinalblue.kraftshade.shader.builtin.DoNothingKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.DrawTextureKraftShader
 import com.cardinalblue.kraftshade.shader.builtin.SaturationKraftShader
 import com.cardinalblue.kraftshade.widget.KraftVideoEffectTextureView
 
@@ -171,8 +171,8 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
                 }
 
                 if (!hasSaturationEffect && !hasBrightnessEffect) {
-                    // If no effects are selected, just use the DoNothingKraftShader
-                    step(DoNothingKraftShader())
+                    // If no effects are selected, just use the DrawTextureKraftShader
+                    step(DrawTextureKraftShader())
                 }
             }
         }

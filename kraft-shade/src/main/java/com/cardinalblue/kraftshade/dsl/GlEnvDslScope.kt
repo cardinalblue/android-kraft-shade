@@ -3,8 +3,8 @@ package com.cardinalblue.kraftshade.dsl
 import android.graphics.BitmapFactory
 import com.cardinalblue.kraftshade.env.GlEnv
 import com.cardinalblue.kraftshade.pipeline.Pipeline
-import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.pipeline.TextureBufferPool
+import com.cardinalblue.kraftshade.pipeline.serialization.SerializedEffect
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.LoadedTexture
 

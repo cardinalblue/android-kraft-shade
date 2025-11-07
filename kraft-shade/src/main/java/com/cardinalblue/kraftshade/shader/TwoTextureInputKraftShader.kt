@@ -113,7 +113,7 @@ void main()
 {
     gl_Position = position;
     textureCoordinate = inputTextureCoordinate.xy;
-    textureCoordinate2 = (texture2TransformMatrix * vec4(inputTextureCoordinate.xy, 0.0, 1.0)).xy;
+    textureCoordinate2 = (texture2TransformMatrix * inputTextureCoordinate).xy;
 }
 """
 

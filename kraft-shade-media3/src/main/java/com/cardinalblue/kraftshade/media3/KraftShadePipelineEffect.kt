@@ -44,7 +44,7 @@ class KraftShadePipelineShaderProgram(
 
     private fun init() {
         if (effectExecution != null) return
-        glEnv = GlEnv(context, useUnconfinedDispatcher = true, eglContext = EGL14.eglGetCurrentContext())
+        glEnv = GlEnv(context, disableDispatcher = true, eglContext = EGL14.eglGetCurrentContext())
         externalFrameBuffer.setCurrentFrameBuffer()
         check(externalFrameBuffer.isValid()) {
             "External frame buffer is not valid. Make sure configure() is called before drawFrame()."

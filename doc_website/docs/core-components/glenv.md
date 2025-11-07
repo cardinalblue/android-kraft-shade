@@ -40,7 +40,7 @@ flowchart TD
 In OpenGL, a context is bound to a specific thread. This means that all OpenGL operations for a particular context must be performed on the same thread where the context was created. To handle this constraint, KraftShade creates a dedicated coroutine dispatcher that uses a single thread:
 
 ```kotlin
-private val dispatcher = if (useUnconfinedDispatcher) Dispatchers.Unconfined else
+internal val dispatcher: CoroutineDispatcher? = if (disableDispatcher) null else
     Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 ```
 
@@ -80,7 +80,7 @@ val glEnv = GlEnv(context)
 // With additional options
 val glEnv = GlEnv(
     context = context,
-    useUnconfinedDispatcher = false,  // Use dedicated thread (recommended for most cases)
+    disableDispatcher = false,  // Use dedicated thread (recommended for most cases)
     enableEglAndroidRecordable = false,  // Enable for video recording
     sharedContext = null  // Optional shared context for resource sharing
 )
@@ -202,7 +202,88 @@ glEnv.execute {
 OpenGL ES operations must be performed on the thread where the GL context was created. `GlEnv` handles this by using a dedicated dispatcher for GL operations:
 
 - By default, a single-threaded executor is used to ensure all GL operations run on the same thread
-- You can use `useUnconfinedDispatcher = true` to run on the calling thread, but this should be used with caution
+- You can use `disableDispatcher = true` to disable the internal dispatcher and run on the calling thread, but this should only be used when the GL context thread is managed by a 3rd party library (e.g., androidx/Media3). Most users don't need this parameter.
+
+### Using disableDispatcher with 3rd Party Libraries
+
+When working with 3rd party libraries that manage their own GL context and thread (such as androidx/Media3), you need to use `disableDispatcher = true` and `runBlocking` to execute KraftShade operations within their callbacks.
+
+#### Example with androidx/Media3
+
+```kotlin
+// Create GlEnv with disabled dispatcher for Media3 integration
+val glEnv = GlEnv(
+    context = context,
+    disableDispatcher = true,  // Disable internal dispatcher
+    eglContext = EGL14.eglGetCurrentContext()  // Use Media3's context
+)
+
+// In your Media3 VideoProcessor or GlEffect implementation
+class MyVideoProcessor : VideoProcessor {
+    override fun queueInputFrame(
+        inputTexture: GlTextureInfo,
+        presentationTimeUs: Long
+    ) {
+        // This callback runs on Media3's GL thread
+        // Use runBlocking to execute KraftShade suspend functions
+        runBlocking {
+            glEnv.execute {
+                // KraftShade operations here
+                pipeline(outputBuffer) {
+                    serialSteps(
+                        inputTexture = inputTexture.asTexture(),
+                        targetBuffer = outputBuffer
+                    ) {
+                        step(SaturationKraftShader()) {
+                            saturation = sampledInput { 1.5f }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Why runBlocking is Needed
+
+When `disableDispatcher = true`:
+1. KraftShade's `execute()` method becomes a regular suspend function without thread switching
+2. The 3rd party library's callback is typically not a suspend function
+3. `runBlocking` bridges the gap between regular functions and suspend functions
+4. All operations stay on the current thread (the 3rd party's GL thread)
+
+#### Important Considerations
+
+**⚠️ Thread Safety**: Only use `disableDispatcher = true` when you're certain that:
+- The calling thread already has a valid GL context
+- All KraftShade operations will be called from the same GL thread
+- You understand the threading implications
+
+**⚠️ Performance**: `runBlocking` can block the calling thread, so ensure that:
+- The GL operations are not too time-consuming
+- The 3rd party library can handle the blocking behavior
+- You're not blocking critical threads (like the main thread)
+
+#### Alternative Approach: Shared Context
+
+If possible, consider using a shared context instead of disabling the dispatcher:
+
+```kotlin
+// Get the 3rd party's GL context
+val thirdPartyContext = EGL14.eglGetCurrentContext()
+
+// Create GlEnv with shared context (recommended when possible)
+val glEnv = GlEnv(
+    context = context,
+    disableDispatcher = false,  // Keep internal dispatcher
+    sharedContext = thirdPartyContext  // Share resources
+)
+
+// This allows KraftShade to run on its own thread while sharing GL resources
+```
+
+This approach is often preferable as it maintains thread isolation while allowing resource sharing.
 
 ### Thread Management with Coroutines
 
