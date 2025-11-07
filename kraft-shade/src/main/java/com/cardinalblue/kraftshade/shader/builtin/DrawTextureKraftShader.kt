@@ -6,7 +6,7 @@ import org.intellij.lang.annotations.Language
 /**
  * This can be used to resize from buffer to another buffer
  */
-class DoNothingKraftShader : TextureInputKraftShader() {
+class DrawTextureKraftShader : TextureInputKraftShader() {
     override fun loadFragmentShader(): String = DO_NOTHING_FRAGMENT_SHADER
 }
 

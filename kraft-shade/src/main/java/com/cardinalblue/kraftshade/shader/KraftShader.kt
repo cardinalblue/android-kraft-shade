@@ -3,13 +3,7 @@ package com.cardinalblue.kraftshade.shader
 import android.opengl.GLES30
 import androidx.annotation.CallSuper
 import com.cardinalblue.kraftshade.OpenGlUtils
-import com.cardinalblue.kraftshade.model.GlMat
-import com.cardinalblue.kraftshade.model.GlMat4
-import com.cardinalblue.kraftshade.model.GlSize
-import com.cardinalblue.kraftshade.model.GlSizeF
-import com.cardinalblue.kraftshade.model.GlVec2
-import com.cardinalblue.kraftshade.model.GlVec3
-import com.cardinalblue.kraftshade.model.GlVec4
+import com.cardinalblue.kraftshade.model.*
 import com.cardinalblue.kraftshade.shader.buffer.GlBuffer
 import com.cardinalblue.kraftshade.shader.buffer.Texture
 import com.cardinalblue.kraftshade.shader.builtin.KraftShaderWithTexelSize
@@ -62,6 +56,13 @@ abstract class KraftShader : SuspendAutoCloseable {
     // TODO Use reflection to collect them, instead [serializedField] and [properties]
     internal val serializableFields = mutableMapOf<String, Any>()
     internal val properties = mutableMapOf<String, Any>()
+
+    init {
+        // do not do this in init(), because withTransform may be called before init()
+        // GlUniformDelegate will handle the thread and timing problem
+        transformMatrix = GlMat4().apply { setIdentity() }
+    }
+
     fun updateProperty(name: String, value: Any) {
         properties[name] = when (value) {
             is GlSize -> value.vec2
@@ -120,7 +121,6 @@ abstract class KraftShader : SuspendAutoCloseable {
         )
         glAttribPosition = GLES30.glGetAttribLocation(glProgId, "position")
         glAttribTextureCoordinate = GLES30.glGetAttribLocation(glProgId, "inputTextureCoordinate")
-        transformMatrix = GlMat4().apply { setIdentity() }
         initialized = true
         return true
     }

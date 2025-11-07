@@ -8,7 +8,7 @@ import com.cardinalblue.kraftshade.dsl.GlEnvDslScope
 import com.cardinalblue.kraftshade.model.GlSize
 import com.cardinalblue.kraftshade.shader.buffer.PixelBuffer
 import com.cardinalblue.kraftshade.util.KraftLogger
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -19,21 +19,24 @@ import java.util.concurrent.Executors
  * Manages the OpenGL ES environment and EGL context.
  * This class handles the initialization of EGL, creation of surfaces, and management of the GL context.
  *
- * @param useUnconfinedDispatcher If true, all the OpenGL API calls are gonna stay on the caller
- *  thread. Just use runBlocking to execute suspend functions in KraftShade lib.
+ * @param disableDispatcher If true, disables the internal coroutine dispatcher and all OpenGL API calls
+ *  will stay on the caller thread. Use runBlocking to execute suspend functions in KraftShade lib.
+ *  This is useful when the thread with the GL context is owned by a 3rd party library (e.g., androidx/Media3).
+ *  **Warning**: Most users don't need to set this parameter. Only set this to true if you know what you're doing
+ *  and understand the threading implications.
  * @param eglContext Directly use the provided EGLContext instead of creating a new one.
  * @param sharedContext The EGL context to share resources with.
  */
 class GlEnv(
     context: Context,
-    useUnconfinedDispatcher: Boolean = false,
+    disableDispatcher: Boolean = false,
     private val enableEglAndroidRecordable: Boolean = false,
     eglContext: EGLContext? = null,
     private val sharedContext: EGLContext? = null,
 ) {
     val appContext: Context = context.applicationContext
 
-    private val dispatcher = if (useUnconfinedDispatcher) Dispatchers.Unconfined else
+    internal val dispatcher: CoroutineDispatcher? = if (disableDispatcher) null else
         Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val logger = KraftLogger("GlEnv")
 
@@ -237,10 +240,20 @@ class GlEnv(
      * @param block The suspend function to execute within the GL context
      * @return The result of the block execution
      */
-    suspend fun <T> execute(block: suspend GlEnvDslScope.() -> T): T = withContext(dispatcher) {
-        makeCurrent()
-        executeDeferredTasks()
-        block(dslScope)
+    suspend fun <T> execute(block: suspend GlEnvDslScope.() -> T): T {
+        suspend fun innerExecute(): T {
+            makeCurrent()
+            executeDeferredTasks()
+            return block(dslScope)
+        }
+
+        dispatcher?.let { dispatcher ->
+            return withContext(dispatcher) {
+                innerExecute()
+            }
+        }
+
+        return innerExecute()
     }
 
     suspend fun <T> use(block: suspend GlEnvDslScope.() -> T): T {

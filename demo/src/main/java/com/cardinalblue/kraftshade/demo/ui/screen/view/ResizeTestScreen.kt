@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.cardinalblue.kraftshade.compose.KraftShadeEffectView
 import com.cardinalblue.kraftshade.compose.rememberKraftShadeEffectState
 import com.cardinalblue.kraftshade.shader.buffer.sampledBitmapTextureProvider
-import com.cardinalblue.kraftshade.shader.builtin.DoNothingKraftShader
+import com.cardinalblue.kraftshade.shader.builtin.DrawTextureKraftShader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -26,14 +26,14 @@ import kotlinx.coroutines.withContext
  * - Using [KraftShadeEffectState] with [KraftShadeEffectView]
  * - Loading and displaying an image from assets
  * - Dynamically resizing the view while preserving content
- * - Using [DoNothingKraftShader] for direct image rendering
+ * - Using [DrawTextureKraftShader] for direct image rendering
  * - Maintaining proper aspect ratio during resizing
  *
  * Implementation details:
  * - Uses nested [Box] composables for controlled resizing
  * - Applies [fillMaxWidth] with a dynamic fraction for resizing
  * - Uses [sampledBitmapTextureProvider] to load the image texture
- * - Creates a simple pipeline with [DoNothingKraftShader]
+ * - Creates a simple pipeline with [DrawTextureKraftShader]
  * - Uses [derivedStateOf] for calculating aspect ratio
  *
  * User interactions:
@@ -109,7 +109,7 @@ fun ResizeTestScreen() {
                     inputTexture,
                     windowSurfaceBuffer,
                 ) {
-                    step(DoNothingKraftShader())
+                    step(DrawTextureKraftShader())
                 }
             }
         }

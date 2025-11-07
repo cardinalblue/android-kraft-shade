@@ -12,13 +12,68 @@ Base shaders are the foundation of KraftShade's shader system. They implement es
 
 ## Available Base Shaders
 
-### DoNothingKraftShader
+### DrawTextureKraftShader
 
-The simplest shader that passes the input texture to the output without any modifications. This shader is useful as a placeholder or for testing purposes.
+The simplest shader that draws the input texture to the output. While it appears to do "nothing" in terms of visual effects, it's actually quite useful for various purposes including texture positioning, coordinate transformation, and as a building block for more complex effects.
 
 ```kotlin
-// Create a shader that does nothing to the input
-val shader = DoNothingKraftShader()
+// Create a shader that draws the input texture directly
+val shader = DrawTextureKraftShader()
+```
+
+#### Practical Use Cases
+
+**1. Texture Positioning and Transformation**
+
+You can use `withTransform` to move, scale, rotate, or flip the texture by transforming the sampling coordinates:
+
+```kotlin
+// Move texture to a different position
+val shader = DrawTextureKraftShader().withTransform {
+    translate(0.2f, 0.1f) // Move texture right and up
+}
+
+// Scale and rotate texture
+val shader = DrawTextureKraftShader().withTransform {
+    scale(0.8f, 0.8f)     // Scale down to 80%
+    rotate(45f)           // Rotate 45 degrees
+}
+
+// Flip texture horizontally
+val shader = DrawTextureKraftShader().withTransform {
+    scale(-1f, 1f)        // Flip horizontally
+    translate(1f, 0f)     // Adjust position after flip
+}
+```
+
+**2. Texture Cropping and Viewport Control**
+
+Transform coordinates to show only a portion of the texture:
+
+```kotlin
+// Show only the center 50% of the texture
+val shader = DrawTextureKraftShader().withTransform {
+    scale(2f, 2f)         // Scale up sampling
+    translate(-0.25f, -0.25f) // Center the crop
+}
+```
+
+**3. Testing and Debugging**
+
+- **Pipeline Testing**: Verify that your pipeline setup is working correctly
+- **Performance Baseline**: Measure the overhead of your pipeline without effect processing
+- **Texture Validation**: Confirm that textures are loaded and passed correctly through the pipeline
+
+**4. Conditional Processing**
+
+Use as a fallback when no effects should be applied:
+
+```kotlin
+val shader = if (effectsEnabled) {
+    SaturationKraftShader(saturation = 1.5f)
+} else {
+    DrawTextureKraftShader() // No effect, just draw the texture
+}
 ```
 
 ### BypassableTextureInputKraftShader
@@ -82,7 +137,7 @@ pipeline(targetBuffer) {
         targetBuffer = targetBuffer
     ) {
         // Use a base shader as a placeholder or for testing
-        step(DoNothingKraftShader())
+        step(DrawTextureKraftShader())
         
         // Use a bypassable shader for conditional processing
         val bypassableShader = BypassableTextureInputKraftShader(
