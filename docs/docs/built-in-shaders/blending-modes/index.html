@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-built-in-shaders/blending-modes" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.8.1">
+<title data-rh="true">Blending Modes | Kraft Shade</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://cardinalblue.github.io/android-kraft-shade/img/kraft-social-card.png"><meta data-rh="true" name="twitter:image" content="https://cardinalblue.github.io/android-kraft-shade/img/kraft-social-card.png"><meta data-rh="true" property="og:url" content="https://cardinalblue.github.io/android-kraft-shade/docs/built-in-shaders/blending-modes"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Blending Modes | Kraft Shade"><meta data-rh="true" name="description" content="Blending modes determine how two images or layers are combined together in KraftShade. These shaders enable sophisticated compositing techniques essential for creating complex visual effects."><meta data-rh="true" property="og:description" content="Blending modes determine how two images or layers are combined together in KraftShade. These shaders enable sophisticated compositing techniques essential for creating complex visual effects."><link data-rh="true" rel="icon" href="/android-kraft-shade/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://cardinalblue.github.io/android-kraft-shade/docs/built-in-shaders/blending-modes"><link data-rh="true" rel="alternate" href="https://cardinalblue.github.io/android-kraft-shade/docs/built-in-shaders/blending-modes" hreflang="en"><link data-rh="true" rel="alternate" href="https://cardinalblue.github.io/android-kraft-shade/docs/built-in-shaders/blending-modes" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Built-in Shaders","item":"https://cardinalblue.github.io/android-kraft-shade/docs/built-in-shaders/"},{"@type":"ListItem","position":2,"name":"Blending Modes","item":"https://cardinalblue.github.io/android-kraft-shade/docs/built-in-shaders/blending-modes"}]}</script><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Cardinal Blue Software",
+  "url": "https://cardinalblue.com",
+  "logo": "https://cardinalblue.github.io/android-kraft-shade/img/logo.png",
+  "sameAs": [
+    "https://github.com/cardinalblue",
+    "https://piccollage.com"
+  ],
+  "foundingDate": "2010",
+  "description": "Cardinal Blue Software is a technology company specializing in creative mobile applications and developer tools.",
+  "makesOffer": {
+    "@type": "SoftwareApplication",
+    "name": "KraftShade",
+    "url": "https://cardinalblue.github.io/android-kraft-shade/"
+  }
+}</script><link rel="stylesheet" href="/android-kraft-shade/assets/css/styles.27e5e8f9.css">
+<script src="/android-kraft-shade/assets/js/runtime~main.f040823d.js" defer="defer"></script>
+<script src="/android-kraft-shade/assets/js/main.77df1fa7.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t="dark";var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",e||t),document.documentElement.setAttribute("data-theme-choice",e||t)}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><link rel="preload" as="image" href="/android-kraft-shade/img/logo.png"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/android-kraft-shade/"><div class="navbar__logo"><img src="/android-kraft-shade/img/logo.png" alt="Kraft Shade Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/android-kraft-shade/img/logo.png" alt="Kraft Shade Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Kraft Shade</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/android-kraft-shade/docs/intro">Documentation</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/cardinalblue/android-kraft-shade" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/android-kraft-shade/docs/intro">intro</a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/android-kraft-shade/docs/introduction/overview">Introduction</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/android-kraft-shade/docs/getting-started/installation">Getting Started</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/android-kraft-shade/docs/core-components/">Core Components</a><button aria-label="Expand sidebar category &#x27;Core Components&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/android-kraft-shade/docs/view-components/">View Components</a><button aria-label="Expand sidebar category &#x27;View Components&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/android-kraft-shade/docs/pipeline-dsl/">Pipeline DSL</a><button aria-label="Expand sidebar category &#x27;Pipeline DSL&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--active" href="/android-kraft-shade/docs/built-in-shaders/">Built-in Shaders</a><button aria-label="Collapse sidebar category &#x27;Built-in Shaders&#x27;" aria-expanded="true" type="button" class="clean-btn menu__caret"></button></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/built-in-shaders/base-shaders">Base Shaders</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/built-in-shaders/color-effects">Color Effects</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/built-in-shaders/alpha-transparency-effects">Alpha &amp; Transparency Effects</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/built-in-shaders/texture-artistic-effects">Texture &amp; Artistic Effects</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/built-in-shaders/edge-detection">Edge Detection</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/built-in-shaders/convolution-mask-processing">Convolution &amp; Mask Processing</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/android-kraft-shade/docs/built-in-shaders/blending-modes">Blending Modes</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/built-in-shaders/blur-distortion">Blur &amp; Distortion</a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/android-kraft-shade/docs/advanced-topics/effect-serialization/overview">Advanced Topics</a></div></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/android-kraft-shade/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><a class="breadcrumbs__link" href="/android-kraft-shade/docs/built-in-shaders/"><span>Built-in Shaders</span></a></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">Blending Modes</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>Blending Modes</h1></header>
+<p>Blending modes determine how two images or layers are combined together in KraftShade. These shaders enable sophisticated compositing techniques essential for creating complex visual effects.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="overview">Overview<a href="#overview" class="hash-link" aria-label="Direct link to Overview" title="Direct link to Overview">​</a></h2>
+<p>Blending modes are mathematical operations that determine how pixels from two different images interact when overlaid. KraftShade provides a variety of blending modes inspired by those found in professional image editing software, allowing for creative combinations of textures and effects.</p>
+<p>All blend shaders in KraftShade extend from the <code>TwoTextureInputKraftShader</code> base class, which handles the input of two textures. Most blend shaders also include an <code>intensity</code> parameter that controls the strength of the blend effect.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="available-blending-mode-shaders">Available Blending Mode Shaders<a href="#available-blending-mode-shaders" class="hash-link" aria-label="Direct link to Available Blending Mode Shaders" title="Direct link to Available Blending Mode Shaders">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="mixblendkraftshader">MixBlendKraftShader<a href="#mixblendkraftshader" class="hash-link" aria-label="Direct link to MixBlendKraftShader" title="Direct link to MixBlendKraftShader">​</a></h3>
+<p>The base class for blend shaders that mix two textures based on a percentage. This is an abstract class that other blend shaders can extend.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>mixturePercent</code>: Float value between 0.0 (only first texture) and 1.0 (only second texture)</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="alphablendkraftshader">AlphaBlendKraftShader<a href="#alphablendkraftshader" class="hash-link" aria-label="Direct link to AlphaBlendKraftShader" title="Direct link to AlphaBlendKraftShader">​</a></h3>
+<p>Blends two textures based on the alpha channel of the second texture and a mixture percentage.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>mixturePercent</code>: Float value between 0.0 (only first texture) and 1.0 (only second texture)</li>
+<li><code>intensity</code>: Controls the strength of the blend effect</li>
+</ul>
+<p><strong>Example Use Cases:</strong></p>
+<ul>
+<li>Smooth transitions between images</li>
+<li>Creating composite images with varying levels of transparency</li>
+</ul>
+<p>[IMAGE: AlphaBlendKraftShader - Left side shows first texture, middle shows second texture, right side shows blended result]</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="normalblendkraftshader">NormalBlendKraftShader<a href="#normalblendkraftshader" class="hash-link" aria-label="Direct link to NormalBlendKraftShader" title="Direct link to NormalBlendKraftShader">​</a></h3>
+<p>The standard blend mode that simply places the second texture over the first, respecting the alpha channel.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>intensity</code>: Controls the strength of the blend effect</li>
+</ul>
+<p><strong>Example Use Cases:</strong></p>
+<ul>
+<li>Basic layering of images</li>
+<li>Standard compositing operations</li>
+</ul>
+<p>[IMAGE: NormalBlendKraftShader - Left side shows first texture, middle shows second texture, right side shows blended result]</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="multiplyblendkraftshader">MultiplyBlendKraftShader<a href="#multiplyblendkraftshader" class="hash-link" aria-label="Direct link to MultiplyBlendKraftShader" title="Direct link to MultiplyBlendKraftShader">​</a></h3>
+<p>Multiplies the color values of the two textures, resulting in a darker image. White pixels have no effect, while black pixels make the result black.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>intensity</code>: Controls the strength of the blend effect</li>
+</ul>
+<p><strong>Example Use Cases:</strong></p>
+<ul>
+<li>Creating shadows and darkening effects</li>
+<li>Simulating the effect of placing two transparent slides on top of each other</li>
+</ul>
+<p>[IMAGE: MultiplyBlendKraftShader - Left side shows first texture, middle shows second texture, right side shows multiplied result]</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="screenblendkraftshader">ScreenBlendKraftShader<a href="#screenblendkraftshader" class="hash-link" aria-label="Direct link to ScreenBlendKraftShader" title="Direct link to ScreenBlendKraftShader">​</a></h3>
+<p>The opposite of multiply - it brightens the image. Black pixels have no effect, while white pixels make the result white.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>intensity</code>: Controls the strength of the blend effect</li>
+</ul>
+<p><strong>Example Use Cases:</strong></p>
+<ul>
+<li>Creating highlights and brightening effects</li>
+<li>Simulating the effect of projecting multiple images onto the same screen</li>
+</ul>
+<p>[IMAGE: ScreenBlendKraftShader - Left side shows first texture, middle shows second texture, right side shows screened result]</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="hardlightblendkraftshader">HardLightBlendKraftShader<a href="#hardlightblendkraftshader" class="hash-link" aria-label="Direct link to HardLightBlendKraftShader" title="Direct link to HardLightBlendKraftShader">​</a></h3>
+<p>A combination of multiply and screen. Dark areas in the second texture darken the first texture, while light areas lighten it.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>intensity</code>: Controls the strength of the blend effect</li>
+</ul>
+<p><strong>Example Use Cases:</strong></p>
+<ul>
+<li>Creating dramatic lighting effects</li>
+<li>Adding texture and contrast to images</li>
+</ul>
+<p>[IMAGE: HardLightBlendKraftShader - Left side shows first texture, middle shows second texture, right side shows hard light blend result]</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="addblendkraftshader">AddBlendKraftShader<a href="#addblendkraftshader" class="hash-link" aria-label="Direct link to AddBlendKraftShader" title="Direct link to AddBlendKraftShader">​</a></h3>
+<p>Adds the color values of the two textures, resulting in a brighter image.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>intensity</code>: Controls the strength of the blend effect</li>
+</ul>
+<p><strong>Example Use Cases:</strong></p>
+<ul>
+<li>Creating glow and light effects</li>
+<li>Combining multiple light sources</li>
+</ul>
+<p>[IMAGE: AddBlendKraftShader - Left side shows first texture, middle shows second texture, right side shows additive blend result]</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="sourceoverblendkraftshader">SourceOverBlendKraftShader<a href="#sourceoverblendkraftshader" class="hash-link" aria-label="Direct link to SourceOverBlendKraftShader" title="Direct link to SourceOverBlendKraftShader">​</a></h3>
+<p>Places the second texture over the first, respecting the alpha channel of both textures.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>intensity</code>: Controls the strength of the blend effect</li>
+</ul>
+<p><strong>Example Use Cases:</strong></p>
+<ul>
+<li>Standard alpha compositing</li>
+<li>Layering images with transparency</li>
+</ul>
+<p>[IMAGE: SourceOverBlendKraftShader - Left side shows first texture, middle shows second texture, right side shows source-over blend result]</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="using-blending-mode-shaders-in-pipelines">Using Blending Mode Shaders in Pipelines<a href="#using-blending-mode-shaders-in-pipelines" class="hash-link" aria-label="Direct link to Using Blending Mode Shaders in Pipelines" title="Direct link to Using Blending Mode Shaders in Pipelines">​</a></h2>
+<p>Blending mode shaders require two input textures and are typically used to combine the results of previous processing steps. They can be used in various stages of a pipeline to create complex visual effects.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="performance-considerations">Performance Considerations<a href="#performance-considerations" class="hash-link" aria-label="Direct link to Performance Considerations" title="Direct link to Performance Considerations">​</a></h2>
+<p>When working with blend modes:</p>
+<ul>
+<li>Blending operations require two texture inputs, which can increase memory usage</li>
+<li>Some blend modes are more computationally expensive than others</li>
+<li>Consider using intermediate buffers to avoid recalculating the same inputs multiple times</li>
+<li>For complex compositions with many layers, consider grouping blends to reduce the number of passes</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="related-topics">Related Topics<a href="#related-topics" class="hash-link" aria-label="Direct link to Related Topics" title="Direct link to Related Topics">​</a></h2>
+<ul>
+<li><a href="/android-kraft-shade/docs/built-in-shaders/alpha-transparency-effects">Alpha &amp; Transparency Effects</a>: Learn about transparency manipulation</li>
+<li><a href="/android-kraft-shade/docs/pipeline-dsl">Pipeline DSL</a>: See how to combine shaders into complex effects</li>
+<li><a href="/android-kraft-shade/docs/core-components/pipeline-system/buffer-management">Buffer Management</a>: Understand how to efficiently manage buffers for multi-pass effects</li>
+</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/cardinalblue/android-kraft-shade/tree/main/doc_website/docs/built-in-shaders/blending-modes.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/android-kraft-shade/docs/built-in-shaders/convolution-mask-processing"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Convolution &amp; Mask Processing</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/android-kraft-shade/docs/built-in-shaders/blur-distortion"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Blur &amp; Distortion</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#overview" class="table-of-contents__link toc-highlight">Overview</a></li><li><a href="#available-blending-mode-shaders" class="table-of-contents__link toc-highlight">Available Blending Mode Shaders</a><ul><li><a href="#mixblendkraftshader" class="table-of-contents__link toc-highlight">MixBlendKraftShader</a></li><li><a href="#alphablendkraftshader" class="table-of-contents__link toc-highlight">AlphaBlendKraftShader</a></li><li><a href="#normalblendkraftshader" class="table-of-contents__link toc-highlight">NormalBlendKraftShader</a></li><li><a href="#multiplyblendkraftshader" class="table-of-contents__link toc-highlight">MultiplyBlendKraftShader</a></li><li><a href="#screenblendkraftshader" class="table-of-contents__link toc-highlight">ScreenBlendKraftShader</a></li><li><a href="#hardlightblendkraftshader" class="table-of-contents__link toc-highlight">HardLightBlendKraftShader</a></li><li><a href="#addblendkraftshader" class="table-of-contents__link toc-highlight">AddBlendKraftShader</a></li><li><a href="#sourceoverblendkraftshader" class="table-of-contents__link toc-highlight">SourceOverBlendKraftShader</a></li></ul></li><li><a href="#using-blending-mode-shaders-in-pipelines" class="table-of-contents__link toc-highlight">Using Blending Mode Shaders in Pipelines</a></li><li><a href="#performance-considerations" class="table-of-contents__link toc-highlight">Performance Considerations</a></li><li><a href="#related-topics" class="table-of-contents__link toc-highlight">Related Topics</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/android-kraft-shade/docs/intro">Documentation</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/cardinalblue/android-kraft-shade" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/cardinalblue/android-kraft-shade/discussions" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub Discussions<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/kraftshade" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://piccollage.com/" target="_blank" rel="noopener noreferrer" class="footer__link-item">PicCollage<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 Cardinal Blue Software.</div></div></div></footer></div>
+</body>
+</html>

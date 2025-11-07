@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-getting-started/basic-concepts" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.8.1">
+<title data-rh="true">Basic Concepts | Kraft Shade</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://cardinalblue.github.io/android-kraft-shade/img/kraft-social-card.png"><meta data-rh="true" name="twitter:image" content="https://cardinalblue.github.io/android-kraft-shade/img/kraft-social-card.png"><meta data-rh="true" property="og:url" content="https://cardinalblue.github.io/android-kraft-shade/docs/getting-started/basic-concepts"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Basic Concepts | Kraft Shade"><meta data-rh="true" name="description" content="This guide introduces the key concepts and terminology used in KraftShade. Understanding these concepts will help you build more complex and efficient graphics applications."><meta data-rh="true" property="og:description" content="This guide introduces the key concepts and terminology used in KraftShade. Understanding these concepts will help you build more complex and efficient graphics applications."><link data-rh="true" rel="icon" href="/android-kraft-shade/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://cardinalblue.github.io/android-kraft-shade/docs/getting-started/basic-concepts"><link data-rh="true" rel="alternate" href="https://cardinalblue.github.io/android-kraft-shade/docs/getting-started/basic-concepts" hreflang="en"><link data-rh="true" rel="alternate" href="https://cardinalblue.github.io/android-kraft-shade/docs/getting-started/basic-concepts" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Basic Concepts","item":"https://cardinalblue.github.io/android-kraft-shade/docs/getting-started/basic-concepts"}]}</script><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Cardinal Blue Software",
+  "url": "https://cardinalblue.com",
+  "logo": "https://cardinalblue.github.io/android-kraft-shade/img/logo.png",
+  "sameAs": [
+    "https://github.com/cardinalblue",
+    "https://piccollage.com"
+  ],
+  "foundingDate": "2010",
+  "description": "Cardinal Blue Software is a technology company specializing in creative mobile applications and developer tools.",
+  "makesOffer": {
+    "@type": "SoftwareApplication",
+    "name": "KraftShade",
+    "url": "https://cardinalblue.github.io/android-kraft-shade/"
+  }
+}</script><link rel="stylesheet" href="/android-kraft-shade/assets/css/styles.27e5e8f9.css">
+<script src="/android-kraft-shade/assets/js/runtime~main.f040823d.js" defer="defer"></script>
+<script src="/android-kraft-shade/assets/js/main.77df1fa7.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t="dark";var e=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",e||t),document.documentElement.setAttribute("data-theme-choice",e||t)}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><link rel="preload" as="image" href="/android-kraft-shade/img/logo.png"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/android-kraft-shade/"><div class="navbar__logo"><img src="/android-kraft-shade/img/logo.png" alt="Kraft Shade Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/android-kraft-shade/img/logo.png" alt="Kraft Shade Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Kraft Shade</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/android-kraft-shade/docs/intro">Documentation</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/cardinalblue/android-kraft-shade" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/android-kraft-shade/docs/intro">intro</a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/android-kraft-shade/docs/introduction/overview">Introduction</a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" href="/android-kraft-shade/docs/getting-started/installation">Getting Started</a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/getting-started/installation">Installation</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/getting-started/quick-start-guide">Quick Start Guide</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/android-kraft-shade/docs/getting-started/basic-concepts">Basic Concepts</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/android-kraft-shade/docs/getting-started/first-effect">first-effect</a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/android-kraft-shade/docs/core-components/">Core Components</a><button aria-label="Expand sidebar category &#x27;Core Components&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/android-kraft-shade/docs/view-components/">View Components</a><button aria-label="Expand sidebar category &#x27;View Components&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/android-kraft-shade/docs/pipeline-dsl/">Pipeline DSL</a><button aria-label="Expand sidebar category &#x27;Pipeline DSL&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist" href="/android-kraft-shade/docs/built-in-shaders/">Built-in Shaders</a><button aria-label="Expand sidebar category &#x27;Built-in Shaders&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/android-kraft-shade/docs/advanced-topics/effect-serialization/overview">Advanced Topics</a></div></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/android-kraft-shade/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Getting Started</span></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">Basic Concepts</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>Basic Concepts</h1></header>
+<p>This guide introduces the key concepts and terminology used in KraftShade. Understanding these concepts will help you build more complex and efficient graphics applications.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="core-architecture">Core Architecture<a href="#core-architecture" class="hash-link" aria-label="Direct link to Core Architecture" title="Direct link to Core Architecture">​</a></h2>
+<p>KraftShade is built around several key architectural components that work together to provide a flexible and powerful graphics rendering system.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="glenv-graphics-environment">GlEnv (Graphics Environment)<a href="#glenv-graphics-environment" class="hash-link" aria-label="Direct link to GlEnv (Graphics Environment)" title="Direct link to GlEnv (Graphics Environment)">​</a></h3>
+<p>The <code>GlEnv</code> is the foundation of KraftShade&#x27;s rendering system:</p>
+<ul>
+<li>It encapsulates all OpenGL ES environment setup in a single class</li>
+<li>Creates a dedicated thread dispatcher and binds the GLES context to that thread</li>
+<li>Ensures all OpenGL operations run in the correct context</li>
+<li>Manages the lifecycle of OpenGL resources</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="shader-system">Shader System<a href="#shader-system" class="hash-link" aria-label="Direct link to Shader System" title="Direct link to Shader System">​</a></h3>
+<p>The shader system is responsible for executing graphics operations:</p>
+<ul>
+<li><strong>KraftShader</strong>: The base shader implementation that provides a modern Kotlin interface to OpenGL shaders</li>
+<li><strong>GlUniformDelegate</strong>: Handles shader uniform variables with features like:<!-- -->
+<ul>
+<li>Support for multiple types (Int, Float, FloatArray, GlMat2/3/4)</li>
+<li>Deferred location query and value setting</li>
+<li>Optional uniforms support (useful for base class implementations)</li>
+<li>Automatic GLES API selection for value binding</li>
+</ul>
+</li>
+<li><strong>Texture Inputs</strong>: Simplified management of texture inputs to shaders</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="pipeline-system">Pipeline System<a href="#pipeline-system" class="hash-link" aria-label="Direct link to Pipeline System" title="Direct link to Pipeline System">​</a></h3>
+<p>The pipeline system orchestrates the execution of multiple shaders:</p>
+<ul>
+<li><strong>Pipeline</strong>: A container for a sequence of shader operations</li>
+<li><strong>PipelineRunContext</strong>: Maintains state during pipeline execution</li>
+<li><strong>Buffer Management</strong>: Handles intermediate buffers and resource recycling</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="input-system">Input System<a href="#input-system" class="hash-link" aria-label="Direct link to Input System" title="Direct link to Input System">​</a></h3>
+<p>The input system provides a flexible way to feed data into shaders:</p>
+<ul>
+<li><strong>Input&lt;T&gt;</strong>: Base input type for shader parameters</li>
+<li><strong>SampledInput&lt;T&gt;</strong>: Dynamic input handling for values that change over time</li>
+<li><strong>TimeInput</strong>: Time-based animations</li>
+<li><strong>MappedInput</strong>: Value transformations</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="view-components">View Components<a href="#view-components" class="hash-link" aria-label="Direct link to View Components" title="Direct link to View Components">​</a></h3>
+<p>KraftShade provides ready-to-use view components for both traditional Android Views and Jetpack Compose:</p>
+<ul>
+<li><strong>Android Views</strong>:<!-- -->
+<ul>
+<li><code>KraftTextureView</code>: Base OpenGL rendering view</li>
+<li><code>KraftEffectTextureView</code>: Effect-enabled view</li>
+<li><code>AnimatedKraftTextureView</code>: Animation support with Choreographer</li>
+</ul>
+</li>
+<li><strong>Jetpack Compose Integration</strong>:<!-- -->
+<ul>
+<li><code>KraftShadeView</code>: Compose wrapper for KraftTextureView</li>
+<li><code>KraftShadeEffectView</code>: Compose wrapper for KraftEffectTextureView</li>
+<li><code>KraftShadeAnimatedView</code>: Compose wrapper for AnimatedKraftTextureView</li>
+</ul>
+</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="key-concepts">Key Concepts<a href="#key-concepts" class="hash-link" aria-label="Direct link to Key Concepts" title="Direct link to Key Concepts">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="shaders">Shaders<a href="#shaders" class="hash-link" aria-label="Direct link to Shaders" title="Direct link to Shaders">​</a></h3>
+<p>In KraftShade, shaders are the building blocks of visual effects:</p>
+<ul>
+<li><strong>KraftShader</strong>: The base class for all shaders</li>
+<li><strong>Shader Parameters</strong>: Properties that control the behavior of a shader</li>
+<li><strong>Texture Inputs</strong>: Images or buffers that a shader processes</li>
+<li><strong>Bypassable Shaders</strong>: Shaders that can be conditionally enabled or disabled</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="textures-and-buffers">Textures and Buffers<a href="#textures-and-buffers" class="hash-link" aria-label="Direct link to Textures and Buffers" title="Direct link to Textures and Buffers">​</a></h3>
+<p>KraftShade uses textures and buffers to manage image data:</p>
+<ul>
+<li><strong>Texture</strong>: An image stored in GPU memory</li>
+<li><strong>TextureProvider</strong>: A source of texture data</li>
+<li><strong>GlBufferProvider</strong>: A target for rendering operations</li>
+<li><strong>TextureBufferPool</strong>: Manages reusable texture buffers for efficient memory usage</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="pipeline-dsl">Pipeline DSL<a href="#pipeline-dsl" class="hash-link" aria-label="Direct link to Pipeline DSL" title="Direct link to Pipeline DSL">​</a></h3>
+<p>KraftShade provides a Domain-Specific Language (DSL) for building rendering pipelines:</p>
+<ul>
+<li><strong>Serial Pipeline</strong>: A linear sequence of shader operations</li>
+<li><strong>Graph Pipeline</strong>: A complex network of shader operations with flexible input/output connections</li>
+<li><strong>Nested Pipeline</strong>: A combination of serial and graph pipelines for complex effects</li>
+</ul>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="pipeline-execution-flow">Pipeline Execution Flow<a href="#pipeline-execution-flow" class="hash-link" aria-label="Direct link to Pipeline Execution Flow" title="Direct link to Pipeline Execution Flow">​</a></h3>
+<p>The typical flow for executing a pipeline in KraftShade is:</p>
+<ol>
+<li><strong>Input Updates</strong>: Sample values from ViewModel or MutableState in Compose UI</li>
+<li><strong>Reset PipelineRunContext</strong>: Initialize the state for the current frame</li>
+<li><strong>Execute Pipeline Steps</strong>: Iterate through steps in the pipeline:<!-- -->
+<ul>
+<li>Render to intermediate buffers or the final target buffer</li>
+<li>Get values from input and set them as parameters of the shader</li>
+<li>Run the shader to render to the target buffer for the step</li>
+<li>Automatically recycle buffers that are no longer needed</li>
+</ul>
+</li>
+</ol>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="effect-serialization">Effect Serialization<a href="#effect-serialization" class="hash-link" aria-label="Direct link to Effect Serialization" title="Direct link to Effect Serialization">​</a></h3>
+<p>KraftShade allows you to serialize and deserialize effects:</p>
+<ul>
+<li><strong>EffectSerializer</strong>: Converts pipeline setups into JSON format</li>
+<li><strong>SerializedEffect</strong>: Reconstructs effects from JSON</li>
+<li><strong>Texture Provider Mapping</strong>: Maps texture names to TextureProvider instances</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="common-shader-types">Common Shader Types<a href="#common-shader-types" class="hash-link" aria-label="Direct link to Common Shader Types" title="Direct link to Common Shader Types">​</a></h2>
+<p>KraftShade includes several categories of built-in shaders:</p>
+<ul>
+<li><strong>Base Shaders</strong>: Core shader implementations like TextureInputKraftShader</li>
+<li><strong>Color Effects</strong>: Shaders for color manipulation like SaturationKraftShader</li>
+<li><strong>Alpha &amp; Transparency Effects</strong>: Shaders for transparency like AlphaBlendKraftShader</li>
+<li><strong>Texture &amp; Artistic Effects</strong>: Shaders for artistic effects like CrosshatchKraftShader</li>
+<li><strong>Edge Detection</strong>: Shaders for edge detection like SobelEdgeDetectionKraftShader</li>
+<li><strong>Convolution &amp; Mask Processing</strong>: Shaders for convolution operations like Convolution3x3KraftShader</li>
+<li><strong>Blending Modes</strong>: Shaders for blending operations like MultiplyBlendKraftShader</li>
+<li><strong>Blur &amp; Distortion</strong>: Shaders for blur and distortion effects like CircularBlurKraftShader</li>
+</ul>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="next-steps">Next Steps<a href="#next-steps" class="hash-link" aria-label="Direct link to Next Steps" title="Direct link to Next Steps">​</a></h2>
+<p>Now that you understand the basic concepts of KraftShade, you can:</p>
+<ul>
+<li>Create your <a href="/android-kraft-shade/docs/getting-started/first-effect">First Effect</a> with KraftShade</li>
+<li>Explore the <a href="/android-kraft-shade/docs/core-components">Core Components</a> in more detail</li>
+<li>Learn about the <a href="/android-kraft-shade/docs/pipeline-dsl">Pipeline DSL</a> for building complex effects</li>
+<li>Check out the <a href="/android-kraft-shade/docs/built-in-shaders">Built-in Shaders</a> for ready-to-use effects</li>
+</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/cardinalblue/android-kraft-shade/tree/main/doc_website/docs/getting-started/basic-concepts.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/android-kraft-shade/docs/getting-started/quick-start-guide"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Quick Start Guide</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/android-kraft-shade/docs/getting-started/first-effect"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">first-effect</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#core-architecture" class="table-of-contents__link toc-highlight">Core Architecture</a><ul><li><a href="#glenv-graphics-environment" class="table-of-contents__link toc-highlight">GlEnv (Graphics Environment)</a></li><li><a href="#shader-system" class="table-of-contents__link toc-highlight">Shader System</a></li><li><a href="#pipeline-system" class="table-of-contents__link toc-highlight">Pipeline System</a></li><li><a href="#input-system" class="table-of-contents__link toc-highlight">Input System</a></li><li><a href="#view-components" class="table-of-contents__link toc-highlight">View Components</a></li></ul></li><li><a href="#key-concepts" class="table-of-contents__link toc-highlight">Key Concepts</a><ul><li><a href="#shaders" class="table-of-contents__link toc-highlight">Shaders</a></li><li><a href="#textures-and-buffers" class="table-of-contents__link toc-highlight">Textures and Buffers</a></li><li><a href="#pipeline-dsl" class="table-of-contents__link toc-highlight">Pipeline DSL</a></li><li><a href="#pipeline-execution-flow" class="table-of-contents__link toc-highlight">Pipeline Execution Flow</a></li><li><a href="#effect-serialization" class="table-of-contents__link toc-highlight">Effect Serialization</a></li></ul></li><li><a href="#common-shader-types" class="table-of-contents__link toc-highlight">Common Shader Types</a></li><li><a href="#next-steps" class="table-of-contents__link toc-highlight">Next Steps</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/android-kraft-shade/docs/intro">Documentation</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/cardinalblue/android-kraft-shade" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/cardinalblue/android-kraft-shade/discussions" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub Discussions<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/kraftshade" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://piccollage.com/" target="_blank" rel="noopener noreferrer" class="footer__link-item">PicCollage<svg width="13.5" height="13.5" aria-hidden="true" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 Cardinal Blue Software.</div></div></div></footer></div>
+</body>
+</html>
