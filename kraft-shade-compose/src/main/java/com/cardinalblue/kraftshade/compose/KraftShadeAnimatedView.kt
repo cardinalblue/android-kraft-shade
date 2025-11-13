@@ -69,9 +69,21 @@ open class KraftShadeAnimatedState(scope: CoroutineScope) : KraftShadeBaseState<
         }
     }
 
+    fun pause() {
+        launchWithLock { view ->
+            view.pause()
+        }
+    }
+
     fun stop() {
         launchWithLock { view ->
             view.stop()
+        }
+    }
+
+    suspend fun getCurrentTime(): Float {
+        return withLock {
+            view?.getCurrentTime() ?: 0f
         }
     }
 }

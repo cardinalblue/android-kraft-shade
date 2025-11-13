@@ -83,7 +83,7 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
     fun setEffectAndPause(effectExecutionProvider: AnimatedEffectExecutionProvider) {
         setEffectWithTimeInput(
             afterSet = { _, _ ->
-                stop()
+                pause()
             },
             effectExecutionProvider = effectExecutionProvider
         )
@@ -105,13 +105,26 @@ class AnimatedKraftTextureView : KraftEffectTextureView {
     }
 
     @MainThread
-    fun stop() {
+    fun pause() {
         if (!playing) return
-        logger.d("stop")
+        logger.d("pause")
         timeInput.pause()
         callback.job?.cancel() // Cancel any ongoing render job
         choreographer.removeFrameCallback(callback)
         playing = false
+    }
+
+    @MainThread
+    fun stop() {
+        logger.d("stop")
+        timeInput.reset()
+        callback.job?.cancel() // Cancel any ongoing render job
+        choreographer.removeFrameCallback(callback)
+        playing = false
+    }
+
+    fun getCurrentTime(): Float {
+        return timeInput.internalProvideSample()
     }
 
     override fun onDetachedFromWindow() {
