@@ -37,6 +37,10 @@ open class KraftShadeAnimatedState(scope: CoroutineScope) : KraftShadeBaseState<
         return view?.playing ?: false
     }
 
+    val isEffectExecutionReady: Boolean get() {
+        return view?.isEffectExecutionReady ?: false
+    }
+
     suspend fun getTimeInput(): TimeInput {
         return withLock { it.timeInput }
     }
