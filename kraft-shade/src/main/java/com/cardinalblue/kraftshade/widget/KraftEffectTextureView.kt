@@ -26,6 +26,10 @@ open class KraftEffectTextureView : KraftTextureView {
     var effectExecution: EffectExecution? = null
         private set
 
+    val isEffectExecutionReady: Boolean get() {
+        return effectExecution != null
+    }
+
     /**
      * When the view size changed, rendering won't be triggered if this is set to false.
      */
