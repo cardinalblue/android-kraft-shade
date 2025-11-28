@@ -15,9 +15,10 @@ import kotlinx.coroutines.runBlocking
 @UnstableApi
 class KraftShaderEffect<T : TextureInputKraftShader>(
     kraftShader: T,
-    setup: T.() -> Unit = {}
+    setup: T.() -> Unit = {},
+    update: T.(Long) -> Unit = { _ -> }
 ) : GlEffect {
-    private val program by lazy { KraftShaderProgram(kraftShader, setup) }
+    private val program by lazy { KraftShaderProgram(kraftShader, setup, update) }
     override fun toGlShaderProgram(
         context: Context,
         useHdr: Boolean
@@ -33,6 +34,7 @@ class KraftShaderEffect<T : TextureInputKraftShader>(
 class KraftShaderProgram<T : TextureInputKraftShader>(
     private val shader: T,
     private val setup: T.() -> Unit = {},
+    private val update: T.(Long) -> Unit = { _ -> }
 ) : BaseGlShaderProgram(true, 1) {
     private val logger = KraftLogger("Media3KraftShaderProgram")
     private var configuredWidth = 0
@@ -58,6 +60,7 @@ class KraftShaderProgram<T : TextureInputKraftShader>(
 
         texture.setId(inputTexId)
         shader.setInputTexture(texture)
+        shader.update(presentationTimeUs)
         shader.draw(
             GlSize(configuredWidth, configuredHeight),
             isScreenCoordinate = false
