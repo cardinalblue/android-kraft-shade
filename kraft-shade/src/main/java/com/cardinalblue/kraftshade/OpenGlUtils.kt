@@ -200,6 +200,10 @@ object OpenGlUtils {
             }
         }
     }
+
+//    fun asFloatBuffer(particleColors: FloatArray): FloatBuffer {
+//        return particleColors.asFloatBuffer()
+//    }
 }
 
 inline fun <T> withFrameBufferRestored(action: () -> T): T {

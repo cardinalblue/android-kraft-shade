@@ -20,10 +20,10 @@ class SerializableField<T: Any>(default: T): ReadWriteProperty<KraftShader, T> {
         property: KProperty<*>,
         value: T
     ) {
-        thisRef.serializableFields[property.name] = when (value) {
-            is GlSizeF -> value.vec2
-            else -> error("PreserveField can only be used with GlSize")
-        }
+//        thisRef.serializableFields[property.name] = when (value) {
+//            is GlSizeF -> value.vec2
+////            else -> error("PreserveField can only be used with GlSize")
+//        }
         this.value = value
     }
 }
