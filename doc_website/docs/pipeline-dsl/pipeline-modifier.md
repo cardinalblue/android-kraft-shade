@@ -37,7 +37,7 @@ class CircularBlurPreservingEdgePipelineModifier(
     private val repeat: Input<Float>,
     private val edgeStrength: Input<Float>,
 ) : PipelineModifierWithInputTexture() {
-    
+
     override suspend fun GraphPipelineSetupScope.addStep(
         inputTexture: TextureProvider,
         outputBuffer: GlBufferProvider
@@ -86,13 +86,13 @@ serialSteps(inputTexture, outputBuffer) {
         repeat = constInput(60f),
         edgeStrength = edgeStrength
     )
-    
+
     with(blurModifier) { addStep() }
-    
+
     step(BrightnessKraftShader()) { shader ->
         shader.brightness = brightness.get()
     }
-    
+
     // Add more steps as needed
 }
 ```
@@ -107,16 +107,16 @@ graphPipeline(inputTexture, outputBuffer) {
         repeat = constInput(30f),
         edgeStrength = constInput(0.5f)
     )
-    
+
     // Use modifiers within graph nodes
     node("preprocess") {
         with(edgeDetection) { addStep() }
     }
-    
+
     node("blur") {
         with(blurEffect) { addStep() }
     }
-    
+
     // Connect nodes...
 }
 ```
@@ -187,7 +187,7 @@ class BlendModifier(
         outputBuffer: GlBufferProvider
     ) {
         require(inputs.size == 2) { "Blend modifier requires exactly 2 inputs" }
-        
+
         step(BlendKraftShader()) { shader ->
             shader.baseTexture = inputs[0]
             shader.overlayTexture = inputs[1]

@@ -22,7 +22,7 @@ You can add KraftShade to your project using one of the following methods:
 dependencies {
     // Core library
     implementation("com.cardinalblue:kraftshade:latest_version")
-    
+
     // Optional: Jetpack Compose integration
     implementation("com.cardinalblue:kraftshade-compose:latest_version")
 }
@@ -61,10 +61,10 @@ It's recommended to initialize KraftShade's logging system in your Application c
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        
+
         // Set the log level (DEBUG, INFO, WARNING, ERROR, or NONE)
         KraftLogger.logLevel = KraftLogger.Level.DEBUG
-        
+
         // Optionally throw exceptions on errors for easier debugging during development
         KraftLogger.throwOnError = true
     }

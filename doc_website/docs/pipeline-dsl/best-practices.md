@@ -30,7 +30,7 @@ graphSteps(targetBuffer = windowSurface) {
         "horizontal-blur",
         "vertical-blur"
     )
-    
+
     // Multiple passes with explicit buffer management
     stepWithInputTexture(shader, inputTexture, horizontalBlurBuffer)
     stepWithInputTexture(shader, horizontalBlurBuffer, verticalBlurBuffer)
@@ -50,7 +50,7 @@ fun GraphPipelineSetupScope.applyTwoPassBlur(
     blurSize: Float
 ) {
     val (horizontalBlurBuffer) = createBufferReferences("horizontal-blur")
-    
+
     // Horizontal pass
     stepWithInputTexture(
         shader = GaussianBlurKraftShader(),
@@ -60,7 +60,7 @@ fun GraphPipelineSetupScope.applyTwoPassBlur(
         shader.blurSize = blurSize
         shader.horizontal = true
     }
-    
+
     // Vertical pass
     stepWithInputTexture(
         shader = GaussianBlurKraftShader(),
@@ -131,7 +131,7 @@ serialSteps(inputTexture, targetBuffer) {
         step(SaturationKraftShader())
         step(BrightnessKraftShader())
     }
-    
+
     // Artistic effects group
     serialStep {
         step(VignetteKraftShader())
@@ -154,11 +154,11 @@ suspend fun SerialTextureInputPipelineScope.applyBasicColorAdjustments(
     step(ContrastKraftShader()) { shader ->
         shader.contrast = contrast
     }
-    
+
     step(SaturationKraftShader()) { shader ->
         shader.saturation = saturation
     }
-    
+
     step(BrightnessKraftShader()) { shader ->
         shader.brightness = brightness
     }
@@ -198,7 +198,7 @@ serialSteps(inputTexture, targetBuffer) {
     serialStep {
         // Steps here...
     }
-    
+
     // Correct: Use graphStep for nested graph pipeline
     graphStep { inputTexture ->
         // Steps here...
@@ -271,10 +271,10 @@ You can combine DSL-defined pipelines with serialized effects:
 serialSteps(inputTexture, targetBuffer) {
     // Regular steps
     step(ContrastKraftShader())
-    
+
     // Apply a serialized effect
     step(serializedEffect, targetBuffer)
-    
+
     // More regular steps
     step(VignetteKraftShader())
 }
@@ -331,12 +331,12 @@ serialSteps(inputTexture, targetBuffer) {
 serialSteps(inputTexture, targetBuffer) {
     // First group of operations
     step(ContrastKraftShader())
-    
+
     // Complex operation as a single graph step
     graphStep { inputTexture ->
         // Graph operations here
     }
-    
+
     // Final operations
     step(VignetteKraftShader())
 }

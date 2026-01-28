@@ -17,7 +17,7 @@ flowchart TD
     A -->|Manages| D[EGL Surfaces]
     A -->|Executes| E[GL Commands]
     A -->|Provides| F[DSL Scope]
-    
+
     style A fill:#c73,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
 ```
 
@@ -186,12 +186,12 @@ glEnv.terminate()
 ```kotlin
 glEnv.execute {
     // 'this' is a GlEnvDslScope
-    
+
     // Create a pipeline
     val pipeline = pipeline(targetBuffer) {
         // Pipeline setup
     }
-    
+
     // Load a texture from assets
     val texture = loadAssetTexture("textures/sample.jpg")
 }

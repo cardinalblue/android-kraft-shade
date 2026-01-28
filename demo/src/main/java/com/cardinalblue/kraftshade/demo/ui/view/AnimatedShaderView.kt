@@ -41,7 +41,7 @@ class AnimatedShaderView: TraditionViewContent {
         CoroutineScope(Dispatchers.Main).launch {
             animatedKraftTextureView.setEffectAndPlay { windowSurface, timeInput ->
                 val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
-                
+
                 val saturationInput = timeInput
                     .bounceBetween(0f, 1f)
 

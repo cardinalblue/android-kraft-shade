@@ -44,7 +44,7 @@ class Pipeline internal constructor(
      */
     private val childPipelines: MutableList<Pipeline> = mutableListOf()
     private val childTextureBuffers: MutableList<TextureBuffer> = mutableListOf()
-    
+
     /**
      * Track all shaders for proper cleanup
      */
@@ -109,7 +109,7 @@ class Pipeline internal constructor(
         setupAction: suspend PipelineRunningScope.(T) -> Unit = {},
     ) {
         shaders.add(shader)
-        
+
         RunShaderStep(
             stepIndex = _steps.size,
             shader = shader,
@@ -189,7 +189,7 @@ class Pipeline internal constructor(
             shaders.forEach { shader -> shader.close(deleteRecursively = automaticTextureRecycle) }
             shaders.clear()
         }
-        
+
         logger.d("destroy completed")
     }
 

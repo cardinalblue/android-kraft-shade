@@ -26,7 +26,7 @@ private const val MULTIPLY_BLEND_FRAGMENT_SHADER = """
 
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
-    
+
     uniform float intensity;
 
     vec4 sampleInside(sampler2D sampler, vec2 coord) {
@@ -40,7 +40,7 @@ private const val MULTIPLY_BLEND_FRAGMENT_SHADER = """
         vec4 overlayer = sampleInside(inputImageTexture2, textureCoordinate2);
 
         vec4 outputColor = overlayer * base + overlayer * (1.0 - base.a) + base * (1.0 - overlayer.a);
-        
+
         gl_FragColor = mix(base, outputColor, intensity);
     }
 """

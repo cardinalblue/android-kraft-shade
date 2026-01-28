@@ -32,7 +32,7 @@ fun AnimatedSaturationDemo() {
     var isPlaying by remember { mutableStateOf(true) }
     var aspectRatio by remember { mutableFloatStateOf(1f) }
     val context = LocalContext.current
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -44,7 +44,7 @@ fun AnimatedSaturationDemo() {
                 .aspectRatio(aspectRatio),
             state = state
         )
-        
+
         // Play/Pause button
         Button(
             modifier = Modifier.padding(16.dp),
@@ -60,16 +60,16 @@ fun AnimatedSaturationDemo() {
             Text(if (isPlaying) "Pause" else "Play")
         }
     }
-    
+
     // Set up the animated effect
     LaunchedEffect(Unit) {
         state.setEffectAndPlay { windowSurface, timeInput ->
             val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
             aspectRatio = bitmap.width.toFloat() / bitmap.height
-            
+
             // Create a saturation input that oscillates between 0 and 1
             val saturationInput = timeInput.bounceBetween(0f, 1f)
-            
+
             pipeline(windowSurface) {
                 serialSteps(bitmap.asTexture(), windowSurface) {
                     step(SaturationKraftShader()) { shader ->
@@ -137,7 +137,7 @@ fun ComplexAnimationDemo() {
     val state = rememberKraftShadeAnimatedState()
     var aspectRatio by remember { mutableFloatStateOf(1f) }
     val context = LocalContext.current
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -149,7 +149,7 @@ fun ComplexAnimationDemo() {
                 .aspectRatio(aspectRatio),
             state = state
         )
-        
+
         // Control buttons
         Row(
             modifier = Modifier.padding(16.dp),
@@ -158,46 +158,46 @@ fun ComplexAnimationDemo() {
             Button(onClick = { state.play() }) {
                 Text("Play")
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Button(onClick = { state.stop() }) {
                 Text("Pause")
             }
         }
     }
-    
+
     // Set up the animated effect
     LaunchedEffect(Unit) {
         state.setEffectAndPlay { windowSurface, timeInput ->
             val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
             aspectRatio = bitmap.width.toFloat() / bitmap.height
-            
+
             // Create multiple time-based inputs with different periods
             val saturationInput = timeInput.bounceBetween(0.5f, 1.5f, periodMs = 3000)
             val contrastInput = timeInput.bounceBetween(0.8f, 1.2f, periodMs = 5000)
             val hueRotationInput = timeInput.map { (it % 10000) / 10000f * 360f }
-            
+
             // Create a swirl effect with animated center point
             val swirlCenterX = timeInput.bounceBetween(0.3f, 0.7f, periodMs = 4000)
             val swirlCenterY = timeInput.bounceBetween(0.3f, 0.7f, periodMs = 6000)
             val swirlAngle = timeInput.bounceBetween(0f, 2f, periodMs = 2000)
-            
+
             pipeline(windowSurface) {
                 serialSteps(bitmap.asTexture(), windowSurface) {
                     // Color adjustments
                     step(SaturationKraftShader()) { shader ->
                         shader.saturation = saturationInput.get()
                     }
-                    
+
                     step(ContrastKraftShader()) { shader ->
                         shader.contrast = contrastInput.get()
                     }
-                    
+
                     step(HueKraftShader()) { shader ->
                         shader.setHueInDegree(hueRotationInput.get())
                     }
-                    
+
                     // Distortion effect
                     step(SwirlKraftShader()) { shader ->
                         shader.center = GlVec2(swirlCenterX.get(), swirlCenterY.get())

@@ -33,18 +33,18 @@ Here's a simple example of using `KraftVideoEffectTextureView` with brightness e
 ```kotlin
 class VideoActivity : AppCompatActivity() {
     private lateinit var videoView: KraftVideoEffectTextureView
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Create the view
         videoView = KraftVideoEffectTextureView(this)
         setContentView(videoView)
-        
+
         // Set video source
         val videoUri = Uri.parse("android.resource://$packageName/${R.raw.sample_video}")
         videoView.setVideoUri(videoUri, autoPlay = true)
-        
+
         // Apply brightness effect
         videoView.setEffectWithPipeline { inputTexture, targetBuffer ->
             serialSteps(inputTexture, targetBuffer) {
@@ -52,17 +52,17 @@ class VideoActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     override fun onPause() {
         super.onPause()
         videoView.onPause()
     }
-    
+
     override fun onResume() {
         super.onResume()
         videoView.onResume()
     }
-    
+
     override fun onDestroy() {
         videoView.releaseMediaPlayer()
         super.onDestroy()
@@ -95,10 +95,10 @@ videoView.setEffectWithPipeline { inputTexture, targetBuffer ->
     serialSteps(inputTexture, targetBuffer) {
         // Apply saturation effect
         step(SaturationKraftShader(1.5f))
-        
+
         // Apply brightness effect
         step(BrightnessKraftShader(0.3f))
-        
+
         // Apply custom shader
         step(MyCustomVideoShader()) { shader ->
             shader.setCustomParameter(someValue)

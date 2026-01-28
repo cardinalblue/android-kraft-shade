@@ -103,7 +103,7 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
             targetBuffer
         ) { shader ->
             videoSurfaceTexture?.updateTexImage()
-            
+
             // Get the correct transformation matrix from SurfaceTexture
             val transformMatrix = FloatArray(16)
             videoSurfaceTexture?.getTransformMatrix(transformMatrix)
@@ -205,10 +205,10 @@ class KraftVideoEffectTextureView @JvmOverloads constructor(
     private fun setupMediaPlayer(uri: Uri, autoPlay: Boolean) {
         // Reuse existing MediaPlayer if possible, or create a new one
         val mp = mediaPlayer ?: MediaPlayer().also { mediaPlayer = it }
-        
+
         try {
             mp.reset()
-            
+
             isPrepareCalled = true
             mp.setDataSource(context, uri)
 

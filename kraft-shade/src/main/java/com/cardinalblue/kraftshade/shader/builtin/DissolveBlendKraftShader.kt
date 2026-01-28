@@ -57,7 +57,7 @@ import org.intellij.lang.annotations.Language
 class DissolveBlendKraftShader(
     mixturePercent: Float = 0.5f
 ) : MixBlendKraftShader(mixturePercent) {
-    
+
     override fun loadFragmentShader(): String = DISSOLVE_BLEND_FRAGMENT_SHADER
 }
 
@@ -69,11 +69,11 @@ private const val DISSOLVE_BLEND_FRAGMENT_SHADER = """
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
     uniform lowp float mixturePercent;
-    
+
     void main() {
         lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
         lowp vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);
-        
+
         gl_FragColor = mix(textureColor, textureColor2, mixturePercent);
     }
 """

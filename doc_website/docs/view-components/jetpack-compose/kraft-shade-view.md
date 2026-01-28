@@ -30,7 +30,7 @@ Here's a simple example of using `KraftShadeView` to render a custom shader in a
 fun TransparencyDemo() {
     // Create and remember the state
     val state = rememberKraftShadeState()
-    
+
     // Create a colored background to demonstrate transparency
     Box(
         modifier = Modifier
@@ -45,7 +45,7 @@ fun TransparencyDemo() {
             state = state
         )
     }
-    
+
     // Set up the shader when the composition is first created
     LaunchedEffect(state) {
         state.runGlTask { windowSurface ->
@@ -129,7 +129,7 @@ This example shows how to integrate `KraftShadeView` into a more complex Compose
 fun CustomRenderingScreen() {
     val state = rememberKraftShadeState()
     var aspectRatio by remember { mutableFloatStateOf(1f) }
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -141,7 +141,7 @@ fun CustomRenderingScreen() {
                 .aspectRatio(aspectRatio),
             state = state
         )
-        
+
         // UI controls
         Text(
             text = "Custom OpenGL Rendering",
@@ -149,13 +149,13 @@ fun CustomRenderingScreen() {
             modifier = Modifier.padding(16.dp)
         )
     }
-    
+
     // Set up the rendering
     LaunchedEffect(state) {
         state.runGlTask { windowSurface ->
             // Set a 16:9 aspect ratio
             aspectRatio = 16f / 9f
-            
+
             // Create a custom shader for rendering
             CustomPatternShader().apply {
                 drawTo(windowSurface)
@@ -175,7 +175,7 @@ class CustomPatternShader : KraftShader() {
             float x = floor(textureCoordinate.x * 10.0);
             float y = floor(textureCoordinate.y * 10.0);
             float pattern = mod(x + y, 2.0);
-            
+
             if (pattern < 1.0) {
                 gl_FragColor = vec4(0.2, 0.3, 0.8, 1.0); // Blue
             } else {

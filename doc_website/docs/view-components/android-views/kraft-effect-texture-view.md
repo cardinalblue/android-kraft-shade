@@ -27,17 +27,17 @@ Here's a simple example of using `KraftEffectTextureView` to apply a saturation 
 ```kotlin
 class MyActivity : AppCompatActivity() {
     private lateinit var effectView: KraftEffectTextureView
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Create the view
         effectView = KraftEffectTextureView(this)
         setContentView(effectView)
-        
+
         // Load an image and apply a saturation effect
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.my_image)
-        
+
         effectView.setEffect(
             effectExecutionProvider = { windowSurface ->
                 // Create a pipeline with a saturation shader
@@ -54,7 +54,7 @@ class MyActivity : AppCompatActivity() {
             }
         )
     }
-    
+
     override fun onDestroy() {
         // Clean up resources
         effectView.terminate()
@@ -119,19 +119,19 @@ This example shows how to create an effect with parameters that can be adjusted 
 class MyEffectActivity : AppCompatActivity() {
     private lateinit var effectView: KraftEffectTextureView
     private var saturation = 1.0f
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_effect)
-        
+
         effectView = findViewById(R.id.effect_view)
         val saturationSeekBar = findViewById<SeekBar>(R.id.saturation_seekbar)
-        
+
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.my_image)
-        
+
         // Set the aspect ratio based on the bitmap dimensions
         effectView.ratio = bitmap.width.toFloat() / bitmap.height
-        
+
         // Set up the effect
         effectView.setEffect(
             effectExecutionProvider = { windowSurface ->
@@ -147,14 +147,14 @@ class MyEffectActivity : AppCompatActivity() {
                 }
             }
         )
-        
+
         // Update saturation when the seek bar changes
         saturationSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 saturation = progress / 100f * 2f  // Range: 0 to 2
                 effectView.requestRender()  // Request a render with the new saturation
             }
-            
+
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {}
         })

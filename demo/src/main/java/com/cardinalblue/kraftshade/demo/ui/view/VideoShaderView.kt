@@ -70,7 +70,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
                 Toast.makeText(context, "Cannot access picker from this context", Toast.LENGTH_SHORT).show()
             }
         }
-        
+
         playPauseButton?.setOnClickListener {
             togglePlayPause()
         }
@@ -81,7 +81,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     brightness = (progress / 100.0f) - 1
-                    
+
                     // Update label and apply effect
                     brightnessLabel?.text = "Brightness: %.2f".format(brightness)
                     kraftVideoEffectTextureView?.requestRender()
@@ -89,7 +89,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            
+
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
@@ -99,7 +99,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     saturation = progress / 100.0f
-                    
+
                     // Update label and apply effect
                     saturationLabel?.text = "Saturation: %.2f".format(saturation)
                     kraftVideoEffectTextureView?.requestRender()
@@ -107,7 +107,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            
+
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
@@ -116,7 +116,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
         brightnessCheckBox?.setOnCheckedChangeListener { _, _ ->
             applyEffect()
         }
-        
+
         saturationCheckBox?.setOnCheckedChangeListener { _, _ ->
             applyEffect()
         }
@@ -143,7 +143,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     private fun handleVideoSelected(uri: Uri) {
         kraftVideoEffectTextureView?.setVideoUri(uri, autoPlay = false)
         applyEffect()
-        
+
         // Enable play/pause button and update text
         playPauseButton?.let { button ->
             button.isEnabled = true
@@ -181,7 +181,7 @@ class VideoShaderView: TraditionViewContent, DefaultLifecycleObserver {
     private fun togglePlayPause() {
         val kraftVideoEffectTextureView = kraftVideoEffectTextureView ?: return
         val button = playPauseButton ?: return
-        
+
         if (kraftVideoEffectTextureView.isPlaying()) {
             kraftVideoEffectTextureView.pausePlayback()
             button.text = "Play"

@@ -24,10 +24,10 @@ First, set up logging in your Application class to help with debugging:
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        
+
         // Enable debug logging
         KraftLogger.logLevel = KraftLogger.Level.DEBUG
-        
+
         // Throw exceptions on errors during development
         KraftLogger.throwOnError = true
     }
@@ -51,23 +51,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var kraftEffectView: KraftEffectTextureView
     private lateinit var saturationSeekBar: SeekBar
     private lateinit var brightnessSeekBar: SeekBar
-    
+
     private var saturation = 1.0f
     private var brightness = 0.0f
     private var sampleBitmap: Bitmap? = null
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
+
         // Load sample image
         sampleBitmap = BitmapFactory.decodeResource(resources, R.drawable.sample_image)
-        
+
         // Initialize views
         kraftEffectView = findViewById(R.id.kraft_effect_view)
         saturationSeekBar = findViewById(R.id.saturation_seek_bar)
         brightnessSeekBar = findViewById(R.id.brightness_seek_bar)
-        
+
         // Set up seek bars
         saturationSeekBar.max = 200
         saturationSeekBar.progress = 100
@@ -76,11 +76,11 @@ class MainActivity : AppCompatActivity() {
                 saturation = progress / 100f
                 kraftEffectView.requestRender()
             }
-            
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-        
+
         brightnessSeekBar.max = 100
         brightnessSeekBar.progress = 50
         brightnessSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -88,15 +88,15 @@ class MainActivity : AppCompatActivity() {
                 brightness = (progress - 50) / 50f
                 kraftEffectView.requestRender()
             }
-            
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-        
+
         // Initialize the effect
         updateEffect()
     }
-    
+
     private fun updateEffect() {
         kraftEffectView.setEffect { targetBuffer ->
             pipeline(targetBuffer) {
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                     step(SaturationKraftShader()) {
                         saturation = sampledInput { this@MainActivity.saturation }
                     }
-                    
+
                     step(BrightnessKraftShader()) {
                         brightness = sampledInput { this@MainActivity.brightness }
                     }
@@ -126,22 +126,22 @@ If you're using Jetpack Compose, here's how to create the same effect:
 @Composable
 fun ImageEffectDemo() {
     val state = rememberKraftShadeEffectState()
-    
+
     var aspectRatio by remember { mutableFloatStateOf(1f) }
     var image by remember { mutableStateOf<Bitmap?>(null) }
-    
+
     var saturation by remember { mutableFloatStateOf(1f) }
     var brightness by remember { mutableFloatStateOf(0f) }
-    
+
     val context = LocalContext.current
-    
+
     // Load image and set aspect ratio
     LaunchedEffect(Unit) {
         val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.sample_image)
         image = bitmap
         aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
     }
-    
+
     // Set effect
     LaunchedEffect(Unit) {
         state.setEffect { targetBuffer ->
@@ -160,7 +160,7 @@ fun ImageEffectDemo() {
             }
         }
     }
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -177,7 +177,7 @@ fun ImageEffectDemo() {
                 state = state
             )
         }
-        
+
         // Effect controls
         Column(
             modifier = Modifier
@@ -193,7 +193,7 @@ fun ImageEffectDemo() {
                 },
                 valueRange = -1f..1f
             )
-            
+
             Text("Saturation: ${String.format("%.1f", saturation)}")
             Slider(
                 value = saturation,

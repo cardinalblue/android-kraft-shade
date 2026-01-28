@@ -50,7 +50,7 @@ void main() {
     } else {
         ba = overlay.a * base.a - 2.0 * (base.a - base.b) * (overlay.a - overlay.b) + overlay.b * (1.0 - base.a) + base.b * (1.0 - overlay.a);
     }
-    
+
     vec4 blendColor = vec4(ra, ga, ba, 1.0);
 
     gl_FragColor = mix(base, blendColor, intensity);

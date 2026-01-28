@@ -45,9 +45,9 @@ fun TwoTextureInputShaderScreen(
         state.setEffect { windowSurface ->
             val baseBitmap = context.loadBitmapFromAsset("sample/cat.jpg")
             aspectRatio = baseBitmap.width.toFloat() / baseBitmap.height
-            
+
             val overlayBitmap = context.loadBitmapFromAsset("sample/cat2.jpg")
-            
+
             pipeline(windowSurface) {
                 graphSteps(windowSurface) {
                     step(shaderCreator(), targetBuffer = graphTargetBuffer) {

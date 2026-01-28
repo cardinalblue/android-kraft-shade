@@ -22,7 +22,7 @@ flowchart TD
     C -->|Base class for| D[Blend Shaders]
     C -->|Extended by| E[ThreeTextureInputKraftShader]
     E -->|Base class for| F[Complex Effect Shaders]
-    
+
     style A fill:#c73,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
 ```
 
@@ -113,7 +113,7 @@ The `Texture` abstract class represents an OpenGL texture:
 abstract class Texture {
     var textureId: Int
     abstract val size: GlSize
-    
+
     fun isValid(): Boolean
     suspend fun delete()
     fun getBitmap(): Bitmap
@@ -172,7 +172,7 @@ class GrayscaleKraftShader : TextureInputKraftShader() {
         precision mediump float;
         varying vec2 textureCoordinate;
         uniform sampler2D inputImageTexture;
-        
+
         void main() {
             vec4 color = texture2D(inputImageTexture, textureCoordinate);
             float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
@@ -187,11 +187,11 @@ class GrayscaleKraftShader : TextureInputKraftShader() {
 ```kotlin
 class BlendKraftShader : TwoTextureInputKraftShader() {
     var mixturePercent: Float by GlUniformDelegate("mixturePercent")
-    
+
     init {
         mixturePercent = 0.5f
     }
-    
+
     override fun loadFragmentShader(): String = """
         precision mediump float;
         varying vec2 textureCoordinate;
@@ -199,7 +199,7 @@ class BlendKraftShader : TwoTextureInputKraftShader() {
         uniform sampler2D inputImageTexture;
         uniform sampler2D inputImageTexture2;
         uniform float mixturePercent;
-        
+
         void main() {
             vec4 color1 = texture2D(inputImageTexture, textureCoordinate);
             vec4 color2 = texture2D(inputImageTexture2, textureCoordinate2);
@@ -237,7 +237,7 @@ pipeline(targetBuffer) {
     step(GrayscaleKraftShader()) {
         // The input texture is automatically set from the previous step
     }
-    
+
     stepWithInputTexture(BlendKraftShader()) {
         // Set the second texture
         setSecondInputTexture(someTexture)
@@ -285,7 +285,7 @@ Here's an example of a shader with a custom texture input:
 class WatermarkShader : TextureInputKraftShader() {
     // Define uniform properties
     var opacity: Float by GlUniformDelegate("opacity")
-    
+
     // Define custom texture input
     private val watermarkTextureInput = KraftShaderTextureInput(1, "watermarkTexture")
     private var _watermarkTexture: Texture by watermarkTextureInput.textureDelegate
@@ -305,11 +305,11 @@ class WatermarkShader : TextureInputKraftShader() {
         uniform sampler2D inputImageTexture;
         uniform sampler2D watermarkTexture;
         uniform float opacity;
-        
+
         void main() {
             vec4 baseColor = texture2D(inputImageTexture, textureCoordinate);
             vec4 watermark = texture2D(watermarkTexture, textureCoordinate);
-            
+
             // Blend the watermark with the base image
             gl_FragColor = mix(baseColor, watermark, watermark.a * opacity);
         }
@@ -354,7 +354,7 @@ uniform sampler2D watermarkTexture;   // Custom texture input
 void main() {
     vec4 baseColor = texture2D(inputImageTexture, textureCoordinate);
     vec4 watermark = texture2D(watermarkTexture, textureCoordinate);
-    
+
     // Use both textures in your shader logic
     gl_FragColor = mix(baseColor, watermark, watermark.a * 0.5);
 }
