@@ -61,26 +61,26 @@ Let's start by setting up a simple UI to display our effect. We'll use Jetpack C
 @Composable
 fun VintageEffectDemo() {
     val state = rememberKraftShadeEffectState()
-    
+
     var aspectRatio by remember { mutableFloatStateOf(1f) }
     var image by remember { mutableStateOf<Bitmap?>(null) }
-    
+
     // Parameters for our effect
     var saturation by remember { mutableFloatStateOf(0.7f) }
     var sepiaIntensity by remember { mutableFloatStateOf(0.8f) }
     var vignetteStart by remember { mutableFloatStateOf(0.3f) }
     var vignetteEnd by remember { mutableFloatStateOf(0.75f) }
     var grainIntensity by remember { mutableFloatStateOf(0.1f) }
-    
+
     val context = LocalContext.current
-    
+
     // Load image and set aspect ratio
     LaunchedEffect(Unit) {
         val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.sample_image)
         image = bitmap
         aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
     }
-    
+
     // Set up the UI layout
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -98,7 +98,7 @@ fun VintageEffectDemo() {
                 state = state
             )
         }
-        
+
         // Effect controls
         LazyColumn(
             modifier = Modifier
@@ -116,7 +116,7 @@ fun VintageEffectDemo() {
                     valueRange = 0f..1f
                 )
             }
-            
+
             item {
                 Text("Sepia Intensity: ${String.format("%.1f", sepiaIntensity)}")
                 Slider(
@@ -128,7 +128,7 @@ fun VintageEffectDemo() {
                     valueRange = 0f..1f
                 )
             }
-            
+
             item {
                 Text("Vignette Start: ${String.format("%.1f", vignetteStart)}")
                 Slider(
@@ -140,7 +140,7 @@ fun VintageEffectDemo() {
                     valueRange = 0f..1f
                 )
             }
-            
+
             item {
                 Text("Vignette End: ${String.format("%.1f", vignetteEnd)}")
                 Slider(
@@ -152,7 +152,7 @@ fun VintageEffectDemo() {
                     valueRange = 0f..1f
                 )
             }
-            
+
             item {
                 Text("Grain Intensity: ${String.format("%.1f", grainIntensity)}")
                 Slider(
@@ -166,7 +166,7 @@ fun VintageEffectDemo() {
             }
         }
     }
-    
+
     // Apply the effect
     LaunchedEffect(Unit) {
         state.setEffect { targetBuffer ->
@@ -191,7 +191,7 @@ private fun createVintageEffect(
     grainIntensity: Float
 ): Pipeline? {
     if (image == null) return null
-    
+
     return pipeline(targetBuffer) {
         // Create buffer references for intermediate results
         val (saturationResult, sepiaResult, vignetteResult) = createBufferReferences(
@@ -199,7 +199,7 @@ private fun createVintageEffect(
             "sepia_result",
             "vignette_result"
         )
-        
+
         // Step 1: Apply saturation adjustment
         step(
             SaturationKraftShader(),
@@ -208,7 +208,7 @@ private fun createVintageEffect(
         ) { shader ->
             shader.saturation = sampledInput { saturation }
         }
-        
+
         // Step 2: Apply sepia tone
         step(
             SepiaToneKraftShader(),
@@ -217,7 +217,7 @@ private fun createVintageEffect(
         ) { shader ->
             shader.intensity = sampledInput { sepiaIntensity }
         }
-        
+
         // Step 3: Apply vignette effect
         step(
             VignetteKraftShader(),
@@ -227,7 +227,7 @@ private fun createVintageEffect(
             shader.vignetteStart = sampledInput { vignetteStart }
             shader.vignetteEnd = sampledInput { vignetteEnd }
         }
-        
+
         // Step 4: Apply grain effect and render to final target
         step(
             NoiseOverlayKraftShader(),
@@ -247,25 +247,25 @@ For the grain effect, we'll create a custom shader. This demonstrates how to ext
 ```kotlin
 class NoiseOverlayKraftShader : TextureInputKraftShader() {
     var intensity by glUniform1f("u_intensity", 0.1f)
-    
+
     override val fragmentShaderSource: String = """
         precision mediump float;
         varying vec2 v_texCoord;
         uniform sampler2D s_texture;
         uniform float u_intensity;
-        
+
         // Simple pseudo-random function
         float random(vec2 st) {
             return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
         }
-        
+
         void main() {
             vec4 color = texture2D(s_texture, v_texCoord);
             float noise = random(v_texCoord) * u_intensity;
-            
+
             // Add noise to each channel
             color.rgb += noise;
-            
+
             gl_FragColor = color;
         }
     """
@@ -329,7 +329,7 @@ pipeline(targetBuffer) {
         "overlay",
         "blended"
     )
-    
+
     // Process the base image
     step(
         SaturationKraftShader(),
@@ -338,7 +338,7 @@ pipeline(targetBuffer) {
     ) { shader ->
         shader.saturation = sampledInput { saturation }
     }
-    
+
     // Create an overlay effect
     step(
         EdgeDetectionKraftShader(),
@@ -347,7 +347,7 @@ pipeline(targetBuffer) {
     ) { shader ->
         shader.intensity = sampledInput { edgeIntensity }
     }
-    
+
     // Blend the two results
     step(
         ScreenBlendKraftShader(),
@@ -356,7 +356,7 @@ pipeline(targetBuffer) {
         shader.setTexture1(baseProcessed)
         shader.setTexture2(overlay)
     }
-    
+
     // Final adjustments
     step(
         ContrastKraftShader(),

@@ -49,7 +49,7 @@ fun MixBlendShaderScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(text = "Mixture: ${(mixturePercent * 100).toInt()}%")
-            
+
             Slider(
                 value = mixturePercent,
                 onValueChange = { mixturePercent = it },
@@ -64,9 +64,9 @@ fun MixBlendShaderScreen(
         state.setEffect { windowSurface ->
             val baseBitmap = context.loadBitmapFromAsset("sample/cat.jpg")
             aspectRatio = baseBitmap.width.toFloat() / baseBitmap.height
-            
+
             val overlayBitmap = context.loadBitmapFromAsset("sample/cat2.jpg")
-            
+
             pipeline(windowSurface) {
                 graphSteps(windowSurface) {
                     val shader = shaderCreator(mixturePercent)

@@ -104,7 +104,7 @@ open class KraftEffectTextureView : KraftTextureView {
         if (oldSetEffectJob != null && oldSetEffectJob.isActive) {
             oldSetEffectJob.cancel()
         }
-        
+
         setEffectJob = runGlTask { windowSurface ->
             effectExecution?.destroy()
             val effect = with(effectExecutionProvider) {

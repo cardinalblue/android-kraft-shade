@@ -90,19 +90,19 @@ class HueBlendKraftShader: TwoTextureInputKraftShader() {
 private const val HUE_BLEND_FRAGMENT_SHADER = """
     varying highp vec2 textureCoordinate;
     varying highp vec2 textureCoordinate2;
-    
+
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
-    
+
     highp float lum(lowp vec3 c) {
         return dot(c, vec3(0.3, 0.59, 0.11));
     }
-    
+
     lowp vec3 clipcolor(lowp vec3 c) {
         highp float l = lum(c);
         lowp float n = min(min(c.r, c.g), c.b);
         lowp float x = max(max(c.r, c.g), c.b);
-        
+
         if (n < 0.0) {
             c.r = l + ((c.r - l) * l) / (l - n);
             c.g = l + ((c.g - l) * l) / (l - n);
@@ -113,7 +113,7 @@ private const val HUE_BLEND_FRAGMENT_SHADER = """
             c.g = l + ((c.g - l) * (1.0 - l)) / (x - l);
             c.b = l + ((c.b - l) * (1.0 - l)) / (x - l);
         }
-        
+
         return c;
     }
 
@@ -122,17 +122,17 @@ private const val HUE_BLEND_FRAGMENT_SHADER = """
         c = c + vec3(d);
         return clipcolor(c);
     }
-    
+
     highp float sat(lowp vec3 c) {
         lowp float n = min(min(c.r, c.g), c.b);
         lowp float x = max(max(c.r, c.g), c.b);
         return x - n;
     }
-    
+
     lowp float mid(lowp float cmin, lowp float cmid, lowp float cmax, highp float s) {
         return ((cmid - cmin) * s) / (cmax - cmin);
     }
-    
+
     lowp vec3 setsat(lowp vec3 c, highp float s) {
         if (c.r > c.g) {
             if (c.r > c.b) {
@@ -172,11 +172,11 @@ private const val HUE_BLEND_FRAGMENT_SHADER = """
         }
         return c;
     }
-    
+
     void main() {
         highp vec4 baseColor = texture2D(inputImageTexture, textureCoordinate);
         highp vec4 overlayColor = texture2D(inputImageTexture2, textureCoordinate2);
-        
+
         gl_FragColor = vec4(baseColor.rgb * (1.0 - overlayColor.a) + setlum(setsat(overlayColor.rgb, sat(baseColor.rgb)), lum(baseColor.rgb)) * overlayColor.a, baseColor.a);
     }
 """

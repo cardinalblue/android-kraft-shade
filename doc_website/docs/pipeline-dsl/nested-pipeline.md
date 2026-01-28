@@ -28,9 +28,9 @@ You can include a serial pipeline within a graph pipeline using the `serialSteps
 graphSteps(targetBuffer = windowSurface) {
     // Create a buffer for the serial pipeline result
     val (serialResult) = createBufferReferences("serial-result")
-    
+
     // Some graph steps...
-    
+
     // Nested serial pipeline
     serialSteps(
         inputTexture = sourceTexture,
@@ -40,12 +40,12 @@ graphSteps(targetBuffer = windowSurface) {
         step(ContrastKraftShader()) { shader ->
             shader.contrast = 1.5f
         }
-        
+
         step(SaturationKraftShader()) { shader ->
             shader.saturation = 0.8f
         }
     }
-    
+
     // Continue with more graph steps using serialResult...
 }
 ```
@@ -59,27 +59,27 @@ You can include a graph pipeline within a serial pipeline using the `graphStep` 
 ```kotlin
 serialSteps(inputTexture = bitmap.asTexture(), targetBuffer = windowSurface) {
     // Some serial steps...
-    
+
     // Nested graph step
     graphStep { inputTexture ->
         // Graph operations defined here, using inputTexture as source
         // and graphTargetBuffer as the output
-        
+
         val (blurBuffer) = createBufferReferences("blur-buffer")
-        
+
         stepWithInputTexture(
             shader = BlurKraftShader(),
             inputTexture = inputTexture,
             targetBuffer = blurBuffer
         )
-        
+
         stepWithInputTexture(
             shader = VignetteKraftShader(),
             inputTexture = blurBuffer,
             targetBuffer = graphTargetBuffer
         )
     }
-    
+
     // Continue with more serial steps...
 }
 ```
@@ -93,7 +93,7 @@ You can also nest a serial pipeline within another serial pipeline using the `se
 ```kotlin
 serialSteps(inputTexture = bitmap.asTexture(), targetBuffer = windowSurface) {
     // Some serial steps...
-    
+
     // Nested serial step
     serialStep {
         // Another serial pipeline using serialStartTexture as input
@@ -101,12 +101,12 @@ serialSteps(inputTexture = bitmap.asTexture(), targetBuffer = windowSurface) {
         step(ContrastKraftShader()) { shader ->
             shader.contrast = 1.5f
         }
-        
+
         step(SaturationKraftShader()) { shader ->
             shader.saturation = 0.8f
         }
     }
-    
+
     // Continue with more serial steps...
 }
 ```
@@ -180,11 +180,11 @@ pipeline(windowSurface) {
         step(ContrastKraftShader()) { shader ->
             shader.contrast = 1.2f
         }
-        
+
         step(SaturationKraftShader()) { shader ->
             shader.saturation = 0.9f
         }
-        
+
         // Apply a complex blur effect using a nested graph step
         graphStep { inputTexture ->
             // Create buffer references for the blur passes
@@ -192,7 +192,7 @@ pipeline(windowSurface) {
                 "horizontal-blur",
                 "vertical-blur"
             )
-            
+
             // First pass: horizontal blur
             stepWithInputTexture(
                 shader = GaussianBlurKraftShader(),
@@ -202,7 +202,7 @@ pipeline(windowSurface) {
                 shader.blurSize = 5f
                 shader.horizontal = true
             }
-            
+
             // Second pass: vertical blur
             stepWithInputTexture(
                 shader = GaussianBlurKraftShader(),
@@ -212,7 +212,7 @@ pipeline(windowSurface) {
                 shader.blurSize = 5f
                 shader.horizontal = false
             }
-            
+
             // Blend the blurred result with the original
             stepWithInputTexture(
                 shader = AlphaBlendKraftShader(),
@@ -223,14 +223,14 @@ pipeline(windowSurface) {
                 shader.mixturePercent = 0.7f
             }
         }
-        
+
         // Apply final artistic effects
         serialStep {
             step(CrosshatchKraftShader()) { shader ->
                 shader.crossHatchSpacing = 0.03f
                 shader.lineWidth = 0.002f
             }
-            
+
             stepWithMixture(
                 shader = CrosshatchKraftShader(),
                 mixturePercentInput = constInput(0.5f)

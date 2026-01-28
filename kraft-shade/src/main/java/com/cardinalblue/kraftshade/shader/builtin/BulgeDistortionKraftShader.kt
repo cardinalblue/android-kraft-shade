@@ -46,7 +46,7 @@ class BulgeDistortionKraftShader(
     }
 
     override fun loadFragmentShader(): String = BULGE_FRAGMENT_SHADER
-    
+
     override fun draw(bufferSize: GlSize, isScreenCoordinate: Boolean) {
         // Update aspect ratio based on buffer size
         aspectRatio = bufferSize.height.toFloat() / bufferSize.width.toFloat()

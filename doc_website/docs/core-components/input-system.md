@@ -112,7 +112,7 @@ class TimeInput(
     private val getTime: () -> Long = { System.currentTimeMillis() }
 ) : SampledInput<Float>() {
     // Implementation details...
-    
+
     fun reset() { /* ... */ }
     fun start() { /* ... */ }
     fun pause() { /* ... */ }
@@ -159,13 +159,13 @@ You can create custom sampled inputs by extending the `SampledInput` class:
 ```kotlin
 class MyCustomInput : SampledInput<Float>() {
     private var value = 0f
-    
+
     override fun Pipeline.provideSample(): Float {
         // Increment the value each frame
         value += 0.01f
         return value
     }
-    
+
     // Additional methods as needed
 }
 ```

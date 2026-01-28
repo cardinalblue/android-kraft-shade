@@ -16,46 +16,46 @@ flowchart TD
     classDef view fill:#27c,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
     classDef dsl fill:#3c3,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
     classDef pipeline fill:#93c,stroke:#933,stroke-width:4px,stroke-dasharray: 5 2
-    
+
     App[Application] --> Views
-    
+
     subgraph Views["View Components"]
         direction TB
         AndroidViews["Android Views"] --> KraftTextureView
         JetpackCompose["Jetpack Compose"] --> KraftShadeView
-        
+
         KraftTextureView --> KraftEffectTextureView
         KraftEffectTextureView --> AnimatedKraftTextureView
-        
+
         KraftShadeView --> KraftShadeEffectView
         KraftShadeEffectView --> KraftShadeAnimatedView
     end
-    
+
     Views --> DSL
-    
+
     subgraph DSL["DSL Layer"]
         direction TB
         PipelineDSL["Pipeline DSL"]
         KraftBitmapDSL["Bitmap DSL"]
     end
-    
+
     DSL --> Core
-    
+
     subgraph Core["Core Components"]
         direction TB
 
         GlEnv["OpenGL Environment (GlEnv)"]
-        
+
         PipelineSystem["Pipeline System (Orchestration)"]
 
         PipelineSystem --> GlEnv
-        
+
         KraftShaders --> GlEnv
 
         PipelineSystem --> InputSystem["Input System"]
         PipelineSystem --> KraftShaders
     end
-    
+
     class Core core
     class Views view
     class DSL dsl
@@ -232,10 +232,10 @@ flowchart LR
     classDef input fill:#27c,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
     classDef process fill:#93c,stroke:#933,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
     classDef output fill:#c73,stroke:#333,stroke-width:2px,font-size:24px,font-weight:bold,white-space: nowrap
-    
+
     Input[Input Texture] --> Pipeline
     Params[Shader Parameters] --> Pipeline
-    
+
     subgraph Pipeline["Pipeline Execution"]
         direction TB
         Shader1[Shader 1] --> Buffer1[Intermediate Buffer]
@@ -243,9 +243,9 @@ flowchart LR
         Shader2 --> Buffer2[Intermediate Buffer]
         Buffer2 --> ShaderN[Shader N]
     end
-    
+
     Pipeline --> Output[Output Texture/Surface]
-    
+
     class Input input
     class Pipeline process
     class Output output

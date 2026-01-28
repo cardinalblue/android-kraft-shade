@@ -86,7 +86,7 @@ graphSteps(targetBuffer = windowSurface) {
         "horizontal-blur",
         "vertical-blur"
     )
-    
+
     // First pass: horizontal blur
     stepWithInputTexture(
         shader = BlurKraftShader(),
@@ -95,7 +95,7 @@ graphSteps(targetBuffer = windowSurface) {
     ) { shader ->
         shader.direction = BlurDirection.HORIZONTAL
     }
-    
+
     // Second pass: vertical blur using the result of the first pass
     stepWithInputTexture(
         shader = BlurKraftShader(),
@@ -104,7 +104,7 @@ graphSteps(targetBuffer = windowSurface) {
     ) { shader ->
         shader.direction = BlurDirection.VERTICAL
     }
-    
+
     // Final pass: blend the blurred result with the original
     stepWithInputTexture(
         shader = AlphaBlendKraftShader(),
@@ -172,7 +172,7 @@ pipeline(windowSurface) {
             "horizontal-blur",
             "vertical-blur"
         )
-        
+
         // First pass: horizontal blur
         stepWithInputTexture(
             shader = GaussianBlurKraftShader(),
@@ -182,7 +182,7 @@ pipeline(windowSurface) {
             shader.blurSize = 10f
             shader.horizontal = true
         }
-        
+
         // Second pass: vertical blur
         stepWithInputTexture(
             shader = GaussianBlurKraftShader(),
@@ -192,7 +192,7 @@ pipeline(windowSurface) {
             shader.blurSize = 10f
             shader.horizontal = false
         }
-        
+
         // Final pass: apply vignette to the blurred result
         stepWithInputTexture(
             shader = VignetteKraftShader(),

@@ -21,7 +21,7 @@ graph TD
     classDef texture fill:#088
     Input:::texture --> Pipeline
     Pipeline --> |Processing| Output:::texture
-    
+
     subgraph Pipeline
         SerialPipeline[Serial Pipeline]
         GraphPipeline[Graph Pipeline]

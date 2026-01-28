@@ -26,7 +26,7 @@ private const val SOURCE_OVER_BLEND_FRAGMENT_SHADER = """
 
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
-    
+
     uniform float intensity;
 
     void main() {

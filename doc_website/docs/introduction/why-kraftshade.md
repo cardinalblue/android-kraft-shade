@@ -56,13 +56,13 @@ For example, here's a complex effect pipeline that would be challenging to imple
 graph TD
   classDef texture fill:#088
   inputTexture:::texture --> ResizeFilter --> resizedTexture:::texture
-  
+
   resizedTexture --> BlurFilter --> blurredTexture:::texture
   resizedTexture --> EdgeDetectionFilter --> edgesTexture:::texture
-  
+
   blurredTexture --> ContrastFilter
   edgesTexture --> ThresholdFilter
-  
+
   ContrastFilter --> OverlayBlendFilter
   ThresholdFilter --> OverlayBlendFilter
   OverlayBlendFilter --> SaturationFilter

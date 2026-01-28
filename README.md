@@ -319,7 +319,7 @@ suspend fun createVintageEffect(
         brightness = sampledInput { 0.1f },
         intensity = sampledInput { 0.8f }
     )
-    
+
     pipelineModifier.apply {
         addStep(
             inputTexture = sampledBitmapTextureProvider("input") { inputImage },
@@ -579,7 +579,7 @@ Here's a simple example of using KraftShade with Jetpack Compose to create an im
 @Composable
 fun ImageEffectDemo() {
     val state = rememberKraftShadeEffectState()
-    
+
     var aspectRatio by remember { mutableFloatStateOf(1f) }
     var image by remember { mutableStateOf<Bitmap?>(null) }
 

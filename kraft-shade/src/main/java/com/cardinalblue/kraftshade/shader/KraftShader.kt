@@ -265,7 +265,7 @@ abstract class KraftShader : SuspendAutoCloseable {
         GLES30.glBlendEquation(GLES30.GL_FUNC_ADD)
         GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA)
     }
-    
+
     fun trackTexture(texture: Texture) {
         trackedTextures.add(texture)
         logger.d("tracking texture: ${texture::class.simpleName} (total: ${trackedTextures.size})")
@@ -274,13 +274,13 @@ abstract class KraftShader : SuspendAutoCloseable {
     suspend fun destroy(deleteRecursively: Boolean) {
         if (!initialized)  return
         logger.i("Destroying shader program: ${this::class.simpleName}")
-        
+
         try {
             // Clear pending tasks to avoid memory leaks
             synchronized(runOnDrawTasks) {
                 runOnDrawTasks.clear()
             }
-            
+
             // Clear uniform cache
             uniformLocationCache.clear()
 
@@ -289,13 +289,13 @@ abstract class KraftShader : SuspendAutoCloseable {
                 trackedTextures.forEach { texture -> if (texture.autoDelete) texture.close() }
                 trackedTextures.clear()
             }
-            
+
             // Delete OpenGL program
             if (glProgId != 0) {
                 GLES30.glDeleteProgram(glProgId)
                 glProgId = 0
             }
-            
+
             initialized = false
         } catch (e: Exception) {
             logger.e("Error destroying shader ${debugName}: ${e.message}", e)

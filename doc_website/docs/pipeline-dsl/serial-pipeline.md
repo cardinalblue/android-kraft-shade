@@ -132,12 +132,12 @@ pipeline(windowSurface) {
         step(ContrastKraftShader()) { shader ->
             shader.contrast = 1.5f
         }
-        
+
         // Apply a saturation adjustment
         step(SaturationKraftShader()) { shader ->
             shader.saturation = 0.8f
         }
-        
+
         // Apply a vignette effect
         step(VignetteKraftShader()) { shader ->
             shader.vignetteStart = 0.8f

@@ -90,7 +90,7 @@ fun KraftShadeEffectViewTestWindow() {
     var swirlAngle by remember { mutableFloatStateOf(1.0f) }
     var swirlCenterX by remember { mutableFloatStateOf(0.5f) }
     var swirlCenterY by remember { mutableFloatStateOf(0.5f) }
-    
+
     var zoomBlurSize by remember { mutableFloatStateOf(1.0f) }
     var zoomBlurCenterX by remember { mutableFloatStateOf(0.5f) }
     var zoomBlurCenterY by remember { mutableFloatStateOf(0.5f) }
@@ -415,9 +415,9 @@ fun KraftShadeEffectViewTestWindow() {
                     valueRange = 0f..1f
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             CollapsibleSection(
                 title = "Zoom Blur",
                 expanded = zoomBlurExpanded,
@@ -549,7 +549,7 @@ fun KraftShadeEffectViewTestWindow() {
                         shader.angle = swirlAngle
                         shader.center = GlVec2(swirlCenterX, swirlCenterY)
                     }
-                    
+
                     step(ZoomBlurKraftShader()) { shader ->
                         shader.blurSize = zoomBlurSize
                         shader.blurCenter = GlVec2(zoomBlurCenterX, zoomBlurCenterY)

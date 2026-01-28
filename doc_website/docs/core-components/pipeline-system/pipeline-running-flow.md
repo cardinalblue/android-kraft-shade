@@ -20,14 +20,14 @@ sequenceDiagram
     participant OpenGL
 
     Client->>KraftEffectTextureView: requestRender()
-    
+
     KraftEffectTextureView->>KraftEffectTextureView: renderFlow.emit(Unit)
     Note over KraftEffectTextureView: Flow collection in onAttachedToWindow
     KraftEffectTextureView->>KraftEffectTextureView: asyncRender()
     KraftEffectTextureView->>KraftEffectTextureView: runGlTask()
-    
+
     KraftEffectTextureView->>Pipeline: run()
-    
+
     alt First run (Configuration Phase)
         Pipeline->>Pipeline: isRenderPhase = false
         loop For each step
@@ -37,36 +37,36 @@ sequenceDiagram
         end
         Pipeline->>Pipeline: isRenderPhase = true
     end
-    
+
     Pipeline->>Pipeline: Mark all sampled inputs as dirty
     Pipeline->>Pipeline: Sample all inputs
     Pipeline->>Pipeline: Reset runContext
-    
+
     loop For each step
         Pipeline->>PipelineStep: run(pipelineRunningScope)
-        
+
         alt RunShaderStep
             PipelineStep->>PipelineStep: setupAction(shader)
             PipelineStep->>PipelineStep: targetBuffer.provideBuffer()
             PipelineStep->>KraftShader: drawTo(buffer)
-            
+
             Note over KraftShader: KraftShader executes its drawing process
             Note over KraftShader: For details on KraftShader drawing, see docs of [KraftShader]
-            
+
             KraftShader->>OpenGL: Render to buffer using OpenGL commands
-            
+
             PipelineStep->>Pipeline: markPreviousBuffer(buffer)
         else RunTaskStep
             PipelineStep->>PipelineStep: task()
         end
-        
+
         Pipeline->>Pipeline: onDebugAfterShaderStep?.invoke(runContext)
-        
+
         alt automaticRecycle is true
             Pipeline->>Pipeline: recycleUnusedBuffers(step.stepIndex)
         end
     end
-    
+
     Pipeline->>Pipeline: bufferPool.recycleAll("pipeline_end")
 ```
 

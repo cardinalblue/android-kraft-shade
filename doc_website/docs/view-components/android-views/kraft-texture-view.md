@@ -29,14 +29,14 @@ Here's a simple example of using `KraftTextureView` to render a custom shader:
 ```kotlin
 class MyActivity : AppCompatActivity() {
     private lateinit var kraftTextureView: KraftTextureView
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Create the view
         kraftTextureView = KraftTextureView(this)
         setContentView(kraftTextureView)
-        
+
         // Run an OpenGL task when the view is ready
         kraftTextureView.runGlTask { windowSurface ->
             // Create and apply a custom shader
@@ -44,7 +44,7 @@ class MyActivity : AppCompatActivity() {
             myShader.drawTo(windowSurface)
         }
     }
-    
+
     override fun onDestroy() {
         // Clean up resources
         kraftTextureView.terminate()

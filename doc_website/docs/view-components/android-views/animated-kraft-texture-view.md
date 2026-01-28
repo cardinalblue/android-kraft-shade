@@ -27,21 +27,21 @@ Here's a simple example of using `AnimatedKraftTextureView` to create an animate
 ```kotlin
 class MyActivity : AppCompatActivity() {
     private lateinit var animatedView: AnimatedKraftTextureView
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Create the view
         animatedView = AnimatedKraftTextureView(this)
         setContentView(animatedView)
-        
+
         // Load an image and set up an animated saturation effect
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.my_image)
-        
+
         animatedView.setEffectAndPlay { windowSurface, timeInput ->
             // Create a pipeline with an animated saturation shader
             val saturationInput = timeInput.bounceBetween(0f, 2f)
-            
+
             pipeline(windowSurface) {
                 serialSteps(
                     inputTexture = bitmap.asTexture(),
@@ -54,17 +54,17 @@ class MyActivity : AppCompatActivity() {
             }
         }
     }
-    
+
     override fun onPause() {
         super.onPause()
         animatedView.stop()  // Pause animation when activity is paused
     }
-    
+
     override fun onResume() {
         super.onResume()
         animatedView.play()  // Resume animation when activity is resumed
     }
-    
+
     override fun onDestroy() {
         // Clean up resources
         animatedView.terminate()
@@ -158,23 +158,23 @@ This example shows how to create an animation that oscillates between different 
 ```kotlin
 class MyAnimationActivity : AppCompatActivity() {
     private lateinit var animatedView: AnimatedKraftTextureView
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_animation)
-        
+
         animatedView = findViewById(R.id.animated_view)
         val playPauseButton = findViewById<Button>(R.id.play_pause_button)
-        
+
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.my_image)
-        
+
         // Set up the animated effect
         animatedView.setEffectWithTimeInput { windowSurface, timeInput ->
             // Create time-based inputs for various effects
             val saturationInput = timeInput.bounceBetween(0.5f, 1.5f, periodMs = 3000)
             val contrastInput = timeInput.bounceBetween(0.8f, 1.2f, periodMs = 5000)
             val hueRotationInput = timeInput.map { (it % 10000) / 10000f * 360f }
-            
+
             pipeline(windowSurface) {
                 serialSteps(
                     inputTexture = bitmap.asTexture(),
@@ -183,21 +183,21 @@ class MyAnimationActivity : AppCompatActivity() {
                     step(SaturationKraftShader()) { shader ->
                         shader.saturation = saturationInput.get()
                     }
-                    
+
                     step(ContrastKraftShader()) { shader ->
                         shader.contrast = contrastInput.get()
                     }
-                    
+
                     step(HueKraftShader()) { shader ->
                         shader.setHueInDegree(hueRotationInput.get())
                     }
                 }
             }
-            
+
             // Start the animation
             animatedView.play()
         }
-        
+
         // Set up play/pause button
         playPauseButton.setOnClickListener {
             if (animatedView.playing) {

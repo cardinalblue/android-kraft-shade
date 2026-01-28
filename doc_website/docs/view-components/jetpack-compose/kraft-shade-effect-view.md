@@ -32,7 +32,7 @@ fun SaturationEffectDemo() {
     var saturation by remember { mutableFloatStateOf(1.0f) }
     var aspectRatio by remember { mutableFloatStateOf(1f) }
     val context = LocalContext.current
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -44,7 +44,7 @@ fun SaturationEffectDemo() {
                 .aspectRatio(aspectRatio),
             state = state
         )
-        
+
         // Saturation control
         Text("Saturation: ${saturation.format(1)}")
         Slider(
@@ -57,13 +57,13 @@ fun SaturationEffectDemo() {
             modifier = Modifier.padding(16.dp)
         )
     }
-    
+
     // Set up the effect when the composition is first created
     LaunchedEffect(Unit) {
         state.setEffect { windowSurface ->
             val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
             aspectRatio = bitmap.width.toFloat() / bitmap.height
-            
+
             pipeline(windowSurface) {
                 serialSteps(
                     inputTexture = bitmap.asTexture(),
@@ -146,7 +146,7 @@ fun MultiEffectDemo() {
     var brightness by remember { mutableFloatStateOf(0f) }
     var contrast by remember { mutableFloatStateOf(1f) }
     val context = LocalContext.current
-    
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -163,7 +163,7 @@ fun MultiEffectDemo() {
                 state = state
             )
         }
-        
+
         // Effect controls
         Column(
             modifier = Modifier
@@ -179,7 +179,7 @@ fun MultiEffectDemo() {
                 },
                 valueRange = 0f..2f
             )
-            
+
             Text("Brightness")
             Slider(
                 value = brightness,
@@ -189,7 +189,7 @@ fun MultiEffectDemo() {
                 },
                 valueRange = -1f..1f
             )
-            
+
             Text("Contrast")
             Slider(
                 value = contrast,
@@ -201,13 +201,13 @@ fun MultiEffectDemo() {
             )
         }
     }
-    
+
     // Set up the effect
     LaunchedEffect(Unit) {
         state.setEffect { windowSurface ->
             val bitmap = context.loadBitmapFromAsset("sample/cat.jpg")
             aspectRatio = bitmap.width.toFloat() / bitmap.height
-            
+
             pipeline(windowSurface) {
                 serialSteps(
                     inputTexture = bitmap.asTexture(),
@@ -216,11 +216,11 @@ fun MultiEffectDemo() {
                     step(SaturationKraftShader()) { shader ->
                         shader.saturation = saturation
                     }
-                    
+
                     step(BrightnessKraftShader()) { shader ->
                         shader.brightness = brightness
                     }
-                    
+
                     step(ContrastKraftShader()) { shader ->
                         shader.contrast = contrast
                     }
@@ -247,13 +247,13 @@ fun ComposeStateIntegrationDemo() {
     val state = rememberKraftShadeEffectState()
     var saturation by remember { mutableFloatStateOf(1f) }
     val saturationState = remember { mutableStateOf(1f) }
-    
+
     // When using asSampledInput, changes to the state are automatically
     // reflected in the shader without calling requestRender()
     LaunchedEffect(saturation) {
         saturationState.value = saturation
     }
-    
+
     // Set up the effect with the state-based input
     LaunchedEffect(Unit) {
         state.setEffect { windowSurface ->
@@ -267,7 +267,7 @@ fun ComposeStateIntegrationDemo() {
             }
         }
     }
-    
+
     // UI components...
 }
 ```

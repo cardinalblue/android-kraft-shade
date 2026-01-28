@@ -21,7 +21,7 @@ fun GridOptionButton(
 ) {
     val navController = LocalNavController.current
     val context = LocalContext.current
-    
+
     Card(
         onClick = { 
             when (destination.sampleType) {

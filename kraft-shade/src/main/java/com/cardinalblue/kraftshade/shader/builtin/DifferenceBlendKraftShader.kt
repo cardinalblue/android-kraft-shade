@@ -60,7 +60,7 @@ private const val DIFFERENCE_BLEND_FRAGMENT_SHADER = """
 
     uniform sampler2D inputImageTexture;
     uniform sampler2D inputImageTexture2;
-    
+
     void main() {
         mediump vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
         mediump vec4 textureColor2 = texture2D(inputImageTexture2, textureCoordinate2);

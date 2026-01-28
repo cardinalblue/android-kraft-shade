@@ -29,23 +29,23 @@ sequenceDiagram
     participant OpenGL
 
     Client->>KraftShader: draw(bufferSize, isScreenCoordinate)
-    
+
     alt First draw call
         KraftShader->>KraftShader: init()
         KraftShader->>OpenGL: loadProgram(vertexShader, fragmentShader)
         OpenGL-->>KraftShader: glProgId
     end
-    
+
     KraftShader->>OpenGL: glUseProgram(glProgId)
     KraftShader->>KraftShader: updateTexelSize()
     KraftShader->>KraftShader: beforeActualDraw(isScreenCoordinate)
     KraftShader->>KraftShader: runPendingOnDrawTasks()
-    
+
     loop For each pending task
         KraftShader->>GlUniformDelegate: Execute task
         GlUniformDelegate->>OpenGL: Set uniform values (glUniform*)
     end
-    
+
     KraftShader->>KraftShader: actualDraw(isScreenCoordinate)
     KraftShader->>OpenGL: glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
     KraftShader->>KraftShader: afterActualDraw()
@@ -125,7 +125,7 @@ uniform lowp float opacity;
 void main()
 {
     lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
-    
+
     gl_FragColor = vec4(textureColor.rgb, textureColor.a * opacity);
 }
 ```
@@ -173,10 +173,10 @@ class MyCustomShader(
 
     override fun loadFragmentShader(): String = """
         varying highp vec2 textureCoordinate;
-        
+
         uniform sampler2D inputImageTexture;
         uniform lowp float intensity;
-        
+
         void main() {
             lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
             // Apply custom effect using intensity parameter

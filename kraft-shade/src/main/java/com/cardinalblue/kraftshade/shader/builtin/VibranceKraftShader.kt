@@ -21,10 +21,10 @@ class VibranceKraftShader(vibrance: Float = 0f) : TextureInputKraftShader() {
 @Language("GLSL")
 private const val VIBRANCE_FRAGMENT_SHADER = """
     varying highp vec2 textureCoordinate;
-    
+
     uniform sampler2D inputImageTexture;
     uniform lowp float vibrance;
-    
+
     void main() {
         lowp vec4 color = texture2D(inputImageTexture, textureCoordinate);
         lowp float average = (color.r + color.g + color.b) / 3.0;

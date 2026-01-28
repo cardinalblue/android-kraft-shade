@@ -138,7 +138,7 @@ pipeline(targetBuffer) {
     ) {
         // Use a base shader as a placeholder or for testing
         step(DrawTextureKraftShader())
-        
+
         // Use a bypassable shader for conditional processing
         val bypassableShader = BypassableTextureInputKraftShader(
             wrappedShader = SaturationKraftShader(saturation = 1.5f)
@@ -155,18 +155,18 @@ You can extend the base shader types to create your own custom shaders. For exam
 ```kotlin
 class MyCustomShader : TextureInputKraftShader() {
     var intensity: Float by GlUniformDelegate("intensity")
-    
+
     init {
         intensity = 1.0f
     }
-    
+
     override fun loadFragmentShader(): String {
         return """
             precision mediump float;
             varying vec2 textureCoordinate;
             uniform sampler2D inputImageTexture;
             uniform float intensity;
-            
+
             void main() {
                 vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);
                 // Apply your custom effect here
