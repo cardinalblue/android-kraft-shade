@@ -72,6 +72,10 @@ class GlMat4 : GlMat {
         Matrix.rotateM(arr, 0, 180f, 1f, 0f, 0f)
         Matrix.translateM(arr, 0, -pivotX, -pivotY, 0f)
     }
+
+    fun transform(arr: FloatArray) {
+        Matrix.multiplyMM(this.arr, 0, this.arr, 0, arr, 0)
+    }
 }
 
 fun FloatArray.asGlMat(): GlMat {
