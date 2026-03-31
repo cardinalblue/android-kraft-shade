@@ -127,6 +127,7 @@ open class KraftTextureView : TextureView, WindowSurfaceBuffer.Listener {
                     glEnv?.execute {
                         windowSurface?.delete()
                         windowSurface = null
+                        surfaceTextureListener = null
                         terminateEnv()
                     }
 
